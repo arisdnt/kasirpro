@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# git-push
+# Convenience script to add, commit (with timestamp) and push to origin main
+# Usage: ./git-push ["commit message"]
+
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+RED="\033[0;31m"
+BLUE="\033[0;34m"
+NC="\033[0m"
+
+timestamp() {
+  date +"%Y-%m-%d %H:%M:%S"
+}
+
+log() {
+  echo -e "${BLUE}[git-push]${NC} $1"
+}
+
+info() {
+  echo -e "${GREEN}[ok]${NC} $1"
+}
+
+warn() {
+  echo -e "${YELLOW}[warn]${NC} $1"
+}
+
+err() {
+  echo -e "${RED}[error]${NC} $1" >&2
+}
+
+# start
+START_TS=$(timestamp)
+log "Starting git-push at ${START_TS}"
+
+# Optional custom message
+if [ $# -gt 0 ]; then
+  CUSTOM_MSG="$*"
+else
+  CUSTOM_MSG="Auto commit: ${START_TS}"
+fi
+
+# ensure we're inside a git repo
+if [ ! -d .git ]; then
+  err "This directory is not a git repository (no .git folder).\nPlease run this script from the repository root."
+  exit 1
+fi
+
+# Show git status brief
+log "Repository status (brief):"
+git status --short || true
+
+# Stage files
+log "Adding all files to staging (git add .)"
+if git add .; then
+  info "Staged files successfully"
+else
+  err "git add failed"
+  exit 2
+fi
+
+# Check if there is anything to commit
+if git diff --cached --quiet; then
+  warn "No changes staged for commit. Skipping 'git commit'."
+else
+  log "Creating commit with message: ${CUSTOM_MSG}"
+  if git commit -m "${CUSTOM_MSG}"; then
+    COMMIT_HASH=$(git rev-parse --short HEAD)
+    info "Commit created (${COMMIT_HASH})"
+  else
+    err "git commit failed"
+    exit 3
+  fi
+fi
+
+# Push
+log "Pushing to remote 'origin' branch 'main' (git push -u origin main)"
+if git push -u origin main; then
+  info "Push to origin/main succeeded"
+  END_TS=$(timestamp)
+  log "Completed git-push at ${END_TS}"
+  exit 0
+else
+  err "git push failed. Check remote, authentication, or branch name."
+  exit 4
+fi
