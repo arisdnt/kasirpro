@@ -11,7 +11,9 @@ import type { Customer } from "@/types/partners";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { formatCurrency } from "@/lib/format";
-import { CheckCircle, AlertCircle, X, Printer } from "lucide-react";
+import { CheckCircle, AlertCircle, Printer } from "lucide-react";
+import { getSupabaseClient } from "@/lib/supabase-client";
+import type { CartItem } from "./types";
 
 const PAYMENT_METHODS: PaymentMethod[] = [
   { key: "cash", label: "Tunai" },
@@ -37,14 +39,32 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-  const [completedTransaction, setCompletedTransaction] = useState<any>(null);
+  type CompletedTransaction = {
+    nomorTransaksi: string;
+    total: number;
+    change: number;
+    pajak: number;
+    pajakRate: number;
+    items: CartItem[];
+    customer: Customer | null;
+    subtotal: number;
+    discount: number;
+    paid: number;
+    method: string;
+    invoiceNumber: string;
+  };
+  const [completedTransaction, setCompletedTransaction] = useState<CompletedTransaction | null>(null);
+  const [taxEnabled, setTaxEnabled] = useState<boolean>(false);
+  const [taxRate, setTaxRate] = useState<number>(0);
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.quantity * item.product.hargaJual - item.discount, 0),
     [items],
   );
   const discountValue = Number(discount) || 0;
-  const total = Math.max(subtotal - discountValue, 0);
+  const taxableBase = Math.max(subtotal - discountValue, 0);
+  const taxNominal = taxEnabled && taxRate > 0 ? (taxableBase * taxRate) / 100 : 0;
+  const total = Math.max(taxableBase + taxNominal, 0);
   const paid = Number(amount) || 0;
   const change = Math.max(paid - total, 0);
 
@@ -54,6 +74,26 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
       setAmount(total.toString());
     }
   }, [method, total]);
+
+  // Load tax settings once per user/store change
+  useEffect(() => {
+    const loadTax = async () => {
+      try {
+        const client = getSupabaseClient();
+        const { data, error } = await client.rpc('get_tax_settings');
+        if (error) throw error;
+        type TaxSettings = { pajak_enabled: boolean; pajak_persen: number };
+        const t = (data as unknown as TaxSettings) ?? { pajak_enabled: false, pajak_persen: 0 };
+        const enabled = Boolean(t.pajak_enabled);
+        const rate = Number(t.pajak_persen ?? 0);
+        setTaxEnabled(enabled);
+        setTaxRate(rate);
+      } catch {
+        // Silent fail; defaults already set
+      }
+    };
+    if (user) loadTax();
+  }, [user]);
   const invoiceNumber = useMemo(
     () => `INV-${format(new Date(), "ddMMyy-HHmm")}`,
     [],
@@ -85,9 +125,14 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
     setIsSubmitting(true);
 
     try {
+      if (!user || !user.tokoId) {
+        toast.error("Pilih toko aktif terlebih dahulu");
+        setIsSubmitting(false);
+        return;
+      }
       const result = await finalizeTransaction({
         tenantId: user.tenantId,
-        tokoId: user.tokoId,
+        tokoId: user.tokoId as string,
         penggunaId: user.id,
         cart: items,
         amountPaid: paid,
@@ -103,6 +148,8 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
         customer: customer,
         subtotal: subtotal,
         discount: discountValue,
+        pajak: result.pajak,
+        pajakRate: result.pajakRate,
         total: total,
         paid: paid,
         change: change,
@@ -252,7 +299,7 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
 
             <!-- Items -->
             <div class="section">
-              ${completedTransaction?.items.map((item: any) => `
+              ${completedTransaction?.items.map((item: CartItem) => `
                 <div class="item">
                   <div class="item-name">${item.product.nama}</div>
                   <div class="item-details">
@@ -275,10 +322,16 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
                 <span>Sub Total:</span>
                 <span>${formatCurrency(completedTransaction?.subtotal || 0)}</span>
               </div>
-              ${completedTransaction?.discount > 0 ? `
+              ${(completedTransaction?.discount ?? 0) > 0 ? `
                 <div class="row">
                   <span>Diskon:</span>
-                  <span>-${formatCurrency(completedTransaction.discount)}</span>
+                  <span>-${formatCurrency(completedTransaction?.discount ?? 0)}</span>
+                </div>
+              ` : ''}
+              ${(completedTransaction?.pajak ?? 0) > 0 ? `
+                <div class="row">
+                  <span>Pajak (${completedTransaction?.pajakRate ?? 0}%):</span>
+                  <span>${formatCurrency(completedTransaction?.pajak ?? 0)}</span>
                 </div>
               ` : ''}
               <div class="row bold" style="font-size: 12px; border-top: 1px dashed #000; padding-top: 1mm; margin-top: 2mm;">
@@ -503,7 +556,7 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
                       <span className="text-right w-16">TOTAL</span>
                     </div>
                   </div>
-                  {completedTransaction.items.map((item: any, index: number) => (
+                  {completedTransaction.items.map((item: CartItem, index: number) => (
                     <div key={item.product.id} className={`mb-2 ${index % 2 === 0 ? 'bg-gray-50 -mx-1 px-1 py-0.5' : ''}`}>
                       <div className="font-semibold text-xs text-black mb-0.5 truncate">
                         {item.product.nama}
@@ -533,6 +586,12 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
                     <div className="flex justify-between text-xs text-black">
                       <span>Diskon:</span>
                       <span className="font-semibold">-{formatCurrency(completedTransaction.discount)}</span>
+                    </div>
+                  )}
+                  {completedTransaction.pajak > 0 && (
+                    <div className="flex justify-between text-xs text-black">
+                      <span>Pajak ({completedTransaction.pajakRate}%):</span>
+                      <span className="font-semibold">{formatCurrency(completedTransaction.pajak)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm font-bold border-dashed border-t border-gray-300 pt-1 text-black">

@@ -14,6 +14,7 @@ import { Card, CardBody, CardHeader, Skeleton } from "@heroui/react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/format";
 import type { DashboardFilters, SalesTrendPoint } from "@/types/dashboard";
+import { memo } from "react";
 
 const numberFormatter = new Intl.NumberFormat("id-ID");
 
@@ -96,7 +97,7 @@ const TrendTooltip = ({
   );
 };
 
-export function DashboardSalesTrend({
+function DashboardSalesTrendImpl({
   data,
   isLoading,
   granularity,
@@ -184,6 +185,9 @@ export function DashboardSalesTrend({
                 fillOpacity={0.2}
                 strokeWidth={2}
                 activeDot={{ r: 4 }}
+                isAnimationActive={false}
+                animationDuration={0}
+                animationBegin={0}
               />
               <Bar
                 dataKey="totalTransaksi"
@@ -192,6 +196,9 @@ export function DashboardSalesTrend({
                 fill={metricColors.transactions}
                 barSize={22}
                 radius={[6, 6, 0, 0]}
+                isAnimationActive={false}
+                animationDuration={0}
+                animationBegin={0}
               />
               <Line
                 type="monotone"
@@ -202,6 +209,9 @@ export function DashboardSalesTrend({
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4 }}
+                isAnimationActive={false}
+                animationDuration={0}
+                animationBegin={0}
               />
             </ComposedChart>
           </ResponsiveContainer>
@@ -210,3 +220,5 @@ export function DashboardSalesTrend({
     </Card>
   );
 }
+
+export const DashboardSalesTrend = memo(DashboardSalesTrendImpl);

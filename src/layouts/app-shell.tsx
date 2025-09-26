@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { TopBar } from "@/components/layout/top-bar";
 import { StatusBar } from "@/components/layout/status-bar";
-import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const detectDesktop = () => (typeof window === "undefined" ? false : window.innerWidth >= 1024);
 
@@ -38,11 +38,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
           isSidebarOpen={sidebarOpen}
         />
-        <section className="flex-1 min-h-0 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className="w-full">
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
             {children}
           </div>
-        </section>
+        </ScrollArea>
         <StatusBar />
       </main>
     </div>

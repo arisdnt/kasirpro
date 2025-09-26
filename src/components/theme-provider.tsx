@@ -1,12 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
+import type { ReactNode } from "react";
 
-type Theme = "light" | "dark" | "system";
+type Theme = "light";
 
 type ThemeProviderProps = {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  storageKey?: string;
+  children: ReactNode;
 };
 
 type ThemeProviderState = {
@@ -18,53 +17,30 @@ const ThemeProviderContext = createContext<ThemeProviderState | undefined>(
   undefined,
 );
 
-export function ThemeProvider({
-  children,
-  defaultTheme = "system",
-  storageKey = "kasirpro-theme",
-}: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(defaultTheme);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const stored = window.localStorage.getItem(storageKey) as Theme | null;
-    setThemeState(stored ?? defaultTheme);
-  }, [defaultTheme, storageKey]);
-
+export function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
     const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-      root.classList.add(systemTheme);
-      return;
-    }
-
-    root.classList.add(theme);
-  }, [theme]);
+    root.classList.remove("dark");
+    root.classList.add("light");
+  }, []);
 
   const value = useMemo<ThemeProviderState>(
     () => ({
-      theme,
-      setTheme: (next) => {
-        if (typeof window !== "undefined") {
-          window.localStorage.setItem(storageKey, next);
+      theme: "light",
+      setTheme: () => {
+        if (typeof window === "undefined") {
+          return;
         }
-        setThemeState(next);
+        const root = window.document.documentElement;
+        root.classList.remove("dark");
+        root.classList.add("light");
       },
     }),
-    [theme, storageKey],
+    [],
   );
 
   return (

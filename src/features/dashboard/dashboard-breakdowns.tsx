@@ -42,7 +42,8 @@ type DashboardBreakdownsProps = {
   isLoading?: boolean;
 };
 
-const PaymentTooltip = ({ active, payload }: any) => {
+type PaymentItem = { name?: string; value?: number };
+const PaymentTooltip = ({ active, payload }: { active?: boolean; payload?: Array<PaymentItem> }) => {
   if (!active || !payload || payload.length === 0) return null;
   const item = payload[0];
   return (
@@ -55,14 +56,16 @@ const PaymentTooltip = ({ active, payload }: any) => {
   );
 };
 
-const CategoryTooltip = ({ active, payload }: any) => {
+type CategoryItem = { payload?: { kategoriNama: string; totalPenjualan: number; totalQty: number } };
+const CategoryTooltip = ({ active, payload }: { active?: boolean; payload?: Array<CategoryItem> }) => {
   if (!active || !payload || payload.length === 0) return null;
   const item = payload[0];
+  const p = item?.payload ?? { kategoriNama: "", totalPenjualan: 0, totalQty: 0 };
   return (
     <div className="rounded-lg border border-slate-200/70 bg-white/90 px-3 py-2 text-xs shadow-lg">
-      <div className="font-medium text-slate-600">{item.payload.kategoriNama}</div>
+      <div className="font-medium text-slate-600">{p.kategoriNama}</div>
       <div className="text-slate-500">
-        {formatCurrency(item.payload.totalPenjualan)} • {numberFormatter.format(item.payload.totalQty)} produk
+        {formatCurrency(p.totalPenjualan)} • {numberFormatter.format(p.totalQty)} produk
       </div>
     </div>
   );
@@ -119,7 +122,7 @@ export function DashboardBreakdowns({
                       width={120}
                     />
                     <Tooltip content={<CategoryTooltip />} />
-                    <Bar dataKey="totalPenjualan" radius={[6, 6, 6, 6]}>
+                    <Bar dataKey="totalPenjualan" radius={[6, 6, 6, 6]} isAnimationActive={false} animationDuration={0} animationBegin={0}>
                       {categories.map((entry, index) => (
                         <Cell
                           key={entry.kategoriId}
@@ -151,6 +154,9 @@ export function DashboardBreakdowns({
                       innerRadius={60}
                       paddingAngle={6}
                       cornerRadius={6}
+                      isAnimationActive={false}
+                      animationDuration={0}
+                      animationBegin={0}
                     >
                       {payments.map((entry, index) => (
                         <Cell

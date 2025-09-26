@@ -22,6 +22,7 @@ const iconColors = {
   "/customers": "text-blue-300",
   "/suppliers": "text-green-300",
   "/purchases": "text-indigo-300",
+  "/purchases/quick-entry": "text-lime-300",
   "/returns": "text-orange-300",
   "/purchase-returns": "text-amber-300",
   "/pesan": "text-yellow-300",

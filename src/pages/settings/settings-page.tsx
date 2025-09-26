@@ -1,11 +1,9 @@
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { useTenantQuery, useStoresQuery } from "@/features/settings/use-settings";
-import { useTheme } from "@/components/theme-provider";
 
 export function SettingsPage() {
   const {
@@ -13,18 +11,12 @@ export function SettingsPage() {
   } = useSupabaseAuth();
   const tenant = useTenantQuery();
   const stores = useStoresQuery();
-  const { theme, setTheme } = useTheme();
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Pengaturan"
         description="Konfigurasi tenant, toko, perangkat kasir, dan hak akses."
-        actions={
-          <Button variant="outline" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            Mode {theme === "dark" ? "Terang" : "Gelap"}
-          </Button>
-        }
       />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="border border-primary/10 bg-white/90 shadow-sm">

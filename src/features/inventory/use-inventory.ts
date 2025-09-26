@@ -6,15 +6,17 @@ import { fetchInventoryItems, fetchBatchInfos } from "./api";
 const INVENTORY_KEY = ["inventory-items"];
 const BATCH_KEY = ["inventory-batch"];
 
-export function useInventoryQuery() {
+export function useInventoryQuery(storeId?: string | null | "all") {
   const {
     state: { user },
   } = useSupabaseAuth();
 
+  const effectiveStore = storeId && storeId !== "all" ? storeId : user?.tokoId ?? null;
+
   return useQuery<InventoryItem[]>({
-    queryKey: [...INVENTORY_KEY, user?.tenantId, user?.tokoId],
+    queryKey: [...INVENTORY_KEY, user?.tenantId, effectiveStore],
     enabled: Boolean(user?.tenantId),
-    queryFn: () => fetchInventoryItems(user!.tenantId, user?.tokoId ?? null),
+    queryFn: () => fetchInventoryItems(user!.tenantId, effectiveStore),
     staleTime: 1000 * 30,
   });
 }

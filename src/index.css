@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    color-scheme: light dark;
+    color-scheme: light;
     --background: 48 100% 97%;
     --foreground: 0 0% 0%;
     --card: 0 0% 100%;
@@ -32,28 +32,6 @@
     --radius: 0.6rem;
   }
 
-  .dark {
-    color-scheme: dark;
-    --background: 221 29% 10%;
-    --foreground: 210 40% 96%;
-    --card: 221 27% 14%;
-    --card-foreground: 210 40% 96%;
-    --popover: 221 27% 14%;
-    --popover-foreground: 210 40% 96%;
-    --primary: 208 88% 60%;
-    --primary-foreground: 221 29% 10%;
-    --secondary: 215 28% 22%;
-    --secondary-foreground: 210 40% 96%;
-    --muted: 215 28% 22%;
-    --muted-foreground: 214 20% 65%;
-    --accent: 325 58% 42%;
-    --accent-foreground: 210 40% 96%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 215 28% 22%;
-    --input: 215 28% 22%;
-    --ring: 208 88% 60%;
-  }
 }
 
 @layer base {

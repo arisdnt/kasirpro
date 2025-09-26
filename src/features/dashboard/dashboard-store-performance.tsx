@@ -1,29 +1,26 @@
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts";
+import { memo, useMemo } from "react";
 import { Card, CardBody, CardHeader, Skeleton } from "@heroui/react";
 import { formatCurrency } from "@/lib/format";
 import type { StorePerformance } from "@/types/dashboard";
-
-const colors = ["#6366f1", "#0ea5e9", "#22c55e", "#f97316", "#a855f7", "#14b8a6"];
-
-const tooltip = ({ active, payload }: any) => {
-  if (!active || !payload || payload.length === 0) return null;
-  const item = payload[0]?.payload;
-  return (
-    <div className="rounded-lg border border-slate-200/70 bg-white/90 px-3 py-2 text-xs shadow-lg">
-      <div className="font-medium text-slate-600">{item.tokoNama}</div>
-      <div className="text-slate-500">{formatCurrency(item.totalPenjualan)}</div>
-      <div className="text-slate-500">{item.totalTransaksi} transaksi</div>
-    </div>
-  );
-};
 
 type DashboardStorePerformanceProps = {
   data: StorePerformance[];
   isLoading?: boolean;
 };
 
-export function DashboardStorePerformance({ data, isLoading }: DashboardStorePerformanceProps) {
+function DashboardStorePerformanceImpl({ data, isLoading }: DashboardStorePerformanceProps) {
   const empty = !isLoading && data.length === 0;
+
+  const { sortedStores, topStore, totalPenjualan } = useMemo(() => {
+    if (data.length === 0) {
+      return { sortedStores: [] as StorePerformance[], topStore: undefined, totalPenjualan: 0 };
+    }
+
+    const sorted = [...data].sort((a, b) => b.totalPenjualan - a.totalPenjualan);
+    const total = sorted.reduce((acc, item) => acc + item.totalPenjualan, 0);
+
+    return { sortedStores: sorted, topStore: sorted[0], totalPenjualan: total };
+  }, [data]);
 
   return (
     <Card className="h-full border border-slate-200/80 bg-white/85 shadow-sm">
@@ -35,42 +32,61 @@ export function DashboardStorePerformance({ data, isLoading }: DashboardStorePer
           </p>
         </div>
       </CardHeader>
-      <CardBody className="h-[280px] p-0">
+      <CardBody className="p-0">
         {isLoading ? (
-          <Skeleton className="h-full w-full rounded-none" />
+          <Skeleton className="h-[280px] w-full rounded-none" />
         ) : empty ? (
-          <div className="flex h-full flex-col items-center justify-center text-sm text-slate-500">
+          <div className="flex h-[280px] flex-col items-center justify-center px-6 text-center text-sm text-slate-500">
             Belum ada transaksi yang dapat dibandingkan.
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 20, right: 24, bottom: 20, left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis
-                dataKey="tokoNama"
-                tick={{ fontSize: 11, fill: "#475569" }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tickFormatter={(value) => `${Math.round(value / 1000)}K`}
-                tick={{ fontSize: 11, fill: "#475569" }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <Tooltip content={tooltip} />
-              <Bar dataKey="totalPenjualan" radius={[8, 8, 4, 4]}>
-                {data.map((entry, index) => (
-                  <Cell
-                    key={entry.tokoId}
-                    fill={colors[index % colors.length]}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="flex h-[280px] flex-col">
+            {topStore ? (
+              <div className="border-b border-slate-200/70 bg-slate-50/60 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Toko Teratas
+                </p>
+                <div className="mt-1 text-sm font-semibold text-slate-700">{topStore.tokoNama}</div>
+                <p className="text-xs text-slate-500">
+                  {formatCurrency(topStore.totalPenjualan)} · {topStore.totalTransaksi} transaksi · Rata order {formatCurrency(topStore.rataOrder)}
+                </p>
+              </div>
+            ) : null}
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4">
+              {sortedStores.map((store, index) => {
+                const share = totalPenjualan === 0 ? 0 : (store.totalPenjualan / totalPenjualan) * 100;
+                const contribution = Math.round(share);
+                const barWidth = totalPenjualan === 0 ? 0 : Math.min(Math.max(share, contribution > 0 ? 6 : 0), 100);
+
+                return (
+                  <div key={store.tokoId} className="rounded-lg border border-slate-200/80 bg-white/95 p-3 shadow-sm">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium text-slate-700">
+                          {index + 1}. {store.tokoNama}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {store.totalTransaksi} transaksi · Rata order {formatCurrency(store.rataOrder)}
+                        </p>
+                      </div>
+                      <p className="text-sm font-semibold text-slate-700">{formatCurrency(store.totalPenjualan)}</p>
+                    </div>
+                    <div className="mt-2 h-2 rounded-full bg-slate-200/80">
+                      <div
+                        className="h-full rounded-full bg-indigo-500"
+                        style={{ width: `${barWidth}%` }}
+                      />
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500">Kontribusi {contribution}%</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
       </CardBody>
     </Card>
   );
 }
+
+export const DashboardStorePerformance = memo(DashboardStorePerformanceImpl);

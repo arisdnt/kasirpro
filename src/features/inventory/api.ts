@@ -6,7 +6,21 @@ export async function fetchInventoryItems(tenantId: string, tokoId: string | nul
   const client = getSupabaseClient();
   const query = client
     .from("inventaris")
-    .select("id, produk_id, stock_tersedia, stock_fisik, toko_id, produk:produk_id ( nama )")
+    .select(
+      `
+        id,
+        produk_id,
+        stock_tersedia,
+        stock_fisik,
+        stock_minimum,
+        stock_maksimum,
+        lokasi_rak,
+        batch_number,
+        tanggal_expired,
+        toko_id,
+        produk:produk_id ( nama, kode )
+      `,
+    )
     .eq("tenant_id", tenantId)
     .order("updated_at", { ascending: false });
 
@@ -21,9 +35,15 @@ export async function fetchInventoryItems(tenantId: string, tokoId: string | nul
     id: item.id,
     produkId: item.produk_id,
     produkNama: (item.produk as any)?.nama ?? "-",
+    produkKode: (item.produk as any)?.kode ?? null,
     stockSistem: item.stock_tersedia ?? 0,
     stockFisik: item.stock_fisik ?? 0,
     selisih: (item.stock_fisik ?? 0) - (item.stock_tersedia ?? 0),
+    stockMinimum: item.stock_minimum ?? null,
+    stockMaximum: item.stock_maksimum ?? null,
+    lokasiRak: item.lokasi_rak ?? null,
+    batchNumber: item.batch_number ?? null,
+    tanggalExpired: item.tanggal_expired ?? null,
     tokoId: item.toko_id,
   })) as InventoryItem[]);
 }
