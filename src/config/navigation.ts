@@ -10,6 +10,7 @@ import {
   Factory,
   LayoutDashboard,
   Layers,
+  Percent,
   Newspaper,
   Package2,
   Settings,
@@ -86,6 +87,13 @@ export const navigationSections: NavSection[] = [
         icon: ShoppingCart,
         description: "Data transaksi penjualan dan omzet",
         tables: ["transaksi_penjualan", "item_transaksi_penjualan"],
+      },
+      {
+        to: "/promo",
+        label: "Promo",
+        icon: Percent,
+        description: "Kelola kampanye diskon dan voucher",
+        tables: ["promo", "promo_produk", "promo_kategori", "promo_brand", "promo_pelanggan", "promo_penerapan"],
       },
       {
         to: "/returns",

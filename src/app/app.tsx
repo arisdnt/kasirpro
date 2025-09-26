@@ -27,6 +27,7 @@ import { UsersPage } from "@/pages/users/users-page";
 import { RolesPage } from "@/pages/roles/roles-page";
 import { SettingsPage } from "@/pages/settings/settings-page";
 import { SystemConfigPage } from "@/pages/settings/system-config-page";
+import { PromoPage } from "@/pages/promo/promo-page";
 import { LoginPage } from "@/pages/auth/login-page";
 
 function ShellOutlet() {
@@ -49,6 +50,7 @@ export function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/pos" element={<PosPage />} />
+          <Route path="/promo" element={<PromoPage />} />
           <Route path="/produk" element={<ProdukPage />} />
           <Route path="/kategori" element={<KategoriPage />} />
           <Route path="/brand" element={<BrandPage />} />

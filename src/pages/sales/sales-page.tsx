@@ -13,10 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSalesQuery } from "@/features/sales/use-sales";
+import { useSalesQuery, useSaleItemsQuery } from "@/features/sales/use-sales";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Filter, Plus, RefreshCw, Search, ShoppingCart } from "lucide-react";
+import { Filter, RefreshCw, Search, ShoppingCart } from "lucide-react";
 
 type PaymentMethodFilter = "all" | "cash" | "card" | "transfer" | "qris";
 
@@ -25,6 +25,7 @@ export function SalesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentFilter, setPaymentFilter] = useState<PaymentMethodFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const saleItems = useSaleItemsQuery(selectedId);
 
   const stats = useMemo(() => {
     const data = sales.data ?? [];
@@ -128,13 +129,9 @@ export function SalesPage() {
                 <span>Non-Tunai: <strong>{stats.nonCash}</strong></span>
                 <span>Omzet: <strong>{formatCurrency(stats.totalRevenue)}</strong></span>
               </div>
-              <Button variant="outline" onClick={handleRefresh} className="gap-2 text-white rounded-none">
+              <Button onClick={handleRefresh} className="gap-2 text-white rounded-none" style={{ backgroundColor: '#476EAE' }}>
                 <RefreshCw className="h-4 w-4" />
                 Refresh data
-              </Button>
-              <Button className="gap-2 text-white rounded-none">
-                <Plus className="h-4 w-4" />
-                Transaksi baru
               </Button>
             </div>
           </div>
@@ -182,17 +179,21 @@ export function SalesPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredSales.map((item) => (
+                    {filteredSales.map((item, index) => (
                       <TableRow
                         key={item.id}
                         onClick={() => setSelectedId(item.id)}
                         data-state={item.id === selectedId ? "selected" : undefined}
                         className={cn(
-                          "cursor-pointer border-b border-slate-100 transition",
-                          item.id === selectedId ? "!bg-gray-100 text-black" : "hover:bg-slate-50"
+                          "cursor-pointer border-b border-slate-100 transition h-14",
+                          item.id === selectedId
+                            ? "!bg-gray-100 text-black"
+                            : index % 2 === 0
+                              ? "bg-white hover:bg-slate-50"
+                              : "bg-gray-50/50 hover:bg-slate-100"
                         )}
                       >
-                        <TableCell className="align-top">
+                        <TableCell className="align-middle py-4">
                           <span className={cn(
                             "font-medium",
                             item.id === selectedId ? "text-black" : "text-slate-900"
@@ -201,18 +202,18 @@ export function SalesPage() {
                           </span>
                         </TableCell>
                         <TableCell className={cn(
-                          "align-top",
+                          "align-middle py-4",
                           item.id === selectedId ? "text-black" : "text-slate-700"
                         )}>
                           {item.pelangganNama ?? "Pelanggan umum"}
                         </TableCell>
                         <TableCell className={cn(
-                          "align-top font-semibold",
+                          "align-middle py-4 font-semibold",
                           item.id === selectedId ? "text-black" : "text-slate-900"
                         )}>
                           {formatCurrency(item.total)}
                         </TableCell>
-                        <TableCell className="align-top">
+                        <TableCell className="align-middle py-4">
                           <span className={cn(
                             "px-2 py-1 rounded text-xs font-semibold border",
                             getPaymentMethodColor(item.metodePembayaran)
@@ -221,13 +222,13 @@ export function SalesPage() {
                           </span>
                         </TableCell>
                         <TableCell className={cn(
-                          "align-top font-medium",
+                          "align-middle py-4 font-medium",
                           item.id === selectedId ? "text-black" : "text-slate-700"
                         )}>
                           {item.kembalian ? formatCurrency(item.kembalian) : "-"}
                         </TableCell>
                         <TableCell className={cn(
-                          "align-top text-xs",
+                          "align-middle py-4 text-xs",
                           item.id === selectedId ? "text-black" : "text-slate-600"
                         )}>
                           {formatDateTime(item.tanggal)}
@@ -285,10 +286,72 @@ export function SalesPage() {
                 <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
                   <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
                     <span className="text-sm font-semibold text-slate-800">
+                      Item Pembelian
+                    </span>
+                    <Badge variant="secondary" className="bg-slate-100 text-slate-700 rounded-none">
+                      {saleItems.data?.length ?? 0} item
+                    </Badge>
+                  </div>
+                  <ScrollArea className="flex-1">
+                    {saleItems.isLoading ? (
+                      <div className="flex flex-col gap-2 p-4">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                          <Skeleton key={index} className="h-20 w-full rounded-lg" />
+                        ))}
+                      </div>
+                    ) : (saleItems.data?.length ?? 0) === 0 ? (
+                      <div className="flex flex-col items-center justify-center gap-2 p-6 text-center">
+                        <ShoppingCart className="h-6 w-6 text-slate-300" />
+                        <p className="text-sm text-slate-600">Tidak ada item</p>
+                      </div>
+                    ) : (
+                      <div className="p-4 space-y-3">
+                        {saleItems.data?.map((item, index) => (
+                          <div key={item.id} className={cn(
+                            "rounded-lg border border-slate-200 p-4",
+                            index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                          )}>
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-slate-900 truncate">
+                                  {item.produkNama}
+                                </h4>
+                                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                                  {item.produkKode && (
+                                    <span className="px-2 py-1 bg-slate-100 rounded">
+                                      {item.produkKode}
+                                    </span>
+                                  )}
+                                  {item.kategoriNama && (
+                                    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                                      {item.kategoriNama}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-slate-900">
+                                  {formatCurrency(item.subtotal)}
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  {item.qty} × {formatCurrency(item.hargaSatuan)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </div>
+
+                <div className="flex shrink-0 flex-col rounded-none border border-slate-200 bg-white">
+                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
+                    <span className="text-sm font-semibold text-slate-800">
                       Detail Pembayaran
                     </span>
                   </div>
-                  <div className="flex-1 p-4">
+                  <div className="p-4">
                     <div className="space-y-3 text-sm">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
