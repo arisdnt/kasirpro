@@ -4,6 +4,7 @@ import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import type { Product } from "@/types/products";
 import { fetchProducts } from "@/features/produk/api";
 import { useSupabaseRealtime } from "@/hooks/use-supabase-realtime";
+import { useProductStockRealtime } from "@/features/produk/hooks/use-product-stock-realtime";
 import { PRODUCTS_QUERY_KEY } from "./keys";
 
 export function useProductsQuery() {
@@ -26,6 +27,7 @@ export function useProductsQuery() {
   }, [queryClient, user?.tenantId, user?.tokoId]);
 
   useSupabaseRealtime("products-changes", { table: "produk" }, invalidate);
+  useProductStockRealtime("products-stock", invalidate);
 
   return query;
 }

@@ -59,6 +59,7 @@ export function PesanPage() {
             onStatusFilterChange={setStatusFilter}
             onRefresh={handleRefresh}
             stats={stats}
+            isRefreshing={messages.isFetching}
           />
         </CardContent>
       </Card>

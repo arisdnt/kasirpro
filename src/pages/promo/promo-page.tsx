@@ -215,7 +215,7 @@ export function PromoPage() {
 
       <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
         <CardContent className="flex flex-col gap-3 py-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex min-w-[260px] flex-1 flex-wrap items-center gap-3">
               <div className="relative flex-1 min-w-[220px]">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -287,17 +287,16 @@ export function PromoPage() {
                 </select>
               </div>
             </div>
-            <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
+            <div className="ml-auto flex items-center gap-2">
               <Button
-                variant="outline"
                 onClick={handleRefresh}
-                className="gap-2 rounded-none"
+                className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0] disabled:bg-[#476EAE]/70"
                 disabled={promosQuery.isFetching}
               >
                 <RefreshCw className={cn("h-4 w-4", promosQuery.isFetching && "animate-spin")} />
                 Muat ulang
               </Button>
-              <Button className="gap-2 rounded-none" disabled title="Segera hadir">
+              <Button className="gap-2 rounded-none bg-[#466eae] text-white hover:bg-[#3a5c9a]" disabled title="Segera hadir">
                 <Plus className="h-4 w-4" />
                 Promo Baru
               </Button>
@@ -533,7 +532,7 @@ export function PromoPage() {
                       </>
                     )}
                   </Button>
-                  <Button className="rounded-none" disabled title="Segera hadir">
+                  <Button className="rounded-none bg-[#466eae] text-white hover:bg-[#3a5c9a]" disabled title="Segera hadir">
                     Edit promo
                   </Button>
                 </div>

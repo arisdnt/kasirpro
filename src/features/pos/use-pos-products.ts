@@ -4,6 +4,8 @@ import { getSupabaseClient } from "@/lib/supabase-client";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import type { PosProduct } from "./types";
 import { useSupabaseRealtime } from "@/hooks/use-supabase-realtime";
+import { fetchProductStocks } from "@/features/produk/api/stocks";
+import { useProductStockRealtime } from "@/features/produk/hooks/use-product-stock-realtime";
 
 const POS_PRODUCTS_KEY = ["pos-products"];
 
@@ -14,7 +16,6 @@ type ProductRow = {
   harga_jual: number;
   satuan: string | null;
   gambar_urls: string[] | null;
-  inventaris: { stock_tersedia: number | null }[] | null;
   brand: { nama: string | null } | null;
   kategori: { nama: string | null } | null;
 };
@@ -24,7 +25,7 @@ async function fetchPosProducts(tenantId: string, tokoId: string | null) {
   const query = client
     .from("produk")
     .select(
-      "id, nama, kode, harga_jual, satuan, gambar_urls, toko_id, brand:brand(nama), kategori:kategori(nama), inventaris:inventaris(stock_tersedia)",
+      "id, nama, kode, harga_jual, satuan, gambar_urls, toko_id, brand:brand(nama), kategori:kategori(nama)",
     )
     .eq("tenant_id", tenantId)
     .eq("status", "aktif")
@@ -39,19 +40,23 @@ async function fetchPosProducts(tenantId: string, tokoId: string | null) {
     throw error;
   }
 
-  return (
-    data?.map((item: ProductRow) => ({
-      id: item.id,
-      nama: item.nama,
-      kode: item.kode,
-      hargaJual: item.harga_jual,
-      satuan: item.satuan,
-      gambarUrl: item.gambar_urls?.[0] ?? null,
-      stok: item.inventaris?.reduce((total, row) => total + (row.stock_tersedia ?? 0), 0) ?? 0,
-      brandNama: item.brand?.nama ?? null,
-      kategoriNama: item.kategori?.nama ?? null,
-    })) ?? []
-  ) satisfies PosProduct[];
+  const rows = (data as ProductRow[] | null) ?? [];
+  const productIds = rows.map((item) => item.id);
+  const stockMap = tokoId && productIds.length > 0
+    ? await fetchProductStocks(tenantId, tokoId, productIds)
+    : {};
+
+  return rows.map((item) => ({
+    id: item.id,
+    nama: item.nama,
+    kode: item.kode,
+    hargaJual: item.harga_jual,
+    satuan: item.satuan,
+    gambarUrl: item.gambar_urls?.[0] ?? null,
+    stok: stockMap[item.id] ?? 0,
+    brandNama: item.brand?.nama ?? null,
+    kategoriNama: item.kategori?.nama ?? null,
+  })) satisfies PosProduct[];
 }
 
 export function usePosProductsQuery() {
@@ -74,7 +79,7 @@ export function usePosProductsQuery() {
   }, [queryClient, user?.tenantId, user?.tokoId]);
 
   useSupabaseRealtime("pos-products", { table: "produk" }, invalidate);
-  useSupabaseRealtime("pos-inventory", { table: "inventaris" }, invalidate);
+  useProductStockRealtime("pos-stock", invalidate);
 
   return query;
 }

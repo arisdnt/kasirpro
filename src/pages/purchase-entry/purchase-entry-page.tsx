@@ -17,6 +17,7 @@ import { MoveRight, ScanBarcode, Search, Trash2, Truck } from "lucide-react";
 
 import type { PurchaseProduct } from "@/features/purchases/use-purchase-products";
 import type { Supplier } from "@/types/partners";
+import { useQuickPurchaseMutation } from "@/features/purchase-entry/use-quick-purchase";
 
 const MAX_SUGGESTIONS = 8;
 
@@ -43,6 +44,7 @@ function resolveBasePrice(product: PurchaseProduct) {
 export function PurchaseEntryPage() {
   const { data: products = [] } = usePurchaseProductsQuery();
   const { data: suppliers = [], isLoading: loadingSuppliers } = useSuppliersQuery();
+  const quickPurchase = useQuickPurchaseMutation();
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchBlurTimer = useRef<number | null>(null);
@@ -187,32 +189,64 @@ export function PurchaseEntryPage() {
     setItems((prev) => prev.filter((item) => item.productId !== productId));
   };
 
-  const handleSaveDraft = () => {
-    if (items.length === 0) {
-      toast.error("Tambahkan produk terlebih dahulu");
-      return;
-    }
-
-    toast.success("Draft pembelian disimpan (simulasi)");
-  };
-
-  const handleFinalize = () => {
+  const ensureValid = () => {
     if (items.length === 0) {
       toast.error("Keranjang pembelian masih kosong");
-      return;
+      return false;
     }
 
     if (supplierMode === "registered" && !selectedSupplierId) {
       toast.error("Pilih supplier terlebih dahulu");
-      return;
+      return false;
     }
 
     if (supplierMode === "external" && externalSupplierName.trim().length === 0) {
       toast.error("Masukkan nama supplier");
-      return;
+      return false;
     }
 
-    toast.success("Transaksi pembelian siap diproses (simulasi)");
+    return true;
+  };
+
+  const submitPurchase = async (status: "draft" | "diterima") => {
+    if (!ensureValid()) return;
+
+    try {
+      const result = await quickPurchase.mutateAsync({
+        items: items.map((item) => ({
+          productId: item.productId,
+          qty: item.qty,
+          harga: item.harga,
+        })),
+        supplierMode,
+        supplierId: selectedSupplierId,
+        externalSupplierName,
+        status,
+      });
+
+      if (status === "draft") {
+        toast.success(`Draft pembelian tersimpan • ${result.nomorTransaksi}`);
+      } else {
+        toast.success(`Transaksi pembelian berhasil dibuat • ${result.nomorTransaksi}`);
+      }
+
+      setItems([]);
+      setSearchTerm("");
+      setHighlightIndex(0);
+
+      if (supplierMode === "external") {
+        setSupplierMode("registered");
+        setSelectedSupplierId(result.supplierId);
+        setExternalSupplierName("");
+      }
+
+      window.setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 0);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Gagal memproses pembelian";
+      toast.error(message);
+    }
   };
 
   const activeSupplierName = useMemo(() => {
@@ -299,9 +333,7 @@ export function PurchaseEntryPage() {
                 )}
               </div>
               <HeroButton
-                color="danger"
-                className="h-12 px-5"
-                variant="flat"
+                className="h-12 gap-2 rounded-none bg-[#476EAE] px-5 text-white hover:bg-[#3f63a0] disabled:bg-[#476EAE]/70 disabled:opacity-80 data-[disabled=true]:bg-[#476EAE]/70 data-[disabled=true]:opacity-80"
                 startContent={<Trash2 className="h-4 w-4" />}
                 onPress={() => setItems([])}
                 isDisabled={items.length === 0}
@@ -391,8 +423,13 @@ export function PurchaseEntryPage() {
               aria-label="Supplier mode"
               selectedKey={supplierMode}
               onSelectionChange={(key) => setSupplierMode(key as SupplierMode)}
-              variant="solid"
-              color="primary"
+              disableAnimation
+              classNames={{
+                tabList: "flex gap-2 border-b border-slate-200 bg-transparent p-0",
+                tab: "min-w-[120px] rounded-none border-b-2 border-transparent px-3 py-2 text-sm font-semibold text-slate-500 transition data-[hover=true]:bg-slate-50 data-[hover=true]:text-[#476EAE] data-[selected=true]:border-[#476EAE] data-[selected=true]:text-[#476EAE]",
+                tabContent: "w-full justify-center",
+                cursor: "hidden",
+              }}
             >
               <Tab key="registered" title="Terdaftar">
                 <div className="space-y-2">
@@ -448,19 +485,21 @@ export function PurchaseEntryPage() {
           </CardBody>
           <CardFooter className="flex flex-col gap-2 border-t border-sky-100 pt-4">
             <HeroButton
-              color="secondary"
-              variant="flat"
+              className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0] data-[disabled=true]:bg-[#476EAE]/70 data-[disabled=true]:opacity-80"
               fullWidth
-              onPress={handleSaveDraft}
+              onPress={() => void submitPurchase("draft")}
+              isDisabled={quickPurchase.isPending || items.length === 0}
+              isLoading={quickPurchase.isPending}
             >
               Simpan Draft
             </HeroButton>
             <HeroButton
-              color="primary"
-              className="bg-emerald-500 text-white hover:bg-emerald-600"
+              className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0] data-[disabled=true]:bg-[#476EAE]/70 data-[disabled=true]:opacity-80"
               fullWidth
-              onPress={handleFinalize}
+              onPress={() => void submitPurchase("diterima")}
               endContent={<MoveRight className="h-4 w-4" />}
+              isDisabled={quickPurchase.isPending || items.length === 0}
+              isLoading={quickPurchase.isPending}
             >
               Konfirmasi Pembelian
             </HeroButton>

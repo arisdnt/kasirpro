@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,14 +17,18 @@ import { useProductsQuery } from "@/features/produk/use-products";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Filter, Package, Plus, RefreshCw, Search } from "lucide-react";
+import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
+import { fetchProductStocks } from "@/features/produk/api/stocks";
 
 type StatusFilter = "all" | "aktif" | "nonaktif";
 
 export function ProdukPage() {
   const products = useProductsQuery();
+  const { state: { user } } = useSupabaseAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [stocks, setStocks] = useState<Record<string, number>>({});
 
   const stats = useMemo(() => {
     const data = products.data ?? [];
@@ -62,6 +66,25 @@ export function ProdukPage() {
     products.refetch();
   };
 
+  // Load stocks for current store when product list changes
+  useEffect(() => {
+    const load = async () => {
+      if (!user?.tenantId || !user.tokoId) return;
+      const ids = (products.data ?? []).map(p => p.id);
+      if (ids.length === 0) {
+        setStocks({});
+        return;
+      }
+      try {
+        const map = await fetchProductStocks(user.tenantId, user.tokoId, ids);
+        setStocks(map);
+      } catch {
+        setStocks({});
+      }
+    };
+    void load();
+  }, [user?.tenantId, user?.tokoId, products.data]);
+
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
       <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
@@ -96,11 +119,15 @@ export function ProdukPage() {
                 <span>Aktif: <strong>{stats.aktif}</strong></span>
                 <span>Nonaktif: <strong>{stats.nonaktif}</strong></span>
               </div>
-              <Button variant="outline" onClick={handleRefresh} className="gap-2 text-white rounded-none">
-                <RefreshCw className="h-4 w-4" />
+              <Button
+                onClick={handleRefresh}
+                className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0] disabled:bg-[#476EAE]/70"
+                disabled={products.isFetching}
+              >
+                <RefreshCw className={cn("h-4 w-4", products.isFetching && "animate-spin")} />
                 Refresh data
               </Button>
-              <Button className="gap-2 text-white rounded-none">
+              <Button className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]" disabled>
                 <Plus className="h-4 w-4" />
                 Produk baru
               </Button>
@@ -146,6 +173,7 @@ export function ProdukPage() {
                       <TableHead className="w-[20%] text-slate-500">Kategori</TableHead>
                       <TableHead className="w-[15%] text-slate-500">Brand</TableHead>
                       <TableHead className="w-[15%] text-slate-500">Harga</TableHead>
+                      <TableHead className="w-[10%] text-slate-500">Stok</TableHead>
                       <TableHead className="w-[10%] text-slate-500">Status</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -166,6 +194,14 @@ export function ProdukPage() {
                             item.id === selectedId ? "text-black" : "text-slate-900"
                           )}>
                             {item.kode}
+                          </span>
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <span className={cn(
+                            "text-sm",
+                            item.id === selectedId ? "text-slate-900" : "text-slate-900"
+                          )}>
+                            {item.nama}
                           </span>
                         </TableCell>
                         <TableCell className="align-top">
@@ -197,6 +233,14 @@ export function ProdukPage() {
                           item.id === selectedId ? "text-black" : "text-slate-700"
                         )}>
                           {formatCurrency(item.hargaJual)}
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <span className={cn(
+                            "text-sm",
+                            item.id === selectedId ? "text-black" : "text-slate-700"
+                          )}>
+                            {user?.tokoId ? (stocks[item.id] ?? 0) : "-"}
+                          </span>
                         </TableCell>
                         <TableCell className="align-top">
                           <Badge
@@ -268,8 +312,8 @@ export function ProdukPage() {
                       <div>
                         <span className="text-xs uppercase tracking-wide text-slate-500">Dibuat</span>
                         <p className="text-slate-700">
-                          {selectedProduct.createdAt
-                            ? new Date(selectedProduct.createdAt).toLocaleDateString('id-ID')
+                          {selectedProduct.updatedAt
+                            ? new Date(selectedProduct.updatedAt).toLocaleDateString('id-ID')
                             : "-"
                           }
                         </p>

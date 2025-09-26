@@ -122,12 +122,26 @@ export function SalesPage() {
                 </select>
               </div>
             </div>
-            <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
-              <div className="flex gap-3 text-xs text-black">
-                <span>Total: <strong>{stats.total}</strong></span>
-                <span>Tunai: <strong>{stats.cash}</strong></span>
-                <span>Non-Tunai: <strong>{stats.nonCash}</strong></span>
-                <span>Omzet: <strong>{formatCurrency(stats.totalRevenue)}</strong></span>
+            <div className="flex flex-1 items-center justify-end gap-4">
+              <div className="flex items-center gap-4 text-xs text-black bg-slate-50 px-3 py-1.5 rounded border h-10">
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-slate-600 text-[10px] leading-none">Total</span>
+                  <span className="font-bold text-sm text-slate-900 leading-none">{stats.total}</span>
+                </div>
+                <div className="w-px h-6 bg-slate-300"></div>
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-slate-600 text-[10px] leading-none">Tunai</span>
+                  <span className="font-bold text-sm text-green-600 leading-none">{stats.cash}</span>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-slate-600 text-[10px] leading-none">Non-Tunai</span>
+                  <span className="font-bold text-sm text-blue-600 leading-none">{stats.nonCash}</span>
+                </div>
+                <div className="w-px h-6 bg-slate-300"></div>
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-slate-600 text-[10px] leading-none">Omzet</span>
+                  <span className="font-bold text-sm text-emerald-600 leading-none">{formatCurrency(stats.totalRevenue)}</span>
+                </div>
               </div>
               <Button onClick={handleRefresh} className="gap-2 text-white rounded-none" style={{ backgroundColor: '#476EAE' }}>
                 <RefreshCw className="h-4 w-4" />

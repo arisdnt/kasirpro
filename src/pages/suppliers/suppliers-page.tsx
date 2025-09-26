@@ -87,11 +87,15 @@ export function SuppliersPage() {
                 <span>Aktif: <strong>{stats.aktif}</strong></span>
                 <span>Nonaktif: <strong>{stats.nonaktif}</strong></span>
               </div>
-              <Button variant="outline" onClick={handleRefresh} className="gap-2 text-white rounded-none">
-                <RefreshCw className="h-4 w-4" />
+              <Button
+                onClick={handleRefresh}
+                className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0] disabled:bg-[#476EAE]/70"
+                disabled={suppliers.isFetching}
+              >
+                <RefreshCw className={cn("h-4 w-4", suppliers.isFetching && "animate-spin")} />
                 Refresh data
               </Button>
-              <Button className="gap-2 text-white rounded-none">
+              <Button className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]" disabled>
                 <Plus className="h-4 w-4" />
                 Supplier baru
               </Button>

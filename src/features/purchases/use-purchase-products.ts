@@ -2,6 +2,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { getSupabaseClient } from "@/lib/supabase-client";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
+import { fetchProductStocks } from "@/features/produk/api/stocks";
+import { useProductStockRealtime } from "@/features/produk/hooks/use-product-stock-realtime";
 import { useSupabaseRealtime } from "@/hooks/use-supabase-realtime";
 
 export type PurchaseProduct = {
@@ -25,7 +27,6 @@ type ProductRow = {
   harga_beli: number | null;
   harga_jual: number | null;
   satuan: string | null;
-  inventaris: { stock_tersedia: number | null }[] | null;
   toko_id: string | null;
 };
 
@@ -34,7 +35,7 @@ async function fetchPurchaseProducts(tenantId: string, tokoId: string | null) {
   const query = client
     .from("produk")
     .select(
-      "id, nama, kode, barcode, harga_beli, harga_jual, satuan, toko_id, inventaris:inventaris(stock_tersedia)"
+      "id, nama, kode, barcode, harga_beli, harga_jual, satuan, toko_id"
     )
     .eq("tenant_id", tenantId)
     .eq("status", "aktif")
@@ -49,18 +50,22 @@ async function fetchPurchaseProducts(tenantId: string, tokoId: string | null) {
     throw error;
   }
 
-  return (
-    data?.map((item: ProductRow) => ({
-      id: item.id,
-      nama: item.nama,
-      kode: item.kode,
-      barcode: item.barcode,
-      hargaBeli: item.harga_beli ?? 0,
-      hargaJual: item.harga_jual,
-      satuan: item.satuan,
-      stok: item.inventaris?.reduce((total, row) => total + (row.stock_tersedia ?? 0), 0) ?? 0,
-    })) ?? []
-  ) satisfies PurchaseProduct[];
+  const rows = (data as ProductRow[] | null) ?? [];
+  const productIds = rows.map((item) => item.id);
+  const stockMap = tokoId && productIds.length > 0
+    ? await fetchProductStocks(tenantId, tokoId, productIds)
+    : {};
+
+  return rows.map((item) => ({
+    id: item.id,
+    nama: item.nama,
+    kode: item.kode,
+    barcode: item.barcode,
+    hargaBeli: item.harga_beli ?? 0,
+    hargaJual: item.harga_jual,
+    satuan: item.satuan,
+    stok: stockMap[item.id] ?? 0,
+  })) satisfies PurchaseProduct[];
 }
 
 export function usePurchaseProductsQuery() {
@@ -83,7 +88,7 @@ export function usePurchaseProductsQuery() {
   }, [queryClient, user?.tenantId, user?.tokoId]);
 
   useSupabaseRealtime("purchase-products", { table: "produk" }, invalidate);
-  useSupabaseRealtime("purchase-inventory", { table: "inventaris" }, invalidate);
+  useProductStockRealtime("purchase-stock", invalidate);
 
   return query;
 }

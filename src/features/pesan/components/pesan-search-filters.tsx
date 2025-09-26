@@ -15,6 +15,7 @@ interface PesanSearchFiltersProps {
     terkirim: number;
     draft: number;
   };
+  isRefreshing?: boolean;
 }
 
 export function PesanSearchFilters({
@@ -24,6 +25,7 @@ export function PesanSearchFilters({
   onStatusFilterChange,
   onRefresh,
   stats,
+  isRefreshing = false,
 }: PesanSearchFiltersProps) {
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -57,11 +59,15 @@ export function PesanSearchFilters({
           <span>Terkirim: <strong>{stats.terkirim}</strong></span>
           <span>Draft: <strong>{stats.draft}</strong></span>
         </div>
-        <Button variant="outline" onClick={onRefresh} className="gap-2 text-white rounded-none">
-          <RefreshCw className="h-4 w-4" />
+        <Button
+          onClick={onRefresh}
+          className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0] disabled:bg-[#476EAE]/70"
+          disabled={isRefreshing}
+        >
+          <RefreshCw className={isRefreshing ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
           Refresh data
         </Button>
-        <Button className="gap-2 text-white rounded-none">
+        <Button className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]" disabled>
           <Plus className="h-4 w-4" />
           Pesan baru
         </Button>

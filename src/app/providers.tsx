@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 import { HeroUIProvider } from "@heroui/react";
@@ -35,7 +35,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <AppLifecycleManager />
           <SupabaseAuthProvider>{children}</SupabaseAuthProvider>
-          <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
+          {/* ReactQueryDevtools removed in production */}
           <Toaster
             richColors
             position="top-right"
