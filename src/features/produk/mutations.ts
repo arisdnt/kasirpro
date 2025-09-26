@@ -137,3 +137,31 @@ export function useUpdateProductMutation(productId: string) {
     },
   });
 }
+
+export function useDeleteProductMutation() {
+  const queryClient = useQueryClient();
+  const {
+    state: { user },
+  } = useSupabaseAuth();
+
+  return useMutation({
+    mutationFn: async (productId: string) => {
+      if (!user) throw new Error("Unauthorized");
+      const client = getSupabaseClient();
+      const { error } = await client
+        .from("produk")
+        .delete()
+        .eq("id", productId)
+        .eq("tenant_id", user.tenantId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_QUERY_KEY });
+      toast.success("Produk dihapus");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Tidak dapat menghapus produk");
+    },
+  });
+}

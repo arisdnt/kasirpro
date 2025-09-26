@@ -14,7 +14,7 @@ export function ProductFormDialog() {
           <DialogHeader>
             <DialogTitle>Tambah Produk</DialogTitle>
           </DialogHeader>
-          <ProductForm onSuccess={() => setOpen(false)} />
+          <ProductForm mode="create" onSuccess={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </>

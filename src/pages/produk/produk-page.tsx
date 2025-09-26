@@ -6,6 +6,9 @@ import { useProductMovements } from "@/features/produk/queries/use-product-movem
 import { ProductFilters } from "./components/product-filters";
 import { ProductList } from "./components/product-list";
 import { ProductStockCard } from "./components/product-stock-card";
+import { ProductDetailModal } from "./components/product-detail-modal";
+import { ProductEditModal } from "./components/product-edit-modal";
+import { ProductDeleteDialog } from "./components/product-delete-dialog";
 
 type StatusFilter = "all" | "aktif" | "nonaktif";
 
@@ -15,6 +18,9 @@ export function ProdukPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [stocks, setStocks] = useState<Record<string, number>>({});
 
   const stats = useMemo(() => {
@@ -48,6 +54,21 @@ export function ProdukPage() {
     if (!selectedId) return null;
     return filteredProducts.find((item) => item.id === selectedId) ?? null;
   }, [filteredProducts, selectedId]);
+
+  const detailProduct = useMemo(() => {
+    if (!detailId) return null;
+    return (products.data ?? []).find((item) => item.id === detailId) ?? null;
+  }, [detailId, products.data]);
+
+  const editProduct = useMemo(() => {
+    if (!editId) return null;
+    return (products.data ?? []).find((item) => item.id === editId) ?? null;
+  }, [editId, products.data]);
+
+  const deleteProduct = useMemo(() => {
+    if (!deleteId) return null;
+    return (products.data ?? []).find((item) => item.id === deleteId) ?? null;
+  }, [deleteId, products.data]);
 
   const MOVEMENT_LIMIT = 30;
   const movements = useProductMovements(selectedProduct?.id ?? null, MOVEMENT_LIMIT);
@@ -99,7 +120,10 @@ export function ProdukPage() {
           selectedId={selectedId}
           onSelectProduct={setSelectedId}
           stocks={stocks}
-          userTokoId={user?.tokoId}
+          userTokoId={user?.tokoId ?? undefined}
+          onViewDetail={setDetailId}
+          onEditProduct={setEditId}
+          onDeleteProduct={setDeleteId}
         />
 
         <ProductStockCard
@@ -107,10 +131,37 @@ export function ProdukPage() {
           currentStock={currentStock}
           movements={movements.data ?? []}
           isMovementsLoading={movements.isLoading}
-          userTokoId={user?.tokoId}
+          userTokoId={user?.tokoId ?? undefined}
           movementLimit={MOVEMENT_LIMIT}
         />
       </div>
+
+      <ProductDetailModal
+        product={detailProduct}
+        open={Boolean(detailId && detailProduct)}
+        onOpenChange={(open) => {
+          if (!open) setDetailId(null);
+        }}
+        currentStock={detailProduct ? stocks[detailProduct.id] ?? 0 : null}
+        movementLimit={MOVEMENT_LIMIT}
+        showAllMovements={true}
+      />
+
+      <ProductEditModal
+        product={editProduct}
+        open={Boolean(editId && editProduct)}
+        onOpenChange={(open) => {
+          if (!open) setEditId(null);
+        }}
+      />
+
+      <ProductDeleteDialog
+        product={deleteProduct}
+        open={Boolean(deleteId && deleteProduct)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+      />
     </div>
   );
 }
