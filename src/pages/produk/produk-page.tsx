@@ -14,11 +14,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useProductsQuery } from "@/features/produk/use-products";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Filter, Package, Plus, RefreshCw, Search } from "lucide-react";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { fetchProductStocks } from "@/features/produk/api/stocks";
+import { useProductMovements } from "@/features/produk/queries/use-product-movements";
 
 type StatusFilter = "all" | "aktif" | "nonaktif";
 
@@ -61,6 +62,46 @@ export function ProdukPage() {
     if (!selectedId) return null;
     return filteredProducts.find((item) => item.id === selectedId) ?? null;
   }, [filteredProducts, selectedId]);
+
+  const MOVEMENT_LIMIT = 30;
+  const movements = useProductMovements(selectedProduct?.id ?? null, MOVEMENT_LIMIT);
+
+  const currentStock = useMemo(() => {
+    if (!selectedProduct) return null;
+    if (!user?.tokoId) return null;
+    return stocks[selectedProduct.id] ?? 0;
+  }, [selectedProduct, stocks, user?.tokoId]);
+
+  const movementList = movements.data ?? [];
+
+  const movementStats = useMemo(() => {
+    const list = movementList;
+    return list.reduce(
+      (acc, item) => {
+        if (item.type === "IN") {
+          acc.masuk += Math.abs(item.qtyChange);
+        } else if (item.type === "OUT") {
+          acc.keluar += Math.abs(item.qtyChange);
+        } else {
+          acc.penyesuaian += item.qtyChange;
+        }
+        return acc;
+      },
+      { masuk: 0, keluar: 0, penyesuaian: 0 },
+    );
+  }, [movementList]);
+
+  const netMovement = movementStats.masuk - movementStats.keluar + movementStats.penyesuaian;
+
+  const formatSigned = (value: number) => {
+    if (value === 0) return "0";
+    return value > 0 ? `+${value}` : `-${Math.abs(value)}`;
+  };
+
+  const formatOutbound = (value: number) => {
+    if (value === 0) return "0";
+    return `-${value}`;
+  };
 
   const handleRefresh = () => {
     products.refetch();
@@ -209,14 +250,6 @@ export function ProdukPage() {
                             "text-sm",
                             item.id === selectedId ? "text-black" : "text-slate-900"
                           )}>
-                            {item.nama}
-                          </span>
-                        </TableCell>
-                        <TableCell className="align-top">
-                          <span className={cn(
-                            "text-sm",
-                            item.id === selectedId ? "text-gray-700" : "text-slate-600"
-                          )}>
                             {item.kategoriNama ?? "-"}
                           </span>
                         </TableCell>
@@ -259,7 +292,7 @@ export function ProdukPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[360px] rounded-none">
+        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[400px] rounded-none">
           <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Produk</span>
@@ -269,59 +302,147 @@ export function ProdukPage() {
               </CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
+          <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
             {selectedProduct ? (
-              <>
-                <div className="shrink-0 rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-                  <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-slate-600">
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Kode</dt>
-                      <dd className="font-medium text-slate-900">{selectedProduct.kode}</dd>
+              <ScrollArea className="h-full">
+                <div className="flex justify-center bg-slate-50 px-4 py-6">
+                  <div className="relative w-full max-w-md rounded-sm border border-slate-300 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]">
+                    <div className="absolute right-5 top-5">
+                      <Badge variant={selectedProduct.status === "aktif" ? "outline" : "destructive"} className="rounded-none border border-slate-400 text-[11px] uppercase tracking-wide">
+                        {selectedProduct.status ?? "-"}
+                      </Badge>
                     </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Status</dt>
-                      <dd className="font-medium text-slate-900">{selectedProduct.status ?? "-"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Kategori</dt>
-                      <dd className="font-medium text-slate-900">{selectedProduct.kategoriNama ?? "-"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Brand</dt>
-                      <dd className="font-medium text-slate-900">{selectedProduct.brandNama ?? "-"}</dd>
-                    </div>
-                    <div className="col-span-2">
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Harga Jual</dt>
-                      <dd className="font-bold text-lg text-slate-900">{formatCurrency(selectedProduct.hargaJual)}</dd>
-                    </div>
-                  </dl>
-                </div>
+                    <div className="p-6 font-mono text-xs text-slate-800">
+                      <div className="text-center border-b-2 border-dashed border-slate-400 pb-3 mb-4">
+                        <h2 className="text-lg font-bold tracking-[0.3em] text-slate-900">KARTU STOK</h2>
+                        <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Item Movement</p>
+                      </div>
 
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
-                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-800">
-                      Informasi Tambahan
-                    </span>
-                  </div>
-                  <div className="flex-1 p-4">
-                    <div className="space-y-3 text-sm">
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">ID Produk</span>
-                        <p className="font-mono text-slate-700">{selectedProduct.id}</p>
+                      <div className="space-y-1 text-[11px]">
+                        <div className="flex justify-between">
+                          <span>Nama</span>
+                          <span className="font-semibold text-slate-900 max-w-[60%] truncate text-right">{selectedProduct.nama}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Kode</span>
+                          <span className="font-semibold text-slate-900">{selectedProduct.kode}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Kategori</span>
+                          <span className="text-slate-900">{selectedProduct.kategoriNama ?? "-"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Brand</span>
+                          <span className="text-slate-900">{selectedProduct.brandNama ?? "-"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Satuan</span>
+                          <span className="text-slate-900">{selectedProduct.satuan ?? "-"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Diubah</span>
+                          <span>{selectedProduct.updatedAt ? formatDateTime(selectedProduct.updatedAt) : "-"}</span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Dibuat</span>
-                        <p className="text-slate-700">
-                          {selectedProduct.updatedAt
-                            ? new Date(selectedProduct.updatedAt).toLocaleDateString('id-ID')
-                            : "-"
-                          }
-                        </p>
+
+                      <div className="mt-4 border-y-2 border-dashed border-slate-400 py-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="rounded border border-slate-200 px-3 py-2 text-center">
+                            <div className="text-[10px] uppercase text-slate-500">Stok Saat Ini</div>
+                            <div className={cn("text-base font-bold", selectedProduct.minimumStock != null && currentStock != null && currentStock < selectedProduct.minimumStock ? "text-red-700" : "text-slate-900")}>{currentStock ?? "-"}</div>
+                          </div>
+                          <div className="rounded border border-slate-200 px-3 py-2 text-center">
+                            <div className="text-[10px] uppercase text-slate-500">Min. Stok</div>
+                            <div className="text-base font-semibold text-slate-900">{selectedProduct.minimumStock ?? "-"}</div>
+                          </div>
+                          <div className="rounded border border-slate-200 px-3 py-2 text-center">
+                            <div className="text-[10px] uppercase text-slate-500">Harga Jual</div>
+                            <div className="text-sm font-semibold text-slate-900">{formatCurrency(selectedProduct.hargaJual)}</div>
+                          </div>
+                          <div className="rounded border border-slate-200 px-3 py-2 text-center">
+                            <div className="text-[10px] uppercase text-slate-500">Harga Beli</div>
+                            <div className="text-sm font-semibold text-slate-900">{selectedProduct.hargaBeli != null ? formatCurrency(selectedProduct.hargaBeli) : "-"}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 space-y-3">
+                        <div className="grid grid-cols-2 gap-2 text-center">
+                          <div className="rounded bg-emerald-50/70 px-3 py-2 border border-emerald-200">
+                            <div className="text-[10px] uppercase text-emerald-700">Masuk</div>
+                            <div className="text-sm font-bold text-emerald-700">{formatSigned(movementStats.masuk)}</div>
+                          </div>
+                          <div className="rounded bg-rose-50/70 px-3 py-2 border border-rose-200">
+                            <div className="text-[10px] uppercase text-rose-700">Keluar</div>
+                            <div className="text-sm font-bold text-rose-700">{formatOutbound(movementStats.keluar)}</div>
+                          </div>
+                          <div className="rounded bg-amber-50/70 px-3 py-2 border border-amber-200">
+                            <div className="text-[10px] uppercase text-amber-700">Penyesuaian</div>
+                            <div className="text-sm font-bold text-amber-700">{formatSigned(movementStats.penyesuaian)}</div>
+                          </div>
+                          <div className="rounded bg-slate-100 px-3 py-2 border border-slate-300">
+                            <div className="text-[10px] uppercase text-slate-600">Total Mutasi</div>
+                            <div className={cn("text-sm font-bold", netMovement === 0 ? "text-slate-700" : netMovement > 0 ? "text-emerald-700" : "text-rose-700")}>{formatSigned(netMovement)}</div>
+                          </div>
+                        </div>
+                        <div className="text-[10px] text-slate-500 text-right">{movementList.length} dari {MOVEMENT_LIMIT} pergerakan terbaru</div>
+                      </div>
+
+                      <div className="mt-4 border-t-2 border-dashed border-slate-400 pt-3">
+                        <div className="text-[10px] uppercase text-slate-500 mb-2">Riwayat Mutasi</div>
+                        {movements.isLoading ? (
+                          <div className="space-y-2">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                              <div key={i} className="flex flex-col gap-1 rounded bg-slate-100 px-3 py-2">
+                                <Skeleton className="h-3 w-full" />
+                                <Skeleton className="h-3 w-1/2" />
+                              </div>
+                            ))}
+                          </div>
+                        ) : movementList.length === 0 ? (
+                          <div className="text-[11px] text-slate-600">Belum ada pergerakan stok yang tercatat.</div>
+                        ) : (
+                          <div className="space-y-2">
+                            {movementList.map((m) => {
+                              const qtyLabel = formatSigned(m.qtyChange);
+                              return (
+                                <div key={m.id} className="rounded border border-slate-200 px-3 py-2">
+                                  <div className="grid grid-cols-12 items-center gap-1 text-[11px]">
+                                    <div className="col-span-6 text-slate-900">{formatDateTime(m.date)}</div>
+                                    <div className="col-span-3 text-center text-slate-700">{m.source}</div>
+                                    <div className={cn(
+                                      "col-span-3 text-right font-bold",
+                                      m.type === "IN" ? "text-emerald-700" : m.type === "OUT" ? "text-rose-700" : "text-amber-700",
+                                    )}>
+                                      {qtyLabel}
+                                    </div>
+                                  </div>
+                                  <div className="mt-1 flex items-center justify-between text-[10px] text-slate-500">
+                                    <span>Ref: {m.referenceNo ?? "-"}</span>
+                                    {m.note ? <span className="text-right">Catatan: {m.note}</span> : null}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-4 border-t border-slate-300 pt-3 text-[10px] text-slate-500">
+                        <div className="flex justify-between">
+                          <span>ID Produk</span>
+                          <span className="font-mono text-[10px] text-slate-700">{selectedProduct.id}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Toko</span>
+                          <span>{user?.tokoId ?? "-"}</span>
+                        </div>
+                        <div className="mt-3 text-center text-[10px]">Saldo akhir • {currentStock ?? "-"}</div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </>
+              </ScrollArea>
             ) : (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
                 <Package className="h-8 w-8 text-slate-300" />

@@ -15,6 +15,7 @@ import type {
   RecentSale,
 } from "@/types/dashboard";
 import { useSupabaseRealtime } from "@/hooks/use-supabase-realtime";
+import { useProductStockRealtime } from "@/features/produk/hooks/use-product-stock-realtime";
 
 const DASHBOARD_KEY = ["dashboard-summary"];
 const INSIGHTS_KEY = ["dashboard-insights"];
@@ -69,6 +70,7 @@ export function useDashboardInsightsQuery(filters: DashboardFilters) {
     });
   }, [queryClient, user?.tenantId]);
 
+  useProductStockRealtime("dashboard-insights-stock", invalidate);
   useSupabaseRealtime(
     "dashboard-insights-sales",
     { table: "transaksi_penjualan" },
@@ -77,11 +79,6 @@ export function useDashboardInsightsQuery(filters: DashboardFilters) {
   useSupabaseRealtime(
     "dashboard-insights-items",
     { table: "item_transaksi_penjualan" },
-    invalidate,
-  );
-  useSupabaseRealtime(
-    "dashboard-insights-inventory",
-    { table: "inventaris" },
     invalidate,
   );
 
@@ -109,7 +106,7 @@ export function useLowStockQuery(selectedTokoId: string | "all") {
     });
   }, [queryClient, user?.tenantId]);
 
-  useSupabaseRealtime("dashboard-low-stock", { table: "inventaris" }, invalidate);
+  useProductStockRealtime("dashboard-low-stock", invalidate);
   useSupabaseRealtime("dashboard-products", { table: "produk" }, invalidate);
 
   return query;

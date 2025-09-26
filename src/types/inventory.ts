@@ -21,3 +21,15 @@ export type BatchInfo = {
   tanggalExpired: string | null;
   stockFisik: number | null;
 };
+
+export type StockMovementType = "IN" | "OUT" | "ADJ";
+
+export type StockMovement = {
+  id: string;
+  date: string; // ISO string
+  referenceNo: string | null;
+  source: "Pembelian" | "Penjualan" | "Stock Opname";
+  type: StockMovementType;
+  qtyChange: number; // positive for IN, negative for OUT, signed for ADJ
+  note?: string | null;
+};
