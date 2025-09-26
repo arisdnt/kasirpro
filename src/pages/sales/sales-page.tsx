@@ -242,149 +242,148 @@ export function SalesPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[360px] rounded-none">
-          <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Transaksi</span>
-              <span className="text-black">•</span>
-              <CardTitle className="text-sm text-black">
-                {selectedSale ? selectedSale.nomorTransaksi : "Pilih transaksi"}
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
+        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white shadow-sm lg:w-[400px] rounded-none">
+          <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
             {selectedSale ? (
-              <>
-                <div className="shrink-0 rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-                  <dl className="space-y-3 text-sm text-slate-600">
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">No. Transaksi</dt>
-                      <dd className="font-bold text-lg text-slate-900">{selectedSale.nomorTransaksi}</dd>
+              <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full">
+                  {/* Invoice Container */}
+                  <div className="bg-white p-6 font-mono text-sm">
+                    {/* Invoice Header */}
+                    <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
+                      <h1 className="text-xl font-bold mb-2">KASIR PRO</h1>
+                      <p className="text-xs">Jl. Contoh No. 123, Kota</p>
+                      <p className="text-xs">Telp: (021) 123-4567</p>
+                      <div className="mt-3 pt-2 border-t border-gray-300">
+                        <p className="font-bold">STRUK PENJUALAN</p>
+                      </div>
                     </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Pelanggan</dt>
-                      <dd className="font-semibold text-slate-900">{selectedSale.pelangganNama ?? "Pelanggan umum"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Metode Pembayaran</dt>
-                      <dd>
-                        <span className={cn(
-                          "px-3 py-1 rounded text-sm font-semibold border",
-                          getPaymentMethodColor(selectedSale.metodePembayaran)
-                        )}>
-                          {getPaymentMethodLabel(selectedSale.metodePembayaran)}
-                        </span>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Total</dt>
-                      <dd className="font-bold text-2xl text-emerald-600">{formatCurrency(selectedSale.total)}</dd>
-                    </div>
-                  </dl>
-                </div>
 
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
-                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-800">
-                      Item Pembelian
-                    </span>
-                    <Badge variant="secondary" className="bg-slate-100 text-slate-700 rounded-none">
-                      {saleItems.data?.length ?? 0} item
-                    </Badge>
-                  </div>
-                  <ScrollArea className="flex-1">
-                    {saleItems.isLoading ? (
-                      <div className="flex flex-col gap-2 p-4">
-                        {Array.from({ length: 3 }).map((_, index) => (
-                          <Skeleton key={index} className="h-20 w-full rounded-lg" />
-                        ))}
+                    {/* Transaction Info */}
+                    <div className="mb-4 space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span>No. Transaksi</span>
+                        <span className="font-bold">{selectedSale.nomorTransaksi}</span>
                       </div>
-                    ) : (saleItems.data?.length ?? 0) === 0 ? (
-                      <div className="flex flex-col items-center justify-center gap-2 p-6 text-center">
-                        <ShoppingCart className="h-6 w-6 text-slate-300" />
-                        <p className="text-sm text-slate-600">Tidak ada item</p>
+                      <div className="flex justify-between">
+                        <span>Tanggal</span>
+                        <span>{formatDateTime(selectedSale.tanggal)}</span>
                       </div>
-                    ) : (
-                      <div className="p-4 space-y-3">
-                        {saleItems.data?.map((item, index) => (
-                          <div key={item.id} className={cn(
-                            "rounded-lg border border-slate-200 p-4",
-                            index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                          )}>
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-slate-900 truncate">
-                                  {item.produkNama}
-                                </h4>
-                                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                                  {item.produkKode && (
-                                    <span className="px-2 py-1 bg-slate-100 rounded">
-                                      {item.produkKode}
-                                    </span>
-                                  )}
-                                  {item.kategoriNama && (
-                                    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">
-                                      {item.kategoriNama}
-                                    </span>
-                                  )}
-                                </div>
+                      <div className="flex justify-between">
+                        <span>Pelanggan</span>
+                        <span>{selectedSale.pelangganNama ?? "Umum"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Kasir</span>
+                        <span>Admin</span>
+                      </div>
+                    </div>
+
+                    {/* Items Table */}
+                    <div className="border-t-2 border-b-2 border-dashed border-gray-400 py-2">
+                      <div className="text-xs font-bold mb-2 grid grid-cols-12 gap-1">
+                        <div className="col-span-6">ITEM</div>
+                        <div className="col-span-2 text-center">QTY</div>
+                        <div className="col-span-2 text-right">HARGA</div>
+                        <div className="col-span-2 text-right">TOTAL</div>
+                      </div>
+
+                      {saleItems.isLoading ? (
+                        <div className="space-y-2">
+                          {Array.from({ length: 3 }).map((_, index) => (
+                            <div key={index} className="grid grid-cols-12 gap-1 text-xs">
+                              <div className="col-span-6">
+                                <Skeleton className="h-3 w-full" />
                               </div>
-                              <div className="text-right">
-                                <p className="font-bold text-slate-900">
-                                  {formatCurrency(item.subtotal)}
-                                </p>
-                                <p className="text-xs text-slate-500">
-                                  {item.qty} × {formatCurrency(item.hargaSatuan)}
-                                </p>
+                              <div className="col-span-2">
+                                <Skeleton className="h-3 w-full" />
+                              </div>
+                              <div className="col-span-2">
+                                <Skeleton className="h-3 w-full" />
+                              </div>
+                              <div className="col-span-2">
+                                <Skeleton className="h-3 w-full" />
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </ScrollArea>
-                </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {saleItems.data?.map((item) => (
+                            <div key={item.id}>
+                              <div className="grid grid-cols-12 gap-1 text-xs">
+                                <div className="col-span-6 truncate">
+                                  {item.produkNama}
+                                </div>
+                                <div className="col-span-2 text-center">
+                                  {item.qty}
+                                </div>
+                                <div className="col-span-2 text-right">
+                                  {formatCurrency(item.hargaSatuan).replace('Rp ', '')}
+                                </div>
+                                <div className="col-span-2 text-right">
+                                  {formatCurrency(item.subtotal).replace('Rp ', '')}
+                                </div>
+                              </div>
+                              {item.produkKode && (
+                                <div className="text-xs text-gray-600 ml-0">
+                                  [{item.produkKode}]
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
-                <div className="flex shrink-0 flex-col rounded-none border border-slate-200 bg-white">
-                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-800">
-                      Detail Pembayaran
-                    </span>
-                  </div>
-                  <div className="p-4">
-                    <div className="space-y-3 text-sm">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-xs uppercase tracking-wide text-slate-500">Dibayar</span>
-                          <p className="font-semibold text-lg text-slate-900">
-                            {selectedSale.bayar ? formatCurrency(selectedSale.bayar) : formatCurrency(selectedSale.total)}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-xs uppercase tracking-wide text-slate-500">Kembalian</span>
-                          <p className="font-semibold text-lg text-blue-600">
-                            {selectedSale.kembalian ? formatCurrency(selectedSale.kembalian) : formatCurrency(0)}
-                          </p>
-                        </div>
+                    {/* Totals */}
+                    <div className="mt-4 space-y-1 text-xs">
+                      <div className="flex justify-between border-b border-gray-300 pb-2">
+                        <span>Subtotal</span>
+                        <span className="font-bold">{formatCurrency(selectedSale.total).replace('Rp ', '')}</span>
                       </div>
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Tanggal & Waktu</span>
-                        <p className="text-slate-700">{formatDateTime(selectedSale.tanggal)}</p>
-                      </div>
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">ID Transaksi</span>
-                        <p className="font-mono text-slate-700">{selectedSale.id}</p>
+                      <div className="flex justify-between text-lg font-bold border-b-2 border-dashed border-gray-400 pb-2">
+                        <span>TOTAL</span>
+                        <span>Rp {formatCurrency(selectedSale.total).replace('Rp ', '')}</span>
                       </div>
                     </div>
+
+                    {/* Payment Details */}
+                    <div className="mt-4 space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span>Metode Bayar</span>
+                        <span className="font-bold">{getPaymentMethodLabel(selectedSale.metodePembayaran)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Bayar</span>
+                        <span>{formatCurrency(selectedSale.bayar ?? selectedSale.total).replace('Rp ', '')}</span>
+                      </div>
+                      <div className="flex justify-between font-bold">
+                        <span>Kembalian</span>
+                        <span>{formatCurrency(selectedSale.kembalian ?? 0).replace('Rp ', '')}</span>
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="text-center mt-6 pt-4 border-t-2 border-dashed border-gray-400">
+                      <p className="text-xs">Terima kasih atas kunjungan Anda</p>
+                      <p className="text-xs">Barang yang sudah dibeli tidak dapat ditukar</p>
+                      <p className="text-xs mt-2">== KASIR PRO ==</p>
+                    </div>
+
+                    {/* Transaction ID Footer */}
+                    <div className="text-center mt-4 pt-2 border-t border-gray-300">
+                      <p className="text-xs text-gray-600">ID: {selectedSale.id}</p>
+                    </div>
                   </div>
-                </div>
-              </>
+                </ScrollArea>
+              </div>
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
                 <ShoppingCart className="h-8 w-8 text-slate-300" />
-                <p className="text-sm font-medium text-slate-600">Pilih transaksi untuk melihat detail</p>
+                <p className="text-sm font-medium text-slate-600">Pilih transaksi untuk melihat invoice</p>
                 <p className="text-xs text-slate-500">
-                  Klik salah satu baris untuk melihat informasi lengkap transaksi penjualan.
+                  Klik salah satu baris untuk melihat struk penjualan.
                 </p>
               </div>
             )}
