@@ -1,0 +1,1 @@
+export { fetchBrands } from "./brands";

@@ -6,11 +6,11 @@
   :root {
     color-scheme: light dark;
     --background: 48 100% 97%;
-    --foreground: 220 26% 18%;
+    --foreground: 0 0% 0%;
     --card: 0 0% 100%;
-    --card-foreground: 220 26% 18%;
+    --card-foreground: 0 0% 0%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 26% 18%;
+    --popover-foreground: 0 0% 0%;
     --primary: 208 88% 50%;
     --primary-foreground: 0 0% 100%;
     --secondary: 47 100% 90%;
@@ -62,7 +62,8 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background antialiased;
+    color: black;
     background-image: radial-gradient(circle at 12% 18%, hsl(208 88% 93%) 0%, transparent 55%),
       radial-gradient(circle at 84% 12%, hsl(340 74% 92%) 0%, transparent 60%),
       radial-gradient(circle at 50% 88%, hsl(47 100% 90%) 0%, transparent 55%);

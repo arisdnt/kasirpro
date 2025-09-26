@@ -33,12 +33,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         />
       )}
       <Sidebar isOpen={sidebarOpen} onNavigate={handleNavigate} />
-      <main className="flex flex-1 flex-col min-w-0 transition-all duration-300 ease-in-out">
+      <main className="flex flex-1 flex-col min-w-0 min-h-0 transition-all duration-300 ease-in-out">
         <TopBar
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
           isSidebarOpen={sidebarOpen}
         />
-        <section className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+        <section className="flex-1 min-h-0 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="w-full">
             {children}
           </div>

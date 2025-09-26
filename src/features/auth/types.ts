@@ -7,6 +7,19 @@ export type Role = {
   permissions: RolePermission;
 };
 
+export type ManagementRole = {
+  id: string;
+  nama: string;
+  level: number;
+  permissions: RolePermission;
+  deskripsi: string | null;
+  isActive: boolean;
+  tenantId: string;
+  userCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type AppUser = {
   id: string;
   username: string;

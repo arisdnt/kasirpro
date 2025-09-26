@@ -37,6 +37,20 @@ export type ReturnTransaction = {
   total: number;
   status: string | null;
   pelangganNama: string | null;
+  alasan?: string | null;
+};
+
+export type PurchaseReturnTransaction = {
+  id: string;
+  nomorRetur: string;
+  tanggal: string;
+  total: number;
+  status: string | null;
+  supplierId: string;
+  supplierNama: string;
+  alasan: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type InternalMessage = {
@@ -45,6 +59,9 @@ export type InternalMessage = {
   isi: string;
   createdAt: string;
   status: string | null;
+  readAt?: string | null;
+  type?: string | null;
+  priority?: string | null;
 };
 
 export type AuditEntry = {
@@ -53,4 +70,29 @@ export type AuditEntry = {
   aksi: string;
   userId: string | null;
   createdAt: string;
+};
+
+export type NewsArticle = {
+  id: string;
+  judul: string;
+  konten: string;
+  status: "draft" | "aktif" | "nonaktif" | "kedaluwarsa";
+  userId: string;
+  authorName: string | null;
+  tenantId: string;
+  tokoId: string | null;
+  tipeBerita: "informasi" | "pengumuman" | "peringatan" | "urgent";
+  targetTampil: "toko_tertentu" | "semua_toko_tenant" | "semua_tenant";
+  prioritas: "rendah" | "normal" | "tinggi" | "urgent";
+  targetTokoIds: string[] | null;
+  targetTenantIds: string[] | null;
+  jadwalMulai: string | null;
+  jadwalSelesai: string | null;
+  intervalTampilMenit: number | null;
+  maksimalTampil: number | null;
+  viewCount: number;
+  gambarUrl: string | null;
+  lampiranUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
