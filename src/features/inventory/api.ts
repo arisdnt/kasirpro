@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { InventoryItem, BatchInfo } from "@/types/inventory";
+import type { InventoryItem, BatchInfo } from "@/features/inventory/types";
 
 export async function fetchInventoryItems(tenantId: string, tokoId: string | null) {
   const client = getSupabaseClient();

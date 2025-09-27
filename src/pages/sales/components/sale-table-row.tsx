@@ -1,5 +1,5 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import type { SaleTransaction } from "@/types/transactions";
+import type { SaleTransaction } from "@/features/sales/types";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 

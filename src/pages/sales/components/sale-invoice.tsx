@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { SaleTransaction, SaleItem } from "@/types/transactions";
+import type { SaleTransaction, SaleItem } from "@/features/sales/types";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { ShoppingCart } from "lucide-react";
 import { SaleItemsList } from "./sale-items-list";

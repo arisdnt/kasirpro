@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { createInternalMessage, createInternalMessagesBatch, deleteInternalMessage, fetchUsersByStore, fetchUsersByTenant, markInternalMessageRead, updateInternalMessage } from "./api";
-import type { InternalMessageInput } from "@/types/transactions";
+import type { InternalMessageInput } from "@/features/pesan/types";
 import type { CascadingTarget } from "./components/hierarchical-target-selector";
 
 export const MESSAGE_KEY = ["pesan-messages"] as const;

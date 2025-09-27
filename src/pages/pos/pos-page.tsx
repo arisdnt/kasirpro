@@ -7,7 +7,7 @@ import { usePosProductsQuery } from "@/features/pos/use-pos-products";
 import { useCustomersQuery } from "@/features/partners/use-partners";
 import { ProductSearchBox } from "@/features/pos/product-search-box";
 import { CustomerSearchBox } from "@/features/pos/customer-search-box";
-import type { Customer } from "@/types/partners";
+import type { Customer } from "@/features/customers/types";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
 

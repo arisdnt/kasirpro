@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Supplier } from "@/types/partners";
+import type { Supplier } from "@/features/suppliers/types";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { Factory } from "lucide-react";
 import type { UseQueryResult } from "@tanstack/react-query";

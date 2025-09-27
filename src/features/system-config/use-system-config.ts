@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { SystemConfig } from "@/types/system-config";
+import type { SystemConfig } from "@/features/system-config/types";
 import { fetchSystemConfigs, updateSystemConfig } from "./api";
 
 const CONFIG_KEY = ["system-configs"] as const;

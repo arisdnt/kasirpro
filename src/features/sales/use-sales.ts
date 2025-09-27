@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { SaleTransaction, SaleItem } from "@/types/transactions";
+import type { SaleTransaction, SaleItem } from "@/features/sales/types";
 import { fetchSalesTransactions, fetchSaleItems } from "./api";
 
 const SALES_KEY = ["sales-transactions"];

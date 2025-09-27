@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { PurchaseReturnItem } from "@/types/transactions";
+import type { PurchaseReturnItem } from "@/features/purchase-returns/types";
 import {
   addPurchaseReturnItem,
   deletePurchaseReturn,

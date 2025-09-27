@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { NewsArticle } from "@/types/transactions";
+import type { NewsArticle } from "@/features/news/types";
 
 export async function fetchNews(tenantId: string) {
   const client = getSupabaseClient();

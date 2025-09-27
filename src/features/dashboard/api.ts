@@ -13,7 +13,7 @@ import type {
   StorePerformance,
   TopCashier,
   TopProduct,
-} from "@/types/dashboard";
+} from "@/features/dashboard/types";
 import { getSupabaseClient } from "@/lib/supabase-client";
 
 const numberOrZero = (value: unknown) => {

@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Supplier } from "@/types/partners";
+import type { Supplier } from "@/features/suppliers/types";
 import { Factory } from "lucide-react";
 import { SupplierCard } from "./supplier-card";
 

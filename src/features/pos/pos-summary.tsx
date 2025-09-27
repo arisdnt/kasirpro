@@ -8,7 +8,7 @@ import { usePosCartStore } from "./use-pos-cart-store";
 import { finalizeTransaction } from "./checkout-service";
 import { PosInvoiceTable } from "./pos-invoice-table";
 import { PosPaymentControls, type PaymentMethod } from "./pos-payment-controls";
-import type { Customer } from "@/types/partners";
+import type { Customer } from "@/features/customers/types";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { formatCurrency } from "@/lib/format";

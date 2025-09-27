@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { InventoryItem, BatchInfo } from "@/types/inventory";
+import type { InventoryItem, BatchInfo } from "@/features/inventory/types";
 import { fetchInventoryItems, fetchBatchInfos } from "./api";
 
 const INVENTORY_KEY = ["inventory-items"];

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { ManagementUser } from "@/types/management";
+import type { ManagementUser } from "@/features/users/types";
 
 export async function fetchUsers(tenantId: string) {
   const client = getSupabaseClient();

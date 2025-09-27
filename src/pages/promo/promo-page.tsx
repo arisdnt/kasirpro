@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useStoresQuery } from "@/features/stores/use-stores";
 import { usePromoList, usePromoStatusMutation } from "@/features/promo/use-promos";
-import type { PromoWithRelations } from "@/types/promo";
+import type { PromoWithRelations } from "@/features/promo/types";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/format";
 import {

@@ -9,7 +9,7 @@ import {
 } from "@heroui/react";
 import { Trophy } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
-import type { TopCashier, TopProduct } from "@/types/dashboard";
+import type { TopCashier, TopProduct } from "@/features/dashboard/types";
 
 const numberFormatter = new Intl.NumberFormat("id-ID");
 

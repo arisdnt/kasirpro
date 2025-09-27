@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { NotepadText } from "lucide-react";
-import type { StockOpnameSummary } from "@/types/stock-opname";
+import type { StockOpnameSummary } from "@/features/stock-opname/types";
 import { numberFormatter, formatDate, statusVariant, statusLabel } from "./stock-opname-utils";
 
 interface StockOpnameListProps {

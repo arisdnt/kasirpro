@@ -1,5 +1,6 @@
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { Customer, Supplier } from "@/types/partners";
+import type { Customer } from "@/features/customers/types";
+import type { Supplier } from "@/features/suppliers/types";
 
 export async function fetchCustomers(tenantId: string, tokoId: string | null) {
   const client = getSupabaseClient();

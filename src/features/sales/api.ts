@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { SaleTransaction, SaleItem } from "@/types/transactions";
+import type { SaleTransaction, SaleItem } from "@/features/sales/types";
 
 export async function fetchSalesTransactions(tenantId: string, tokoId: string | null) {
   const client = getSupabaseClient();

@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import type { SaleItem } from "@/types/transactions";
+import type { SaleItem } from "@/features/sales/types";
 import { formatCurrency } from "@/lib/format";
 
 interface SaleItemsListProps {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { SystemConfig } from "@/types/system-config";
+import type { SystemConfig } from "@/features/system-config/types";
 
 type RawConfig = {
   id: string;

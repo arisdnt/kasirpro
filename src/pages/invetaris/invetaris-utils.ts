@@ -1,4 +1,4 @@
-import type { InventoryItem } from "@/types/inventory";
+import type { InventoryItem } from "@/features/inventory/types";
 
 export type StockStateFilter = "all" | "low" | "out" | "over" | "healthy";
 

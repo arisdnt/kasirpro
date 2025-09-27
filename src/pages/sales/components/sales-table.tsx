@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SaleTransaction } from "@/types/transactions";
+import type { SaleTransaction } from "@/features/sales/types";
 import { ShoppingCart } from "lucide-react";
 import { SaleTableRow } from "./sale-table-row";
 

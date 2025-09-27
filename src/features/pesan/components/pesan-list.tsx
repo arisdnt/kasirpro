@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Mail } from "lucide-react";
-import type { InternalMessage } from "@/types/transactions";
+import type { InternalMessage } from "@/features/pesan/types";
 
 interface PesanListProps {
   messages: InternalMessage[];

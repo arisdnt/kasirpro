@@ -7,7 +7,7 @@ import { PesanList } from "@/features/pesan/components/pesan-list";
 import { PesanDetail } from "@/features/pesan/components/pesan-detail";
 import { PesanComposeModal } from "@/features/pesan/components/pesan-compose-modal";
 import { useCreateMessageMutation, useDeleteMessageMutation, useMarkReadMessageMutation, useUpdateMessageMutation } from "@/features/pesan/mutations";
-import type { InternalMessage } from "@/types/transactions";
+import type { InternalMessage } from "@/features/pesan/types";
 
 type StatusFilter = "all" | "terkirim" | "draft" | "dibaca";
 

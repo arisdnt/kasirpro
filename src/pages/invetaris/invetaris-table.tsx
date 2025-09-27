@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { Package, Eye, Edit, Trash2 } from "lucide-react";
-import type { InventoryItem } from "@/types/inventory";
+import type { InventoryItem } from "@/features/inventory/types";
 import {
   numberFormatter,
   getStockState,

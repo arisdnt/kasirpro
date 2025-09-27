@@ -1,5 +1,5 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import type { Toko } from "@/types/management";
+import type { Toko } from "@/features/stores/types";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 

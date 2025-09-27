@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { Supplier } from "@/types/partners";
+import type { Supplier } from "@/features/suppliers/types";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Building2, Calendar, CreditCard, Hash, Mail, MapPin, Phone, User } from "lucide-react";

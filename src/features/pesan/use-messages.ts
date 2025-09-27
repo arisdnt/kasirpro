@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { InternalMessage } from "@/types/transactions";
+import type { InternalMessage } from "@/features/pesan/types";
 import { fetchInternalMessages } from "./api";
 
 const MESSAGE_KEY = ["pesan-messages"];

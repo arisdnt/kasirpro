@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { Toko } from "@/types/management";
+import type { Toko } from "@/features/stores/types";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Building } from "lucide-react";

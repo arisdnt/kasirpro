@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStoresQuery } from "@/features/stores/use-stores";
 import { useSystemConfigList, useSystemConfigUpdate } from "@/features/system-config/use-system-config";
-import type { SystemConfig } from "@/types/system-config";
+import type { SystemConfig } from "@/features/system-config/types";
 import { SystemConfigMetrics } from "./components/system-config-metrics";
 import { SystemConfigHeader } from "./components/system-config-header";
 import { SystemConfigList } from "./components/system-config-list";

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Tenant } from "@/types/management";
+import type { Tenant } from "@/features/tenants/types";
 import { fetchTenants } from "./api";
 
 const TENANTS_KEY = ["tenants"];

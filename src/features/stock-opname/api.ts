@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { StockOpnameDetail, StockOpnameSummary } from "@/types/stock-opname";
+import type { StockOpnameDetail, StockOpnameSummary } from "@/features/stock-opname/types";
 
 type RawOpnameItem = {
   id: string;

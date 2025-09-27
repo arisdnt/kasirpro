@@ -20,7 +20,7 @@ interface Product {
   updatedAt: string | null;
 }
 
-import type { StockMovement as Movement } from "@/types/inventory";
+import type { StockMovement as Movement } from "@/features/inventory/types";
 
 interface ProductStockCardProps {
   product: Product | null;

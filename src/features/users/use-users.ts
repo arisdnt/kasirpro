@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { ManagementUser } from "@/types/management";
+import type { ManagementUser } from "@/features/users/types";
 import { fetchUsers } from "./api";
 
 const USERS_KEY = ["users"];

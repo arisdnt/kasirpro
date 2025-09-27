@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader, Skeleton } from "@heroui/react";
 import { ArrowUpRightSquare } from "lucide-react";
 import { formatCurrency, formatDateTime } from "@/lib/format";
-import type { RecentSale } from "@/types/dashboard";
+import type { RecentSale } from "@/features/dashboard/types";
 
 type DashboardRecentActivityProps = {
   sales: RecentSale[];

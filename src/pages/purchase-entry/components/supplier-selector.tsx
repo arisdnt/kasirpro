@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader, Tab, Tabs } from "@heroui/react";
 import { Truck } from "lucide-react";
-import type { Supplier } from "@/types/partners";
+import type { Supplier } from "@/features/suppliers/types";
 import type { SupplierMode } from "../purchase-entry-types";
 
 interface SupplierSelectorProps {

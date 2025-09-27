@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { NewsArticle } from "@/types/transactions";
+import type { NewsArticle } from "@/features/news/types";
 import { fetchNews } from "./api";
 
 const NEWS_KEY = ["news"];

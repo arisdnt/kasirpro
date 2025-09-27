@@ -10,7 +10,7 @@ import {
   KeyRound,
 } from "lucide-react";
 import type { UseQueryResult } from "@tanstack/react-query";
-import type { Store } from "@/types/stores";
+import type { Toko as Store } from "@/features/stores/types";
 
 type ScopeFilter = "all" | "tenant" | string;
 type TypeFilter = "all" | string;

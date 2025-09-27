@@ -1,4 +1,4 @@
-import type { StockOpnameSummary } from "@/types/stock-opname";
+import type { StockOpnameSummary } from "@/features/stock-opname/types";
 
 export const numberFormatter = new Intl.NumberFormat("id-ID");
 export const dateFormatter = new Intl.DateTimeFormat("id-ID", {

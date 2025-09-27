@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { AuditEntry } from "@/types/transactions";
+import type { AuditEntry } from "@/features/audit/types";
 import { fetchAuditLogs } from "./api";
 
 const AUDIT_KEY = ["audit-logs"];

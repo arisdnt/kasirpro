@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import { useRealtimeClock } from "@/hooks/use-realtime-clock";
 import { CommandDialog, CommandInput, CommandList } from "@/components/ui/command";
 import { WindowControls } from "./window-controls";
 import { useCalculatorStore } from "@/hooks/use-calculator-store";
@@ -31,7 +30,6 @@ export function TopBar({
   } = useSupabaseAuth();
   const [open, setOpen] = useState(false);
   const { toggleCalculator } = useCalculatorStore();
-  const timestamp = useRealtimeClock(15_000);
   const initial = user?.fullName?.charAt(0) ?? user?.username.charAt(0) ?? "U";
 
   return (
@@ -77,18 +75,6 @@ export function TopBar({
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant="outline" className="gap-1 rounded-full border-emerald-400/70 bg-emerald-50/70 text-emerald-600">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                Realtime aktif
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent className="text-xs">Terhubung ke Supabase Realtime</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
@@ -102,14 +88,6 @@ export function TopBar({
           </Tooltip>
         </TooltipProvider>
 
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold text-white">
-            {timestamp.toLocaleString("id-ID", { timeStyle: "short" })}
-          </span>
-          <span className="text-xs text-white/80">
-            {timestamp.toLocaleString("id-ID", { dateStyle: "medium" })}
-          </span>
-        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-2 py-0.5 text-left text-sm shadow-sm transition hover:bg-white/30">

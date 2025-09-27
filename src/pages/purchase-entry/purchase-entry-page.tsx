@@ -10,7 +10,7 @@ import { PurchaseItemsList } from "./components/purchase-items-list";
 import { SupplierSelector } from "./components/supplier-selector";
 import { PurchaseSummary } from "./components/purchase-summary";
 import { usePurchaseEntryState } from "./use-purchase-entry-state";
-import type { Supplier } from "@/types/partners";
+import type { Supplier } from "@/features/suppliers/types";
 
 export function PurchaseEntryPage() {
   const { data: products = [] } = usePurchaseProductsQuery();

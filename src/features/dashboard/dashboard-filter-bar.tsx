@@ -30,8 +30,8 @@ import type { Selection } from "@react-types/shared";
 import type {
   DashboardFilters,
   TransactionStatus,
-} from "@/types/dashboard";
-import type { Toko } from "@/types/management";
+} from "@/features/dashboard/types";
+import type { Toko } from "@/features/stores/types";
 
 const statusOptions: Array<{ value: TransactionStatus; label: string }> = [
   { value: "selesai", label: "Selesai" },

@@ -5,7 +5,7 @@ import {
   Building,
   ShieldCheck,
 } from "lucide-react";
-import type { SystemConfig } from "@/types/system-config";
+import type { SystemConfig } from "@/features/system-config/types";
 
 const numberFormatter = new Intl.NumberFormat("id-ID");
 

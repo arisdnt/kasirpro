@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { fetchStockOpnameDetail, fetchStockOpnameSummaries } from "./api";
-import type { StockOpnameDetail, StockOpnameSummary } from "@/types/stock-opname";
+import type { StockOpnameDetail, StockOpnameSummary } from "@/features/stock-opname/types";
 
 const LIST_KEY = ["stock-opname", "list"] as const;
 const DETAIL_KEY = ["stock-opname", "detail"] as const;

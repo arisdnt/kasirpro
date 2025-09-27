@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { NotepadText, Package } from "lucide-react";
-import type { StockOpnameDetail } from "@/types/stock-opname";
+import type { StockOpnameDetail } from "@/features/stock-opname/types";
 import { numberFormatter, formatDate, statusVariant, statusLabel, getVarianceColor, formatVariance } from "./stock-opname-utils";
 
 interface StockOpnameDetailProps {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { PurchaseReturnItem, PurchaseReturnTransaction } from "@/types/transactions";
+import type { PurchaseReturnItem, PurchaseReturnTransaction } from "@/features/purchase-returns/types";
 import { nanoid } from "nanoid";
 
 export async function fetchPurchaseReturns(tenantId: string, tokoId: string | null) {

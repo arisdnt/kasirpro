@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Settings2 } from "lucide-react";
-import type { SystemConfig } from "@/types/system-config";
+import type { SystemConfig } from "@/features/system-config/types";
 
 const dateFormatter = new Intl.DateTimeFormat("id-ID", {
   dateStyle: "medium",

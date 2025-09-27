@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { InventoryItem } from "@/types/inventory";
+import type { InventoryItem } from "@/features/inventory/types";
 import type { SummaryAccent } from "./invetaris-utils";
 import { numberFormatter, summaryAccentMap, getStockState } from "./invetaris-utils";
 

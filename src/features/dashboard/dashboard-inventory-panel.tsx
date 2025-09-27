@@ -20,7 +20,7 @@ import {
 } from "@heroui/react";
 import { Boxes, Layers, PackageX } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
-import type { InventoryHealth, LowStockItem } from "@/types/dashboard";
+import type { InventoryHealth, LowStockItem } from "@/features/dashboard/types";
 
 const numberFormatter = new Intl.NumberFormat("id-ID");
 

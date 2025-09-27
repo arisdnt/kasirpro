@@ -4,7 +4,7 @@ import {
   useStockOpnameDetail,
   useStockOpnameList,
 } from "@/features/stock-opname/use-stock-opname";
-import type { StockOpnameSummary } from "@/types/stock-opname";
+import type { StockOpnameSummary } from "@/features/stock-opname/types";
 import { StockOpnameStatistics } from "./stock-opname-statistics";
 import { StockOpnameFilters } from "./stock-opname-filters";
 import { StockOpnameList } from "./stock-opname-list";

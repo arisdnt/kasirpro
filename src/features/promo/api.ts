@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { PromoWithRelations } from "@/types/promo";
+import type { PromoWithRelations } from "@/features/promo/types";
 
 const BASE_SELECT = `
   id,

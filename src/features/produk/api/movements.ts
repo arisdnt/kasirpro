@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { StockMovement } from "@/types/inventory";
+import type { StockMovement } from "@/features/inventory/types";
 
 export async function fetchProductMovements(
   tenantId: string,

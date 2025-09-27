@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { Toko } from "@/types/management";
+import type { Toko } from "@/features/stores/types";
 import { fetchStores } from "./api";
 
 const STORES_KEY = ["stores"];

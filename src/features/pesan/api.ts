@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { InternalMessage, InternalMessageInput } from "@/types/transactions";
+import type { InternalMessage, InternalMessageInput } from "@/features/pesan/types";
 
 export async function fetchInternalMessages(tenantId: string, tokoId: string | null, currentUserId: string) {
   const client = getSupabaseClient();

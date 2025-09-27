@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Product } from "@/features/produk/types";
-import type { StockMovement } from "@/types/inventory";
+import type { StockMovement } from "@/features/inventory/types";
 import { formatDateTime } from "@/lib/format";
 import { useProductMovements } from "@/features/produk/queries/use-product-movements";
 import { X } from "lucide-react";

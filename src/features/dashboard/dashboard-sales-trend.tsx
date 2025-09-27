@@ -13,7 +13,7 @@ import {
 import { Card, CardBody, CardHeader, Skeleton } from "@heroui/react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/format";
-import type { DashboardFilters, SalesTrendPoint } from "@/types/dashboard";
+import type { DashboardFilters, SalesTrendPoint } from "@/features/dashboard/types";
 import { memo } from "react";
 
 const numberFormatter = new Intl.NumberFormat("id-ID");

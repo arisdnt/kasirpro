@@ -21,7 +21,7 @@ import { formatCurrency } from "@/lib/format";
 import type {
   CategoryPerformance,
   PaymentBreakdown,
-} from "@/types/dashboard";
+} from "@/features/dashboard/types";
 
 const numberFormatter = new Intl.NumberFormat("id-ID");
 

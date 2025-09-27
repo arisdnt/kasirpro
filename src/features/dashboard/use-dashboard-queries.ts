@@ -13,7 +13,7 @@ import type {
   DashboardSummary,
   LowStockItem,
   RecentSale,
-} from "@/types/dashboard";
+} from "@/features/dashboard/types";
 import { useSupabaseRealtime } from "@/hooks/use-supabase-realtime";
 import { useProductStockRealtime } from "@/features/produk/hooks/use-product-stock-realtime";
 

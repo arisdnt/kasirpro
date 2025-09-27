@@ -13,7 +13,7 @@ import type {
   DashboardInsights,
   DashboardSummary,
   SalesTrendPoint,
-} from "@/types/dashboard";
+} from "@/features/dashboard/types";
 
 const numberFormatter = new Intl.NumberFormat("id-ID");
 const dateFormatter = new Intl.DateTimeFormat("id-ID", {

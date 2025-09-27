@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { PurchaseReturnTransaction } from "@/types/transactions";
+import type { PurchaseReturnTransaction } from "@/features/purchase-returns/types";
 import { createPurchaseReturnDraft, fetchPurchaseReturns } from "./api";
 
 const PURCHASE_RETURNS_KEY = ["purchase-returns"];

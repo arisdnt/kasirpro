@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { RefreshCw, FilePlus } from "lucide-react";
-import type { StockOpnameSummary } from "@/types/stock-opname";
+import type { StockOpnameSummary } from "@/features/stock-opname/types";
 import { numberFormatter } from "./stock-opname-utils";
 
 interface StockOpnameStatisticsProps {

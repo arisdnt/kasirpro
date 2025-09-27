@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDateTime } from "@/lib/format";
 import { Mail } from "lucide-react";
-import type { InternalMessage } from "@/types/transactions";
+import type { InternalMessage } from "@/features/pesan/types";
 
 interface PesanDetailProps {
   message: InternalMessage | null;

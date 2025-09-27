@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Toko } from "@/types/management";
+import type { Toko } from "@/features/stores/types";
 import { Building } from "lucide-react";
 import { StoreTableRow } from "./store-table-row";
 

@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Package, MapPin } from "lucide-react";
-import type { InventoryItem } from "@/types/inventory";
+import type { InventoryItem } from "@/features/inventory/types";
 import { numberFormatter, formatDate } from "./invetaris-utils";
 
 interface InvetarisDetailProps {

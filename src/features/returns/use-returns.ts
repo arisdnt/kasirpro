@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { ReturnTransaction } from "@/types/transactions";
+import type { ReturnTransaction } from "@/features/returns/types";
 import { createSalesReturnDraft, fetchSalesReturns } from "./api";
 
 const RETURNS_KEY = ["sales-returns"];

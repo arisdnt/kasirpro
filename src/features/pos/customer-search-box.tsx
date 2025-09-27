@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
-import type { Customer } from "@/types/partners";
+import type { Customer } from "@/features/customers/types";
 import { toast } from "sonner";
 
 const MAX_SUGGESTIONS = 8;

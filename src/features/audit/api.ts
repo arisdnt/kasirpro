@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { AuditEntry } from "@/types/transactions";
+import type { AuditEntry } from "@/features/audit/types";
 
 export async function fetchAuditLogs(tenantId: string) {
   const client = getSupabaseClient();

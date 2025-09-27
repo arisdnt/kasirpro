@@ -1,7 +1,7 @@
 import { memo, useMemo } from "react";
 import { Card, CardBody, CardHeader, Skeleton } from "@heroui/react";
 import { formatCurrency } from "@/lib/format";
-import type { StorePerformance } from "@/types/dashboard";
+import type { StorePerformance } from "@/features/dashboard/types";
 
 type DashboardStorePerformanceProps = {
   data: StorePerformance[];

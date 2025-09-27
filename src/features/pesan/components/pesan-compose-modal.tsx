@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import type { InternalMessage } from "@/types/transactions";
+import type { InternalMessage } from "@/features/pesan/types";
 import type { MessageComposePayload } from "@/features/pesan/mutations";
 import { HierarchicalTargetSelector, type CascadingTarget } from "./hierarchical-target-selector";
 

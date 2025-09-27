@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { StockMovement } from "@/types/inventory";
+import type { StockMovement } from "@/features/inventory/types";
 import { fetchProductMovements } from "@/features/produk/api/movements";
 
 const MOVEMENTS_KEY = ["product-movements"] as const;

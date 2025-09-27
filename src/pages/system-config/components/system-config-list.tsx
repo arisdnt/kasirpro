@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Settings2 } from "lucide-react";
-import type { SystemConfig } from "@/types/system-config";
+import type { SystemConfig } from "@/features/system-config/types";
 import type { UseQueryResult } from "@tanstack/react-query";
 
 const dateFormatter = new Intl.DateTimeFormat("id-ID", {

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { PromoWithRelations } from "@/types/promo";
+import type { PromoWithRelations } from "@/features/promo/types";
 import { fetchPromos, updatePromoStatus } from "./api";
 
 const PROMO_LIST_KEY = ["promo-list"] as const;

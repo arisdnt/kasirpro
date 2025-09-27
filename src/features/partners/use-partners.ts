@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { Customer, Supplier } from "@/types/partners";
+import type { Customer } from "@/features/customers/types";
+import type { Supplier } from "@/features/suppliers/types";
 import { fetchCustomers, fetchSuppliers } from "./api";
 
 const CUSTOMERS_KEY = ["partners-customers"];

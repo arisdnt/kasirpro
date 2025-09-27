@@ -17,7 +17,7 @@ import {
   useLowStockQuery,
   useRecentSalesQuery,
 } from "@/features/dashboard/use-dashboard-queries";
-import type { DashboardFilters } from "@/types/dashboard";
+import type { DashboardFilters } from "@/features/dashboard/types";
 
 const createDefaultFilters = (): DashboardFilters => {
   const today = new Date();
