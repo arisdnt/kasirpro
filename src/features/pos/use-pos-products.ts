@@ -4,8 +4,8 @@ import { getSupabaseClient } from "@/lib/supabase-client";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import type { PosProduct } from "./types";
 import { useSupabaseRealtime } from "@/hooks/use-supabase-realtime";
-import { fetchProductStocks } from "@/features/produk/api/stocks";
 import { useProductStockRealtime } from "@/features/produk/hooks/use-product-stock-realtime";
+import { fetchProductStocks } from "@/features/produk/api/stocks";
 
 const POS_PRODUCTS_KEY = ["pos-products"];
 
@@ -59,7 +59,7 @@ async function fetchPosProducts(tenantId: string, tokoId: string | null) {
   })) satisfies PosProduct[];
 }
 
-export function usePosProductsQuery() {
+export function usePosProductsQuery(options?: { subscribe?: boolean }) {
   const {
     state: { user },
   } = useSupabaseAuth();
@@ -68,18 +68,25 @@ export function usePosProductsQuery() {
   const query = useQuery<PosProduct[]>({
     queryKey: [...POS_PRODUCTS_KEY, user?.tenantId, user?.tokoId],
     enabled: Boolean(user?.tenantId),
-    staleTime: 1000 * 30,
+    staleTime: 0, // Always fresh for realtime
     queryFn: () => fetchPosProducts(user!.tenantId, user?.tokoId ?? null),
   });
 
-  const invalidate = useCallback(() => {
+  const refetchData = useCallback(() => {
+    console.log("🔄 POS: Refetching products due to realtime event");
+    // Invalidate and refetch
     queryClient.invalidateQueries({
+      queryKey: [...POS_PRODUCTS_KEY, user?.tenantId, user?.tokoId],
+    });
+    void queryClient.refetchQueries({
       queryKey: [...POS_PRODUCTS_KEY, user?.tenantId, user?.tokoId],
     });
   }, [queryClient, user?.tenantId, user?.tokoId]);
 
-  useSupabaseRealtime("pos-products", { table: "produk" }, invalidate);
-  useProductStockRealtime("pos-stock", invalidate);
+  const subscribe = options?.subscribe !== false;
+  // Always call hooks to preserve order; gate the callback
+  useSupabaseRealtime("pos-products", { table: "produk" }, subscribe ? refetchData : () => {});
+  useProductStockRealtime("pos-products-stocks", subscribe ? refetchData : () => {});
 
   return query;
 }

@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import type { PurchaseReturnTransaction } from "@/types/transactions";
-import { fetchPurchaseReturns } from "./api";
+import { createPurchaseReturnDraft, fetchPurchaseReturns } from "./api";
 
 const PURCHASE_RETURNS_KEY = ["purchase-returns"];
 
@@ -15,5 +15,27 @@ export function usePurchaseReturnsQuery() {
     enabled: Boolean(user?.tenantId),
     queryFn: () => fetchPurchaseReturns(user!.tenantId, user?.tokoId ?? null),
     staleTime: 1000 * 60,
+  });
+}
+
+export function useCreatePurchaseReturnDraft() {
+  const qc = useQueryClient();
+  const {
+    state: { user },
+  } = useSupabaseAuth();
+  return useMutation({
+    mutationFn: async (params: { purchaseId: string; supplierId: string }) => {
+      if (!user) throw new Error("Unauthorized");
+      return createPurchaseReturnDraft({
+        tenantId: user.tenantId,
+        tokoId: user.tokoId ?? null,
+        penggunaId: user.id,
+        purchaseId: params.purchaseId,
+        supplierId: params.supplierId,
+      });
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["purchase-returns"] });
+    },
   });
 }

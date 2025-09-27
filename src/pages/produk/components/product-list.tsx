@@ -19,10 +19,10 @@ interface Product {
   id: string;
   kode: string;
   nama: string;
-  kategoriNama?: string;
-  brandNama?: string;
+  kategoriNama: string | null;
+  brandNama: string | null;
   hargaJual: number;
-  status?: "aktif" | "nonaktif";
+  status: string | null;
 }
 
 interface ProductListProps {

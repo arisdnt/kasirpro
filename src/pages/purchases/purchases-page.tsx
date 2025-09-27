@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { usePurchasesQuery } from "@/features/purchases/use-purchases";
+import { usePurchasesQuery, usePurchaseItemsQuery } from "@/features/purchases/use-purchases";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Filter, Package2, Plus, RefreshCw, Search } from "lucide-react";
@@ -26,6 +26,7 @@ export function PurchasesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const purchaseItems = usePurchaseItemsQuery(selectedId);
 
   const stats = useMemo(() => {
     const data = purchases.data ?? [];
@@ -230,73 +231,128 @@ export function PurchasesPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[360px] rounded-none">
-          <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Pembelian</span>
-              <span className="text-black">•</span>
-              <CardTitle className="text-sm text-black">
-                {selectedPurchase ? selectedPurchase.nomorTransaksi : "Pilih transaksi"}
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
+        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white shadow-sm lg:w-[400px] rounded-none">
+          <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
             {selectedPurchase ? (
-              <>
-                <div className="shrink-0 rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-                  <dl className="space-y-3 text-sm text-slate-600">
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">No. Transaksi</dt>
-                      <dd className="font-bold text-lg text-slate-900">{selectedPurchase.nomorTransaksi}</dd>
+              <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="bg-white p-6 font-mono text-sm">
+                    <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
+                      <h1 className="text-xl font-bold mb-2">KASIR PRO</h1>
+                      <p className="text-xs">Jl. Contoh No. 123, Kota</p>
+                      <p className="text-xs">Telp: (021) 123-4567</p>
+                      <div className="mt-3 pt-2 border-t border-gray-300">
+                        <p className="font-bold">BUKTI PEMBELIAN</p>
+                      </div>
                     </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Supplier</dt>
-                      <dd className="font-semibold text-slate-900">{selectedPurchase.supplierNama}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Status</dt>
-                      <dd>
-                        <span className={cn(
-                          "px-3 py-1 rounded text-sm font-semibold border",
-                          getStatusColor(selectedPurchase.status ?? "")
-                        )}>
-                          {selectedPurchase.status ?? "-"}
-                        </span>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Total</dt>
-                      <dd className="font-bold text-2xl text-emerald-600">{formatCurrency(selectedPurchase.total)}</dd>
-                    </div>
-                  </dl>
-                </div>
 
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
-                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-800">
-                      Informasi Transaksi
-                    </span>
-                  </div>
-                  <div className="flex-1 p-4">
-                    <div className="space-y-3 text-sm">
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Tanggal</span>
-                        <p className="text-slate-700">{formatDateTime(selectedPurchase.tanggal)}</p>
+                    <div className="mb-4 space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span>No. Transaksi</span>
+                        <span className="font-bold">{selectedPurchase.nomorTransaksi}</span>
                       </div>
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">ID Transaksi</span>
-                        <p className="font-mono text-slate-700">{selectedPurchase.id}</p>
+                      <div className="flex justify-between">
+                        <span>Tanggal</span>
+                        <span>{formatDateTime(selectedPurchase.tanggal)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Supplier</span>
+                        <span>{selectedPurchase.supplierNama}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Status</span>
+                        <span className={cn(
+                          "px-2 py-0.5 rounded text-[10px] font-bold border",
+                          getStatusColor(selectedPurchase.status ?? "")
+                        )}>{selectedPurchase.status ?? "-"}</span>
                       </div>
                     </div>
+
+                    <div className="border-t-2 border-b-2 border-dashed border-gray-400 py-2">
+                      <div className="text-xs font-bold mb-2 grid grid-cols-12 gap-1">
+                        <div className="col-span-6">ITEM</div>
+                        <div className="col-span-2 text-center">QTY</div>
+                        <div className="col-span-2 text-right">HARGA</div>
+                        <div className="col-span-2 text-right">TOTAL</div>
+                      </div>
+
+                      {purchaseItems.isLoading ? (
+                        <div className="space-y-2">
+                          {Array.from({ length: 3 }).map((_, index) => (
+                            <div key={index} className="grid grid-cols-12 gap-1 text-xs">
+                              <div className="col-span-6">
+                                <Skeleton className="h-3 w-full" />
+                              </div>
+                              <div className="col-span-2">
+                                <Skeleton className="h-3 w-full" />
+                              </div>
+                              <div className="col-span-2">
+                                <Skeleton className="h-3 w-full" />
+                              </div>
+                              <div className="col-span-2">
+                                <Skeleton className="h-3 w-full" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {purchaseItems.data?.map((item) => (
+                            <div key={item.id}>
+                              <div className="grid grid-cols-12 gap-1 text-xs">
+                                <div className="col-span-6 truncate">
+                                  {item.produkNama}
+                                </div>
+                                <div className="col-span-2 text-center">
+                                  {item.qty}
+                                </div>
+                                <div className="col-span-2 text-right">
+                                  {formatCurrency(item.hargaSatuan).replace('Rp ', '')}
+                                </div>
+                                <div className="col-span-2 text-right">
+                                  {formatCurrency(item.subtotal).replace('Rp ', '')}
+                                </div>
+                              </div>
+                              {item.produkKode && (
+                                <div className="text-xs text-gray-600 ml-0">
+                                  [{item.produkKode}]
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-4 space-y-1 text-xs">
+                      <div className="flex justify-between border-b border-gray-300 pb-2">
+                        <span>Subtotal</span>
+                        <span className="font-bold">{formatCurrency(selectedPurchase.total).replace('Rp ', '')}</span>
+                      </div>
+                      <div className="flex justify-between text-lg font-bold border-b-2 border-dashed border-gray-400 pb-2">
+                        <span>TOTAL</span>
+                        <span>Rp {formatCurrency(selectedPurchase.total).replace('Rp ', '')}</span>
+                      </div>
+                    </div>
+
+                    <div className="text-center mt-6 pt-4 border-t-2 border-dashed border-gray-400">
+                      <p className="text-xs">Terima kasih</p>
+                      <p className="text-xs">Simpan bukti pembelian ini untuk arsip</p>
+                      <p className="text-xs mt-2">== KASIR PRO ==</p>
+                    </div>
+
+                    <div className="text-center mt-4 pt-2 border-t border-gray-300">
+                      <p className="text-xs text-gray-600">ID: {selectedPurchase.id}</p>
+                    </div>
                   </div>
-                </div>
-              </>
+                </ScrollArea>
+              </div>
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
                 <Package2 className="h-8 w-8 text-slate-300" />
-                <p className="text-sm font-medium text-slate-600">Pilih transaksi untuk melihat detail</p>
+                <p className="text-sm font-medium text-slate-600">Pilih transaksi untuk melihat bukti pembelian</p>
                 <p className="text-xs text-slate-500">
-                  Klik salah satu baris untuk melihat informasi lengkap transaksi pembelian.
+                  Klik salah satu baris untuk melihat rincian item dalam bentuk invoice.
                 </p>
               </div>
             )}

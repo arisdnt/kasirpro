@@ -7,7 +7,7 @@ import { PosPage } from "@/pages/pos/pos-page";
 import { ProdukPage } from "@/pages/produk/produk-page";
 import { KategoriPage } from "@/pages/kategori/kategori-page";
 import { BrandPage } from "@/pages/brand/brand-page";
-import { InventoryPage } from "@/pages/inventory/inventory-page";
+import { InvetarisPage } from "@/pages/invetaris/invetaris-page";
 import { InventoryVariancePage } from "@/pages/inventory/inventory-variance-page";
 import { StockOpnamePage } from "@/pages/inventory/stock-opname-page";
 import { PartnersPage } from "@/pages/partners/partners-page";
@@ -55,8 +55,9 @@ export function App() {
           <Route path="/kategori" element={<KategoriPage />} />
           <Route path="/brand" element={<BrandPage />} />
           <Route path="/products" element={<Navigate to="/produk" replace />} />
-          <Route path="/inventory" element={<InventoryPage />} />
-          <Route path="/inventory/variance" element={<InventoryVariancePage />} />
+          <Route path="/invetaris" element={<InvetarisPage />} />
+          <Route path="/inventory" element={<Navigate to="/invetaris" replace />} />
+          <Route path="/invetaris/variance" element={<InventoryVariancePage />} />
           <Route path="/stock-opname" element={<StockOpnamePage />} />
           <Route path="/partners" element={<PartnersPage />} />
           <Route path="/customers" element={<CustomersPage />} />

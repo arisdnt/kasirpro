@@ -30,6 +30,18 @@ export type PurchaseTransaction = {
   supplierNama: string;
 };
 
+export type PurchaseItem = {
+  id: string;
+  transaksiId: string;
+  produkId: string;
+  produkNama: string;
+  produkKode: string | null;
+  kategoriNama: string | null;
+  qty: number;
+  hargaSatuan: number;
+  subtotal: number;
+};
+
 export type ReturnTransaction = {
   id: string;
   nomorRetur: string;
@@ -38,6 +50,20 @@ export type ReturnTransaction = {
   status: string | null;
   pelangganNama: string | null;
   alasan?: string | null;
+  // Linking info to enable editing against the original sale
+  transaksiPenjualanId?: string | null;
+  pelangganId?: string | null;
+  nomorTransaksiPenjualan?: string | null;
+};
+
+export type ReturnItem = {
+  id: string;
+  returId: string;
+  produkId: string;
+  produkNama: string;
+  qty: number;
+  hargaSatuan: number;
+  subtotal: number;
 };
 
 export type PurchaseReturnTransaction = {
@@ -51,6 +77,17 @@ export type PurchaseReturnTransaction = {
   alasan: string | null;
   createdAt: string;
   updatedAt: string;
+  transaksiPembelianId?: string | null;
+};
+
+export type PurchaseReturnItem = {
+  id: string;
+  returId: string;
+  produkId: string;
+  produkNama: string;
+  qty: number;
+  hargaSatuan: number;
+  subtotal: number;
 };
 
 export type InternalMessage = {

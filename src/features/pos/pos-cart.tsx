@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/format";
 import { usePosCartStore } from "./use-pos-cart-store";
 import { Trash2 } from "lucide-react";
+import { usePosProductsQuery } from "./use-pos-products";
+import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
+import { fetchProductStocks } from "@/features/produk/api/stocks";
 
 export function PosCart() {
+  const {
+    state: { user },
+  } = useSupabaseAuth();
   const items = usePosCartStore((state) => state.items);
   const increase = usePosCartStore((state) => state.increase);
   const decrease = usePosCartStore((state) => state.decrease);
@@ -14,6 +21,50 @@ export function PosCart() {
   const remove = usePosCartStore((state) => state.remove);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState<string>("");
+  const { data: liveProducts = [] } = usePosProductsQuery({ subscribe: false });
+  const queryClient = useQueryClient();
+  const lastRefreshRef = useRef<number>(0);
+
+  // Build a quick lookup map for current live stocks by product id
+  const liveStockMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const p of liveProducts) map[p.id] = p.stok;
+    return map;
+  }, [liveProducts]);
+
+  // Backstop: if for any reason the shared cache lags, refresh stocks for items in cart
+  useEffect(() => {
+    const now = Date.now();
+    // Throttle to avoid spamming requests
+    if (now - lastRefreshRef.current < 4000) return;
+    lastRefreshRef.current = now;
+
+    const tenantId = user?.tenantId;
+    const tokoId = user?.tokoId ?? null;
+    if (!tenantId || !tokoId) return;
+    if (items.length === 0) return;
+
+  const productIds = Array.from(new Set(items.map((it) => it.product.id)));
+
+    (async () => {
+      try {
+  console.log("🧭 POS Cart: refreshing stocks for cart items", productIds);
+        const stockMap = await fetchProductStocks(tenantId, tokoId, productIds);
+        // Patch the shared query cache so all POS components see the update
+        queryClient.setQueryData<import("./types").PosProduct[] | undefined>(
+          ["pos-products", tenantId, tokoId],
+          (old) => {
+            if (!old) return old;
+            return old.map((p) =>
+              stockMap[p.id] !== undefined ? { ...p, stok: stockMap[p.id] } : p,
+            );
+          },
+        );
+      } catch (e) {
+        console.warn("POS Cart: stock refresh failed", e);
+      }
+    })();
+  }, [items, user?.tenantId, user?.tokoId, liveStockMap, queryClient]);
 
   if (items.length === 0) {
     return (
@@ -31,6 +82,15 @@ export function PosCart() {
       <div className="divide-y divide-slate-100">
         {items.map((item, index) => {
           const lineTotal = item.quantity * item.product.hargaJual;
+          const currentStock = liveStockMap[item.product.id] ?? item.product.stok;
+          if (liveStockMap[item.product.id] === undefined) {
+            // Targeted debug: identify when we fall back to snapshot stock
+            console.warn("⚠️ POS Cart: live stock missing in cache, falling back to snapshot", {
+              produkId: item.product.id,
+              kode: item.product.kode,
+              snapshotStok: item.product.stok,
+            });
+          }
           return (
             <div
               key={item.product.id}
@@ -43,7 +103,7 @@ export function PosCart() {
                   {item.product.nama}
                 </p>
                 <p className="text-xs text-slate-500 truncate">
-                  {item.product.kode} • <span className="bg-[#476EAE] text-white px-1 py-0.5 text-xs font-bold">Stok {item.product.stok}</span>
+                  {item.product.kode} • <span className="bg-[#476EAE] text-white px-1 py-0.5 text-xs font-bold">Stok {currentStock}</span>
                 </p>
               </div>
               <div className="text-center">

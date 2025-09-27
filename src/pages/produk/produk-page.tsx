@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
-import { useProductsQuery } from "@/features/produk/use-products";
+import { useMemo, useState } from "react";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import { fetchProductStocks } from "@/features/produk/api/stocks";
 import { useProductMovements } from "@/features/produk/queries/use-product-movements";
+import { useProductsWithRealtimeStocks } from "@/features/produk/hooks/use-products-with-realtime-stocks";
 import { ProductFilters } from "./components/product-filters";
 import { ProductList } from "./components/product-list";
 import { ProductStockCard } from "./components/product-stock-card";
@@ -13,7 +12,7 @@ import { ProductDeleteDialog } from "./components/product-delete-dialog";
 type StatusFilter = "all" | "aktif" | "nonaktif";
 
 export function ProdukPage() {
-  const products = useProductsQuery();
+  const products = useProductsWithRealtimeStocks();
   const { state: { user } } = useSupabaseAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -21,7 +20,6 @@ export function ProdukPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [stocks, setStocks] = useState<Record<string, number>>({});
 
   const stats = useMemo(() => {
     const data = products.data ?? [];
@@ -76,30 +74,13 @@ export function ProdukPage() {
   const currentStock = useMemo(() => {
     if (!selectedProduct) return null;
     if (!user?.tokoId) return null;
-    return stocks[selectedProduct.id] ?? 0;
-  }, [selectedProduct, stocks, user?.tokoId]);
+    return products.stocks[selectedProduct.id] ?? 0;
+  }, [selectedProduct, products.stocks, user?.tokoId]);
 
   const handleRefresh = () => {
     products.refetch();
+    products.refreshStocks();
   };
-
-  useEffect(() => {
-    const load = async () => {
-      if (!user?.tenantId || !user.tokoId) return;
-      const ids = (products.data ?? []).map(p => p.id);
-      if (ids.length === 0) {
-        setStocks({});
-        return;
-      }
-      try {
-        const map = await fetchProductStocks(user.tenantId, user.tokoId, ids);
-        setStocks(map);
-      } catch {
-        setStocks({});
-      }
-    };
-    void load();
-  }, [user?.tenantId, user?.tokoId, products.data]);
 
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
@@ -119,7 +100,7 @@ export function ProdukPage() {
           isLoading={products.isLoading}
           selectedId={selectedId}
           onSelectProduct={setSelectedId}
-          stocks={stocks}
+          stocks={products.stocks}
           userTokoId={user?.tokoId ?? undefined}
           onViewDetail={setDetailId}
           onEditProduct={setEditId}
@@ -142,7 +123,7 @@ export function ProdukPage() {
         onOpenChange={(open) => {
           if (!open) setDetailId(null);
         }}
-        currentStock={detailProduct ? stocks[detailProduct.id] ?? 0 : null}
+        currentStock={detailProduct ? products.stocks[detailProduct.id] ?? 0 : null}
         movementLimit={MOVEMENT_LIMIT}
         showAllMovements={true}
       />

@@ -20,6 +20,15 @@ type FooterAction = {
 export function PosPage() {
   const { data: products = [] } = usePosProductsQuery();
   const { data: customers = [] } = useCustomersQuery();
+
+  // Debug: Log when products data changes
+  useEffect(() => {
+    console.log("🔍 POS Page: Products data updated", {
+      count: products.length,
+      firstProduct: products[0]?.nama,
+      firstStock: products[0]?.stok
+    });
+  }, [products]);
   const addItem = usePosCartStore((state) => state.addItem);
   const clearCart = usePosCartStore((state) => state.clear);
   const totalAmount = usePosCartStore((state) => state.totalAmount());

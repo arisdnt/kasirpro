@@ -5,17 +5,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSuppliersQuery } from "@/features/suppliers/use-suppliers";
+import { useSupplierProductsQuery, useSupplierPurchasesQuery, useSuppliersQuery } from "@/features/suppliers/use-suppliers";
+import { useCreateSupplier, useDeleteSupplier, useUpdateSupplier } from "@/features/suppliers/use-supplier-mutations";
 import { cn } from "@/lib/utils";
 import { Factory, Filter, Plus, RefreshCw, Search } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatCurrency, formatDateTime } from "@/lib/format";
 
 type StatusFilter = "all" | "aktif" | "nonaktif";
 
 export function SuppliersPage() {
   const suppliers = useSuppliersQuery();
+  const createSupplier = useCreateSupplier();
+  const updateSupplier = useUpdateSupplier();
+  const deleteSupplier = useDeleteSupplier();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [form, setForm] = useState({
+    kode: "",
+    nama: "",
+    kontakPerson: "",
+    telepon: "",
+    email: "",
+    status: "aktif" as "aktif" | "nonaktif",
+    alamat: "",
+    kota: "",
+    provinsi: "",
+    kodePos: "",
+    npwp: "",
+    tempoPembayaran: 30,
+    limitKredit: 0,
+  });
 
   const stats = useMemo(() => {
     const data = suppliers.data ?? [];
@@ -48,6 +74,9 @@ export function SuppliersPage() {
     if (!selectedId) return null;
     return filteredSuppliers.find((item) => item.id === selectedId) ?? null;
   }, [filteredSuppliers, selectedId]);
+
+  const supplierPurchases = useSupplierPurchasesQuery(selectedSupplier?.id ?? null);
+  const supplierProducts = useSupplierProductsQuery(selectedSupplier?.id ?? null);
 
   const handleRefresh = () => {
     suppliers.refetch();
@@ -95,7 +124,27 @@ export function SuppliersPage() {
                 <RefreshCw className={cn("h-4 w-4", suppliers.isFetching && "animate-spin")} />
                 Refresh data
               </Button>
-              <Button className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]" disabled>
+              <Button
+                className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
+                onClick={() => {
+                  setForm({
+                    kode: "",
+                    nama: "",
+                    kontakPerson: "",
+                    telepon: "",
+                    email: "",
+                    status: "aktif",
+                    alamat: "",
+                    kota: "",
+                    provinsi: "",
+                    kodePos: "",
+                    npwp: "",
+                    tempoPembayaran: 30,
+                    limitKredit: 0,
+                  });
+                  setShowCreate(true);
+                }}
+              >
                 <Plus className="h-4 w-4" />
                 Supplier baru
               </Button>
@@ -190,7 +239,7 @@ export function SuppliersPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[360px] rounded-none">
+  <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[360px] rounded-none">
           <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Supplier</span>
@@ -232,8 +281,43 @@ export function SuppliersPage() {
                 <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
                   <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
                     <span className="text-sm font-semibold text-slate-800">
-                      Informasi Kontak & Lokasi
+                      Informasi Kontak & Ringkasan
                     </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-none"
+                        onClick={() => {
+                          setForm({
+                            kode: selectedSupplier.kode ?? "",
+                            nama: selectedSupplier.nama ?? "",
+                            kontakPerson: selectedSupplier.kontakPerson ?? "",
+                            telepon: selectedSupplier.telepon ?? "",
+                            email: selectedSupplier.email ?? "",
+                            status: (selectedSupplier.status as "aktif" | "nonaktif") ?? "aktif",
+                            alamat: selectedSupplier.alamat ?? "",
+                            kota: selectedSupplier.kota ?? "",
+                            provinsi: selectedSupplier.provinsi ?? "",
+                            kodePos: selectedSupplier.kodePos ?? "",
+                            npwp: selectedSupplier.npwp ?? "",
+                            tempoPembayaran: selectedSupplier.tempoPembayaran ?? 30,
+                            limitKredit: selectedSupplier.limitKredit ?? 0,
+                          });
+                          setShowEdit(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-none"
+                        onClick={() => setShowDelete(true)}
+                      >
+                        Hapus
+                      </Button>
+                    </div>
                   </div>
                   <div className="flex-1 p-4">
                     <div className="space-y-4 text-sm">
@@ -262,6 +346,70 @@ export function SuppliersPage() {
                         <p className="text-slate-700">{selectedSupplier.provinsi ?? "Tidak diketahui"}</p>
                       </div>
                     </div>
+                    <div className="mt-4">
+                      <Tabs defaultValue="purchases">
+                        <TabsList className="rounded-none">
+                          <TabsTrigger value="purchases" className="rounded-none">Transaksi</TabsTrigger>
+                          <TabsTrigger value="products" className="rounded-none">Produk</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="purchases" className="mt-3">
+                          {supplierPurchases.isLoading ? (
+                            <div className="space-y-2">
+                              {Array.from({ length: 4 }).map((_, i) => (
+                                <Skeleton key={i} className="h-10 w-full" />
+                              ))}
+                            </div>
+                          ) : (supplierPurchases.data ?? []).length === 0 ? (
+                            <div className="text-xs text-slate-500">Belum ada transaksi pembelian.</div>
+                          ) : (
+                            <div className="space-y-2">
+                              {(supplierPurchases.data ?? []).map((t) => (
+                                <div key={t.id} className="flex items-center justify-between rounded border border-slate-200 p-2 text-xs">
+                                  <div className="flex flex-col">
+                                    <span className="font-mono font-semibold">{t.nomorTransaksi}</span>
+                                    <span className="text-slate-600">{formatDateTime(t.tanggal)}</span>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="font-semibold">{formatCurrency(t.total)}</div>
+                                    <div className="capitalize text-slate-600">{t.status ?? "-"}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </TabsContent>
+                        <TabsContent value="products" className="mt-3">
+                          {supplierProducts.isLoading ? (
+                            <div className="space-y-2">
+                              {Array.from({ length: 4 }).map((_, i) => (
+                                <Skeleton key={i} className="h-10 w-full" />
+                              ))}
+                            </div>
+                          ) : (supplierProducts.data ?? []).length === 0 ? (
+                            <div className="text-xs text-slate-500">Belum ada produk dari supplier ini.</div>
+                          ) : (
+                            <div className="space-y-2">
+                              {(supplierProducts.data ?? []).map((p) => (
+                                <div key={p.produkId} className="grid grid-cols-12 items-center gap-2 rounded border border-slate-200 p-2 text-xs">
+                                  <div className="col-span-6">
+                                    <div className="font-medium text-slate-800">{p.produkNama}</div>
+                                    <div className="text-slate-500">{p.produkKode ?? "-"} {p.kategoriNama ? `• ${p.kategoriNama}` : ""}</div>
+                                  </div>
+                                  <div className="col-span-3 text-right">
+                                    <div>Total Qty</div>
+                                    <div className="font-semibold">{p.totalQty}</div>
+                                  </div>
+                                  <div className="col-span-3 text-right">
+                                    <div>Terakhir</div>
+                                    <div className="text-slate-600">{p.lastPurchasedAt ? formatDateTime(p.lastPurchasedAt) : "-"}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </TabsContent>
+                      </Tabs>
+                    </div>
                   </div>
                 </div>
               </>
@@ -277,6 +425,281 @@ export function SuppliersPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Create Modal */}
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Supplier baru</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Kode</label>
+                <Input value={form.kode} onChange={(e) => setForm({ ...form, kode: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Nama</label>
+                <Input value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Kontak</label>
+                <Input value={form.kontakPerson} onChange={(e) => setForm({ ...form, kontakPerson: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Telepon</label>
+                <Input value={form.telepon} onChange={(e) => setForm({ ...form, telepon: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-slate-600">Email</label>
+              <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-xs text-slate-600">Alamat</label>
+              <Input value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Kota</label>
+                <Input value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Provinsi</label>
+                <Input value={form.provinsi} onChange={(e) => setForm({ ...form, provinsi: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Kode Pos</label>
+                <Input value={form.kodePos} onChange={(e) => setForm({ ...form, kodePos: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">NPWP</label>
+                <Input value={form.npwp} onChange={(e) => setForm({ ...form, npwp: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Status</label>
+                <select
+                  className="h-10 w-full rounded-none border border-slate-200 bg-white px-3 text-sm text-black shadow-inner"
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value as "aktif" | "nonaktif" })}
+                >
+                  <option value="aktif">aktif</option>
+                  <option value="nonaktif">nonaktif</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Tempo Pembayaran (hari)</label>
+                <Input type="number" value={form.tempoPembayaran}
+                  onChange={(e) => setForm({ ...form, tempoPembayaran: Number(e.target.value || 0) })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Limit Kredit</label>
+                <Input type="number" value={form.limitKredit}
+                  onChange={(e) => setForm({ ...form, limitKredit: Number(e.target.value || 0) })} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className="rounded-none"
+              disabled={createSupplier.isPending}
+              onClick={async () => {
+                if (!form.kode || !form.nama) {
+                  toast.error("Kode dan nama wajib diisi");
+                  return;
+                }
+                try {
+                  await createSupplier.mutateAsync({
+                    kode: form.kode,
+                    nama: form.nama,
+                    kontakPerson: form.kontakPerson || null,
+                    telepon: form.telepon || null,
+                    email: form.email || null,
+                    status: form.status,
+                    alamat: form.alamat || null,
+                    kota: form.kota || null,
+                    provinsi: form.provinsi || null,
+                    kodePos: form.kodePos || null,
+                    npwp: form.npwp || null,
+                    tempoPembayaran: form.tempoPembayaran,
+                    limitKredit: form.limitKredit,
+                  });
+                  toast.success("Supplier berhasil dibuat");
+                  setShowCreate(false);
+                } catch {
+                  toast.error("Gagal membuat supplier");
+                }
+              }}
+            >
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Modal */}
+      <Dialog open={showEdit} onOpenChange={setShowEdit}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit supplier</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Kode</label>
+                <Input value={form.kode} onChange={(e) => setForm({ ...form, kode: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Nama</label>
+                <Input value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Kontak</label>
+                <Input value={form.kontakPerson} onChange={(e) => setForm({ ...form, kontakPerson: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Telepon</label>
+                <Input value={form.telepon} onChange={(e) => setForm({ ...form, telepon: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-slate-600">Email</label>
+              <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-xs text-slate-600">Alamat</label>
+              <Input value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Kota</label>
+                <Input value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Provinsi</label>
+                <Input value={form.provinsi} onChange={(e) => setForm({ ...form, provinsi: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Kode Pos</label>
+                <Input value={form.kodePos} onChange={(e) => setForm({ ...form, kodePos: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">NPWP</label>
+                <Input value={form.npwp} onChange={(e) => setForm({ ...form, npwp: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Status</label>
+                <select
+                  className="h-10 w-full rounded-none border border-slate-200 bg-white px-3 text-sm text-black shadow-inner"
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value as "aktif" | "nonaktif" })}
+                >
+                  <option value="aktif">aktif</option>
+                  <option value="nonaktif">nonaktif</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600">Tempo Pembayaran (hari)</label>
+                <Input type="number" value={form.tempoPembayaran}
+                  onChange={(e) => setForm({ ...form, tempoPembayaran: Number(e.target.value || 0) })} />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600">Limit Kredit</label>
+                <Input type="number" value={form.limitKredit}
+                  onChange={(e) => setForm({ ...form, limitKredit: Number(e.target.value || 0) })} />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className="rounded-none"
+              disabled={updateSupplier.isPending || !selectedId}
+              onClick={async () => {
+                if (!selectedId) return;
+                if (!form.kode || !form.nama) {
+                  toast.error("Kode dan nama wajib diisi");
+                  return;
+                }
+                try {
+                  await updateSupplier.mutateAsync({
+                    id: selectedId,
+                    payload: {
+                      kode: form.kode,
+                      nama: form.nama,
+                      kontakPerson: form.kontakPerson || null,
+                      telepon: form.telepon || null,
+                      email: form.email || null,
+                      status: form.status,
+                      alamat: form.alamat || null,
+                      kota: form.kota || null,
+                      provinsi: form.provinsi || null,
+                      kodePos: form.kodePos || null,
+                      npwp: form.npwp || null,
+                      tempoPembayaran: form.tempoPembayaran,
+                      limitKredit: form.limitKredit,
+                    },
+                  });
+                  toast.success("Supplier diperbarui");
+                  setShowEdit(false);
+                } catch {
+                  toast.error("Gagal memperbarui supplier");
+                }
+              }}
+            >
+              Simpan perubahan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Modal */}
+      <Dialog open={showDelete} onOpenChange={setShowDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hapus supplier?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-slate-600">Tindakan ini tidak dapat dibatalkan.</p>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="rounded-none"
+              onClick={() => setShowDelete(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              className="rounded-none bg-red-600 hover:bg-red-700"
+              disabled={deleteSupplier.isPending || !selectedId}
+              onClick={async () => {
+                if (!selectedId) return;
+                try {
+                  await deleteSupplier.mutateAsync(selectedId);
+                  toast.success("Supplier dihapus");
+                  setShowDelete(false);
+                  // clear selection to avoid showing stale detail
+                  // and let list refetch via invalidation
+                } catch {
+                  toast.error("Gagal menghapus supplier");
+                }
+              }}
+            >
+              Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

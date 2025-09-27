@@ -1,0 +1,1 @@
+export { InvetarisPage } from "./invetaris-page";

@@ -17,7 +17,7 @@ const iconColors = {
   "/produk": "text-purple-300",
   "/kategori": "text-cyan-300",
   "/brand": "text-rose-300",
-  "/inventory": "text-orange-300",
+  "/invetaris": "text-orange-300",
   "/partners": "text-pink-300",
   "/customers": "text-blue-300",
   "/suppliers": "text-green-300",

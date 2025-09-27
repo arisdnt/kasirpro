@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { id as localeID } from "date-fns/locale";
 import { toast } from "sonner";
@@ -56,6 +57,7 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
   const [completedTransaction, setCompletedTransaction] = useState<CompletedTransaction | null>(null);
   const [taxEnabled, setTaxEnabled] = useState<boolean>(false);
   const [taxRate, setTaxRate] = useState<number>(0);
+  const queryClient = useQueryClient();
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.quantity * item.product.hargaJual - item.discount, 0),
@@ -159,6 +161,10 @@ export function PosSummary({ customer, payButtonRef }: PosSummaryProps) {
 
       toast.success(`Transaksi ${result.nomorTransaksi} berhasil`);
       setShowInvoiceModal(true);
+
+  // Immediately refresh POS products (stocks) so the UI reflects changes without waiting for realtime
+  queryClient.invalidateQueries({ queryKey: ["pos-products", user.tenantId, user.tokoId] });
+  void queryClient.refetchQueries({ queryKey: ["pos-products", user.tenantId, user.tokoId] });
 
       clearCart();
       setAmount("0");

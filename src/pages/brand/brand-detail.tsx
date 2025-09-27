@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tag } from "lucide-react";
 import { getBrandScopeText, getBrandScopeDisplay } from "./brand-utils";
+import { useBrandProductsQuery } from "@/features/brand/queries";
 
 interface Brand {
   id: string;
@@ -14,6 +17,7 @@ interface BrandDetailProps {
 }
 
 export function BrandDetail({ selectedBrand }: BrandDetailProps) {
+  const products = useBrandProductsQuery(selectedBrand?.id ?? null);
   return (
     <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[360px] rounded-none">
       <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
@@ -37,13 +41,13 @@ export function BrandDetail({ selectedBrand }: BrandDetailProps) {
                 <div>
                   <dt className="text-xs uppercase tracking-wide text-slate-500">Cakupan</dt>
                   <dd className="font-medium text-slate-900">
-                    {getBrandScopeText(selectedBrand.tokoId)}
+                    {getBrandScopeText(selectedBrand.tokoId ?? null)}
                   </dd>
                 </div>
                 <div className="col-span-2">
                   <dt className="text-xs uppercase tracking-wide text-slate-500">Toko</dt>
                   <dd className="font-medium text-slate-900">
-                    {getBrandScopeDisplay(selectedBrand.tokoId)}
+                    {getBrandScopeDisplay(selectedBrand.tokoId ?? null)}
                   </dd>
                 </div>
               </dl>
@@ -52,26 +56,36 @@ export function BrandDetail({ selectedBrand }: BrandDetailProps) {
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
               <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
                 <span className="text-sm font-semibold text-slate-800">
-                  Informasi Tambahan
+                  Produk Dalam Brand Ini
                 </span>
               </div>
-              <div className="flex-1 p-4">
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <span className="text-xs uppercase tracking-wide text-slate-500">ID Brand</span>
-                    <p className="font-mono text-slate-700">{selectedBrand.id}</p>
-                  </div>
-                  <div>
-                    <span className="text-xs uppercase tracking-wide text-slate-500">Dibuat</span>
-                    <p className="text-slate-700">
-                      {selectedBrand.createdAt
-                        ? new Date(selectedBrand.createdAt).toLocaleDateString('id-ID')
-                        : "-"
-                      }
-                    </p>
-                  </div>
+              <ScrollArea className="flex-1">
+                <div className="p-4">
+                  {products.isLoading ? (
+                    <div className="space-y-2">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <Skeleton key={i} className="h-10 w-full" />
+                      ))}
+                    </div>
+                  ) : (products.data ?? []).length === 0 ? (
+                    <div className="text-xs text-slate-500">Belum ada produk untuk brand ini.</div>
+                  ) : (
+                    <div className="space-y-2 text-sm">
+                      {(products.data ?? []).map((p: { id: string; nama: string; kode: string; kategoriNama: string | null; }) => (
+                        <div key={p.id} className="flex items-center justify-between rounded border border-slate-200 p-2">
+                          <div className="flex flex-col">
+                            <span className="font-medium text-slate-800">{p.nama}</span>
+                            <span className="text-slate-500">{p.kode}</span>
+                          </div>
+                          <div className="text-right text-xs text-slate-600">
+                            {p.kategoriNama ?? "-"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+              </ScrollArea>
             </div>
           </>
         ) : (

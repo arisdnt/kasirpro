@@ -10,25 +10,17 @@ interface Product {
   id: string;
   nama: string;
   kode: string;
-  kategoriNama?: string;
-  brandNama?: string;
-  satuan?: string;
+  kategoriNama: string | null;
+  brandNama: string | null;
+  satuan: string | null;
   hargaJual: number;
-  hargaBeli?: number;
-  minimumStock?: number;
-  status?: "aktif" | "nonaktif";
-  updatedAt?: string;
+  hargaBeli: number | null;
+  minimumStock: number | null;
+  status: string | null;
+  updatedAt: string | null;
 }
 
-interface Movement {
-  id: string;
-  date: string;
-  type: "IN" | "OUT" | "ADJUSTMENT";
-  qtyChange: number;
-  source: string;
-  referenceNo?: string;
-  note?: string;
-}
+import type { StockMovement as Movement } from "@/types/inventory";
 
 interface ProductStockCardProps {
   product: Product | null;

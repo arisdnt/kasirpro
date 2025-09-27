@@ -19,6 +19,7 @@ interface Brand {
   nama: string;
   tokoId?: string | null;
   createdAt?: string;
+  jumlahProduk?: number;
 }
 
 interface BrandTableProps {
@@ -61,9 +62,10 @@ export function BrandTable({ data, isLoading, selectedId, onSelectItem }: BrandT
             <Table className="min-w-full text-sm">
               <TableHeader className="sticky top-0 z-10 bg-white/95">
                 <TableRow className="border-b border-slate-200">
-                  <TableHead className="w-[40%] text-slate-500">Brand</TableHead>
-                  <TableHead className="w-[30%] text-slate-500">Cakupan</TableHead>
-                  <TableHead className="w-[30%] text-slate-500">Referensi</TableHead>
+                  <TableHead className="w-[35%] text-slate-500">Brand</TableHead>
+                  <TableHead className="w-[20%] text-slate-500">Jumlah Produk</TableHead>
+                  <TableHead className="w-[25%] text-slate-500">Cakupan</TableHead>
+                  <TableHead className="w-[20%] text-slate-500">Referensi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -88,6 +90,14 @@ export function BrandTable({ data, isLoading, selectedId, onSelectItem }: BrandT
                       </div>
                     </TableCell>
                     <TableCell className="align-top">
+                      <span className={cn(
+                        "text-xs font-semibold",
+                        item.id === selectedId ? "text-black" : "text-slate-900"
+                      )}>
+                        {item.jumlahProduk ?? 0}
+                      </span>
+                    </TableCell>
+                    <TableCell className="align-top">
                       <Badge
                         variant={item.tokoId ? "outline" : "secondary"}
                         className={cn(
@@ -95,14 +105,14 @@ export function BrandTable({ data, isLoading, selectedId, onSelectItem }: BrandT
                           item.tokoId ? "text-slate-600" : "text-slate-700"
                         )}
                       >
-                        {getBrandScopeText(item.tokoId)}
+                        {getBrandScopeText(item.tokoId ?? null)}
                       </Badge>
                     </TableCell>
                     <TableCell className={cn(
                       "align-top text-xs",
                       item.id === selectedId ? "text-gray-700" : "text-slate-500"
                     )}>
-                      {getBrandReferenceText(item.tokoId)}
+                      {getBrandReferenceText(item.tokoId ?? null)}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -95,8 +95,12 @@ export function ProductSearchBox({ products, inputRef, onAdd }: ProductSearchBox
               }`}
             >
               <span className="font-medium">{product.nama}</span>
-              <span className="text-xs text-slate-500">
-                {product.kode} • {formatCurrency(product.hargaJual)}
+              <span className="text-xs">
+                <span className="text-slate-500">{product.kode}</span>
+                <span className="text-slate-300"> • </span>
+                <span className="text-red-600 font-semibold">Stok {product.stok}</span>
+                <span className="text-slate-300"> • </span>
+                <span className="text-slate-500">{formatCurrency(product.hargaJual)}</span>
               </span>
             </button>
           ))}

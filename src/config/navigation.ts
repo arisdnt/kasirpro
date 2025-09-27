@@ -190,14 +190,14 @@ export const navigationSections: NavSection[] = [
         tables: ["brand"],
       },
       {
-        to: "/inventory",
-        label: "Inventaris",
+        to: "/invetaris",
+        label: "Invetaris",
         icon: Box,
-        description: "Kelola stok barang untuk setiap toko",
+        description: "Catat aset/perlengkapan toko (tidak dijual)",
         tables: ["inventaris", "stock_opname", "stock_opname_items"],
       },
       {
-        to: "/inventory/variance",
+        to: "/invetaris/variance",
         label: "Kesehatan Stok",
         icon: Activity,
         description: "Analisis selisih stok fisik dan sistem",
