@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Category } from "@/types/products";
+import type { Category } from "@/features/kategori/types";
 import { useCategoriesQuery } from "@/features/kategori/use-categories";
 
 type Props = {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { Brand } from "@/types/products";
+import type { Brand } from "@/features/brand/types";
 import { fetchBrands } from "@/features/brand/api";
 import { BRANDS_QUERY_KEY } from "./keys";
 

@@ -26,3 +26,26 @@ export interface PurchaseItem {
   hargaSatuan: number;
   subtotal: number;
 }
+
+// Types from old centralized types
+export type PurchaseTransaction = {
+  id: string;
+  nomorTransaksi: string;
+  tanggal: string;
+  total: number;
+  status: string | null;
+  supplierId: string;
+  supplierNama: string;
+};
+
+export type PurchaseItemDetailed = {
+  id: string;
+  transaksiId: string;
+  produkId: string;
+  produkNama: string;
+  produkKode: string | null;
+  kategoriNama: string | null;
+  qty: number;
+  hargaSatuan: number;
+  subtotal: number;
+};

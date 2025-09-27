@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/types/products";
+import type { Product } from "@/features/produk/types";
 import { useDeleteProductMutation } from "@/features/produk/mutations";
 import { formatCurrency } from "@/lib/format";
 import { X, Trash2 } from "lucide-react";

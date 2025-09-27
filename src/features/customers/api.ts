@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { Customer } from "@/types/partners";
+import type { Customer } from "@/features/customers/types";
 
 type PelangganRow = {
   id: string;

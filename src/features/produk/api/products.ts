@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Product } from "@/types/products";
+import type { Product } from "@/features/produk/types";
 import { getSupabaseClient } from "@/lib/supabase-client";
 
 export async function fetchProducts(tenantId: string, tokoId: string | null) {

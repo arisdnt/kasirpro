@@ -1,0 +1,24 @@
+export type NewsArticle = {
+  id: string;
+  judul: string;
+  konten: string;
+  status: "draft" | "aktif" | "nonaktif" | "kedaluwarsa";
+  userId: string;
+  authorName: string | null;
+  tenantId: string;
+  tokoId: string | null;
+  tipeBerita: "informasi" | "pengumuman" | "peringatan" | "urgent";
+  targetTampil: "toko_tertentu" | "semua_toko_tenant" | "semua_tenant";
+  prioritas: "rendah" | "normal" | "tinggi" | "urgent";
+  targetTokoIds: string[] | null;
+  targetTenantIds: string[] | null;
+  jadwalMulai: string | null;
+  jadwalSelesai: string | null;
+  intervalTampilMenit: number | null;
+  maksimalTampil: number | null;
+  viewCount: number;
+  gambarUrl: string | null;
+  lampiranUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+};

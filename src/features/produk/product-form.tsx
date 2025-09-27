@@ -3,10 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import type { ProductInput } from "@/types/products";
+import type { ProductInput } from "@/features/produk/types";
 import { useCategoriesQuery } from "@/features/kategori/use-categories";
 import { useBrandsQuery } from "@/features/brand/use-brands";
-import type { Product } from "@/types/products";
+import type { Product } from "@/features/produk/types";
 import { useCreateProductMutation, useUpdateProductMutation } from "./mutations";
 import { Save, RefreshCw } from "lucide-react";
 

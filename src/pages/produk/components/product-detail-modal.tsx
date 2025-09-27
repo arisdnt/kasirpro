@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Product } from "@/types/products";
+import type { Product } from "@/features/produk/types";
 import type { StockMovement } from "@/types/inventory";
 import { formatDateTime } from "@/lib/format";
 import { useProductMovements } from "@/features/produk/queries/use-product-movements";

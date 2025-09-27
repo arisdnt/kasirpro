@@ -1,4 +1,4 @@
-import type { Brand } from "@/types/products";
+import type { Brand } from "@/features/brand/types";
 import { getSupabaseClient } from "@/lib/supabase-client";
 
 export async function fetchBrands(tenantId: string, tokoId: string | null) {

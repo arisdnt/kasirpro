@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { Product } from "@/types/products";
+import type { Product } from "@/features/produk/types";
 import { fetchProducts } from "@/features/produk/api";
 import { useSupabaseRealtime } from "@/hooks/use-supabase-realtime";
 import { useProductStockRealtime } from "@/features/produk/hooks/use-product-stock-realtime";

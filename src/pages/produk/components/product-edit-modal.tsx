@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProductForm } from "@/features/produk/product-form";
-import type { Product } from "@/types/products";
+import type { Product } from "@/features/produk/types";
 
 type ProductEditModalProps = {
   product: Product | null;

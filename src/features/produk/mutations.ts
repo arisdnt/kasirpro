@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { ProductInput } from "@/types/products";
+import type { ProductInput } from "@/features/produk/types";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { PRODUCTS_QUERY_KEY } from "./queries";
 import { uploadProductImage } from "./storage";

@@ -1,4 +1,4 @@
-import type { Category } from "@/types/products";
+import type { Category } from "@/features/kategori/types";
 
 export type ScopeFilter = "all" | "global" | "store";
 

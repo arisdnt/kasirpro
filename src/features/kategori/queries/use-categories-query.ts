@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
-import type { Category } from "@/types/products";
+import type { Category } from "@/features/kategori/types";
 import { fetchCategories } from "@/features/kategori/api";
 import { CATEGORIES_QUERY_KEY } from "./keys";
 

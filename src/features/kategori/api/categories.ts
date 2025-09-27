@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Category } from "@/types/products";
+import type { Category } from "@/features/kategori/types";
 import { getSupabaseClient } from "@/lib/supabase-client";
 
 type RawCategory = {

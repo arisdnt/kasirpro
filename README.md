@@ -62,6 +62,28 @@ npm run electron:dist
 - `npm run lint` - Run ESLint
 - `npm run preview` - Preview the production build
 
+## 🧰 Git helper
+
+This repo includes a helper to quickly add, commit (with a timestamp by default), and push to `origin main`.
+
+- Windows PowerShell:
+
+```powershell
+./git-push.ps1 "your commit message"
+```
+
+- Windows Command Prompt:
+
+```bat
+git-push.cmd "your commit message"
+```
+
+- macOS/Linux (Bash):
+
+```bash
+./git-push "your commit message"
+```
+
 ## 🏗 Project Structure
 
 ```

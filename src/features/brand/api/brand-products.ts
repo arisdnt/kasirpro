@@ -1,4 +1,4 @@
-import type { Product } from "@/types/products";
+import type { Product } from "@/features/produk/types";
 import { getSupabaseClient } from "@/lib/supabase-client";
 
 export type BrandProductListItem = Pick<Product, "id" | "nama" | "kode" | "kategoriNama">;

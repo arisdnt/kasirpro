@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { Supplier } from "@/types/partners";
+import type { Supplier } from "@/features/suppliers/types";
 
 export async function fetchSuppliers(tenantId: string, tokoId: string | null) {
   const client = getSupabaseClient();
