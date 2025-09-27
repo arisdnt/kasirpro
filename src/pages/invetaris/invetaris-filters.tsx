@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,6 +19,7 @@ interface InvetarisFiltersProps {
   onStockStateChange: (value: StockStateFilter) => void;
   onRefresh: () => void;
   isRefreshing?: boolean;
+  onCreate: () => void;
 }
 
 export function InvetarisFilters({
@@ -32,6 +32,7 @@ export function InvetarisFilters({
   onStockStateChange,
   onRefresh,
   isRefreshing = false,
+  onCreate,
 }: InvetarisFiltersProps) {
   return (
     <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
@@ -86,11 +87,12 @@ export function InvetarisFilters({
               <RefreshCw className={isRefreshing ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
               Muat ulang
             </Button>
-            <Button asChild className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]">
-              <Link to="/stock-opname">
-                <Plus className="h-4 w-4" />
-                Stock Opname
-              </Link>
+            <Button
+              className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
+              onClick={onCreate}
+            >
+              <Plus className="h-4 w-4" />
+              Tambah Invetaris
             </Button>
           </div>
         </div>

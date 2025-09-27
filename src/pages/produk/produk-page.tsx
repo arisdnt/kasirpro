@@ -95,26 +95,30 @@ export function ProdukPage() {
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <ProductList
-          products={filteredProducts}
-          isLoading={products.isLoading}
-          selectedId={selectedId}
-          onSelectProduct={setSelectedId}
-          stocks={products.stocks}
-          userTokoId={user?.tokoId ?? undefined}
-          onViewDetail={setDetailId}
-          onEditProduct={setEditId}
-          onDeleteProduct={setDeleteId}
-        />
+        <div className="w-full lg:w-3/4">
+          <ProductList
+            products={filteredProducts}
+            isLoading={products.isLoading}
+            selectedId={selectedId}
+            onSelectProduct={setSelectedId}
+            stocks={products.stocks}
+            userTokoId={user?.tokoId ?? undefined}
+            onViewDetail={setDetailId}
+            onEditProduct={setEditId}
+            onDeleteProduct={setDeleteId}
+          />
+        </div>
 
-        <ProductStockCard
-          product={selectedProduct}
-          currentStock={currentStock}
-          movements={movements.data ?? []}
-          isMovementsLoading={movements.isLoading}
-          userTokoId={user?.tokoId ?? undefined}
-          movementLimit={MOVEMENT_LIMIT}
-        />
+        <div className="w-full lg:w-1/4">
+          <ProductStockCard
+            product={selectedProduct}
+            currentStock={currentStock}
+            movements={movements.data ?? []}
+            isMovementsLoading={movements.isLoading}
+            userTokoId={user?.tokoId ?? undefined}
+            movementLimit={MOVEMENT_LIMIT}
+          />
+        </div>
       </div>
 
       <ProductDetailModal

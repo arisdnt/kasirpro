@@ -68,17 +68,21 @@ export function InventoryVariancePage() {
       </Card>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <VarianceTable
-          data={filteredInventory}
-          isLoading={inventory.isLoading}
-          selectedId={selectedId}
-          onSelectItem={setSelectedId}
-        />
-        <VarianceDetail
-          selectedItem={selectedInventoryItem}
-          batches={selectedBatches}
-          isBatchesLoading={batches.isLoading}
-        />
+        <div className="w-full lg:w-3/4">
+          <VarianceTable
+            data={filteredInventory}
+            isLoading={inventory.isLoading}
+            selectedId={selectedId}
+            onSelectItem={setSelectedId}
+          />
+        </div>
+        <div className="w-full lg:w-1/4">
+          <VarianceDetail
+            selectedItem={selectedInventoryItem}
+            batches={selectedBatches}
+            isBatchesLoading={batches.isLoading}
+          />
+        </div>
       </div>
     </div>
   );

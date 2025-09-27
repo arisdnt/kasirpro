@@ -66,7 +66,7 @@ export function ProductStockCard({
   };
 
   return (
-    <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[400px] rounded-none">
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
       <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
         <div className="flex items-center gap-2">
         </div>

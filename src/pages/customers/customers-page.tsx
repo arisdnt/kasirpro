@@ -62,13 +62,17 @@ export function CustomersPage() {
       </Card>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <CustomersTable
-          data={filteredCustomers}
-          isLoading={customers.isLoading}
-          selectedId={selectedId}
-          onSelectItem={setSelectedId}
-        />
-        <CustomersDetail selectedCustomer={selectedCustomer} />
+        <div className="w-full lg:w-3/4">
+          <CustomersTable
+            data={filteredCustomers}
+            isLoading={customers.isLoading}
+            selectedId={selectedId}
+            onSelectItem={setSelectedId}
+          />
+        </div>
+        <div className="w-full lg:w-1/4">
+          <CustomersDetail selectedCustomer={selectedCustomer} />
+        </div>
       </div>
     </div>
   );

@@ -74,17 +74,21 @@ export function StockOpnamePage() {
       </div>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <StockOpnameList
-          data={filteredList}
-          isLoading={listQuery.isLoading}
-          selectedId={selectedId}
-          onSelectItem={setSelectedId}
-        />
+        <div className="w-full lg:w-3/4">
+          <StockOpnameList
+            data={filteredList}
+            isLoading={listQuery.isLoading}
+            selectedId={selectedId}
+            onSelectItem={setSelectedId}
+          />
+        </div>
 
-        <StockOpnameDetail
-          data={selectedDetail}
-          isLoading={detailQuery.isLoading}
-        />
+        <div className="w-full lg:w-1/4">
+          <StockOpnameDetail
+            data={selectedDetail}
+            isLoading={detailQuery.isLoading}
+          />
+        </div>
       </div>
     </div>
   );

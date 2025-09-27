@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useStoresQuery } from "@/features/stores/use-stores";
 import { useInventoryQuery } from "@/features/inventory/use-inventory";
 import { useCreateInventaris, useDeleteInventaris, useUpdateInventaris, type InventarisInput } from "@/features/inventory/mutations";
-import { usePurchaseProductsQuery } from "@/features/purchases/use-purchase-products";
+import { useAssetProductsQuery } from "@/features/inventory/use-asset-products";
 import { InvetarisSummary } from "@/pages/invetaris/invetaris-summary";
 import { InvetarisFilters } from "@/pages/invetaris/invetaris-filters";
 import { InvetarisTable } from "@/pages/invetaris/invetaris-table";
@@ -35,7 +35,7 @@ export function InvetarisPage() {
   });
 
   const inventory = useInventoryQuery(storeFilter);
-  const products = usePurchaseProductsQuery();
+  const products = useAssetProductsQuery(storeFilter);
   const createInventaris = useCreateInventaris();
   const updateInventaris = useUpdateInventaris();
   const deleteInventaris = useDeleteInventaris();
@@ -95,16 +95,31 @@ export function InvetarisPage() {
         onStockStateChange={setStockState}
         onRefresh={handleRefresh}
         isRefreshing={inventory.isFetching}
+        onCreate={() => {
+          setForm({
+            produkId: "",
+            stockFisik: 0,
+            stockTersedia: 0,
+            stockMinimum: null,
+            stockMaksimum: null,
+            lokasiRak: "",
+            batchNumber: "",
+            tanggalExpired: null,
+          });
+          setShowCreate(true);
+        }}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <InvetarisTable
-          data={filteredInventory}
-          isLoading={inventory.isLoading}
-          selectedId={selectedId}
-          onSelectItem={setSelectedId}
-        />
-        <div className="flex w-full shrink-0 flex-col gap-2 lg:w-[400px]">
+        <div className="w-full lg:w-3/4">
+          <InvetarisTable
+            data={filteredInventory}
+            isLoading={inventory.isLoading}
+            selectedId={selectedId}
+            onSelectItem={setSelectedId}
+          />
+        </div>
+        <div className="flex w-full shrink-0 flex-col gap-2 lg:w-1/4">
           <div className="flex items-center justify-end gap-2">
             <Button
               className="rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { useNewsQuery } from "@/features/news/use-news";
 import { formatDateTime } from "@/lib/format";
-import { Calendar, Eye, Newspaper, Filter, Search, RefreshCw, Plus } from "lucide-react";
+import { Calendar, Eye, Newspaper, Filter, Search, RefreshCw, Plus, Tag, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type StatusFilter = "all" | "draft" | "aktif" | "nonaktif" | "kedaluwarsa";
@@ -179,7 +179,7 @@ function NewsStatistics({
 
 function NewsDetail({ selectedNews }: { selectedNews: NewsItem | null }) {
   return (
-    <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[400px] rounded-none">
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
       <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Berita</span>
@@ -328,7 +328,8 @@ export function NewsPage() {
       </div>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <Card className="flex flex-1 min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
+        <div className="w-full lg:w-3/4">
+          <Card className="flex h-full min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
           <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-black">Manajemen Berita</span>
@@ -441,8 +442,11 @@ export function NewsPage() {
             </ScrollArea>
           </CardContent>
         </Card>
+        </div>
 
-        <NewsDetail selectedNews={selectedNews} />
+        <div className="w-full lg:w-1/4">
+          <NewsDetail selectedNews={selectedNews} />
+        </div>
       </div>
     </div>
   );

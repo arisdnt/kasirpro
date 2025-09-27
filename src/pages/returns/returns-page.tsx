@@ -164,7 +164,8 @@ export function ReturnsPage() {
       </Card>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <Card className="flex flex-1 min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
+        <div className="w-full lg:w-3/4">
+          <Card className="flex h-full min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
           <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-black">Retur Penjualan</span>
@@ -303,8 +304,10 @@ export function ReturnsPage() {
             </ScrollArea>
           </CardContent>
         </Card>
+        </div>
 
-  <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white shadow-sm lg:w-[400px] rounded-none">
+        <div className="w-full lg:w-1/4">
+          <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white shadow-sm rounded-none">
           <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
             {selectedReturn ? (
               <div className="flex-1 overflow-hidden">
@@ -396,6 +399,7 @@ export function ReturnsPage() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
       {/* Create Return Dialog */}

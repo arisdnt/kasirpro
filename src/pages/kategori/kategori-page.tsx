@@ -78,17 +78,21 @@ export function KategoriPage() {
       </div>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <KategoriTable
-          data={filteredCategories}
-          isLoading={categories.isLoading}
-          selectedId={selectedId}
-          onSelectItem={setSelectedId}
-        />
-        <KategoriDetail
-          selectedCategory={selectedCategory}
-          products={products.data ?? []}
-          isProductsLoading={products.isLoading}
-        />
+        <div className="w-full lg:w-3/4">
+          <KategoriTable
+            data={filteredCategories}
+            isLoading={categories.isLoading}
+            selectedId={selectedId}
+            onSelectItem={setSelectedId}
+          />
+        </div>
+        <div className="w-full lg:w-1/4">
+          <KategoriDetail
+            selectedCategory={selectedCategory}
+            products={products.data ?? []}
+            isProductsLoading={products.isLoading}
+          />
+        </div>
       </div>
     </div>
   );

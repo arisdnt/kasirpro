@@ -35,7 +35,7 @@ interface CustomersTableProps {
 
 export function CustomersTable({ data, isLoading, selectedId, onSelectItem }: CustomersTableProps) {
   return (
-    <Card className="flex flex-1 min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
+    <Card className="flex h-full min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
       <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-black">Data Pelanggan</span>

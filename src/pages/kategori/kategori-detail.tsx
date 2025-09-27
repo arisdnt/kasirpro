@@ -28,8 +28,8 @@ export function KategoriDetail({ selectedCategory, products, isProductsLoading }
     : [];
 
   return (
-    <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[360px] rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
+      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2 px-2">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Detail & Produk</span>
           <span className="text-slate-400">•</span>
@@ -38,16 +38,16 @@ export function KategoriDetail({ selectedCategory, products, isProductsLoading }
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden">
+      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {selectedCategory ? (
-          <ScrollArea className="h-full pr-1">
+          <ScrollArea className="h-full">
             <div className="relative w-full">
               <div className="absolute right-0 top-0">
                 <Badge variant="outline" className="rounded-none border border-slate-400 text-[11px] uppercase tracking-wide">
                   {selectedCategory.tokoId ? "Kategori Toko" : "Kategori Global"}
                 </Badge>
               </div>
-              <div className="p-6 font-mono text-xs text-slate-800">
+              <div className="font-mono text-xs text-slate-800">
                 <div className="mb-4 border-b-2 border-dashed border-slate-400 pb-3 text-center">
                   <h2 className="text-lg font-bold tracking-[0.3em] text-slate-900">KATEGORI</h2>
                   <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Ringkasan & Produk</p>
@@ -79,7 +79,7 @@ export function KategoriDetail({ selectedCategory, products, isProductsLoading }
                       ))}
                     </div>
                   ) : categoryProducts.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center gap-2 py-6 text-center">
+                    <div className="flex flex-col items-center justify-center gap-2 text-center">
                       <FolderTree className="h-6 w-6 text-slate-300" />
                       <p className="text-[11px] text-slate-600">Belum ada produk pada kategori ini.</p>
                     </div>
