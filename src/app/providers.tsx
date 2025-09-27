@@ -6,6 +6,7 @@ import { HeroUIProvider } from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SupabaseAuthProvider } from "@/features/auth/supabase-auth-provider";
+import { CalculatorProvider } from "@/components/providers/calculator-provider";
 import { useAppLifecycle } from "@/hooks/use-app-lifecycle";
 
 const queryClient = new QueryClient({
@@ -35,6 +36,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <AppLifecycleManager />
           <SupabaseAuthProvider>{children}</SupabaseAuthProvider>
+          <CalculatorProvider />
           {/* ReactQueryDevtools removed in production */}
           <Toaster
             richColors

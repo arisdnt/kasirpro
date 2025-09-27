@@ -27,6 +27,7 @@ import { UsersPage } from "@/pages/users/users-page";
 import { RolesPage } from "@/pages/roles/roles-page";
 import { SettingsPage } from "@/pages/settings/settings-page";
 import { SystemConfigPage } from "@/pages/system-config/system-config-page";
+import { DeviceInfoPage } from "@/pages/settings/device-info-page";
 import { PromoPage } from "@/pages/promo/promo-page";
 import { LoginPage } from "@/pages/auth/login-page";
 
@@ -76,6 +77,7 @@ export function App() {
           <Route path="/roles" element={<RolesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/system-config" element={<SystemConfigPage />} />
+          <Route path="/settings/device-info" element={<DeviceInfoPage />} />
         </Route>
       </Route>
 

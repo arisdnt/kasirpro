@@ -300,6 +300,13 @@ export const navigationSections: NavSection[] = [
         description: "Kelola key konfigurasi tenant dan toko",
         tables: ["konfigurasi_sistem"],
       },
+      {
+        to: "/settings/device-info",
+        label: "Informasi Perangkat",
+        icon: Settings2,
+        description: "Detail perangkat, OS, CPU, memori, storage, jaringan",
+        tables: [],
+      },
     ],
   },
 ];

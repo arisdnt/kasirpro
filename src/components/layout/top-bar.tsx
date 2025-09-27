@@ -14,7 +14,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { useRealtimeClock } from "@/hooks/use-realtime-clock";
 import { CommandDialog, CommandInput, CommandList } from "@/components/ui/command";
-import { Keyboard, PanelLeft, PanelRight, Power, Search } from "lucide-react";
+import { WindowControls } from "./window-controls";
+import { useCalculatorStore } from "@/hooks/use-calculator-store";
+import { Keyboard, PanelLeft, PanelRight, Power, Search, Calculator } from "lucide-react";
 
 export function TopBar({
   onToggleSidebar,
@@ -28,12 +30,25 @@ export function TopBar({
     signOut,
   } = useSupabaseAuth();
   const [open, setOpen] = useState(false);
+  const { toggleCalculator } = useCalculatorStore();
   const timestamp = useRealtimeClock(15_000);
   const initial = user?.fullName?.charAt(0) ?? user?.username.charAt(0) ?? "U";
 
   return (
-    <header className="flex items-center justify-between border-b border-[#3a5998] bg-[#476EAE] px-4 py-1 shadow-sm">
-      <div className="flex items-center gap-3">
+    <header 
+      className="flex items-center justify-between border-b border-[#3a5998] bg-[#476EAE] px-4 py-1 shadow-sm"
+      style={{ 
+        // @ts-ignore - WebkitAppRegion is a valid CSS property for Electron
+        WebkitAppRegion: 'drag' 
+      }}
+    >
+      <div 
+        className="flex items-center gap-3"
+        style={{ 
+          // @ts-ignore - WebkitAppRegion is a valid CSS property for Electron
+          WebkitAppRegion: 'no-drag' 
+        }}
+      >
         <Button
           variant="secondary"
           size="icon"
@@ -52,7 +67,13 @@ export function TopBar({
           Cari fitur (⌘K)
         </Button>
       </div>
-      <div className="flex items-center gap-4">
+      <div 
+        className="flex items-center gap-4"
+        style={{ 
+          // @ts-ignore - WebkitAppRegion is a valid CSS property for Electron
+          WebkitAppRegion: 'no-drag' 
+        }}
+      >
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -64,6 +85,23 @@ export function TopBar({
             <TooltipContent className="text-xs">Terhubung ke Supabase Realtime</TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleCalculator}
+                className="h-8 w-8 p-0 hover:bg-white/20 text-white hover:text-white"
+              >
+                <Calculator className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="text-xs">Kalkulator</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-white">
             {timestamp.toLocaleString("id-ID", { timeStyle: "short" })}
@@ -105,6 +143,7 @@ export function TopBar({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <WindowControls />
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Cari modul, produk, atau pelanggan..." />

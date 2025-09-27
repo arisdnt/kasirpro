@@ -1,4 +1,102 @@
-# React + TypeScript + Vite
+# KasirPro - Point of Sale Desktop App
+
+This is a Point of Sale (POS) desktop application built with React + TypeScript + Vite and packaged with Electron.
+
+## 🚀 Development
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Running the Application in Development Mode
+
+To run the application in development mode with Electron:
+
+```bash
+npm run dev
+```
+
+This command will:
+1. Start the Vite dev server on http://localhost:5173
+2. Wait for the server to be ready
+3. Automatically launch the Electron desktop application
+
+### Alternative Development Methods
+
+**Option 1: Using the batch file (Windows only)**
+```bash
+start-dev.bat
+```
+
+**Option 2: Running components separately**
+```bash
+# Terminal 1 - Start Vite dev server
+npm run vite:dev
+
+# Terminal 2 - Start Electron (wait for Vite to be ready first)
+npm run electron:dev
+```
+
+## 📦 Building for Production
+
+### Build for Distribution
+```bash
+npm run electron:build
+```
+
+This will create distributable packages in the `dist-electron` folder.
+
+### Build without Publishing
+```bash
+npm run electron:dist
+```
+
+## 🛠 Available Scripts
+
+- `npm run dev` - Start development with Electron
+- `npm run vite:dev` - Start only Vite dev server
+- `npm run electron:dev` - Start only Electron (requires Vite server to be running)
+- `npm run build` - Build the React app for production
+- `npm run electron:build` - Build and package the Electron app for distribution
+- `npm run electron:dist` - Build Electron app without publishing
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview the production build
+
+## 🏗 Project Structure
+
+```
+├── electron/
+│   ├── main.js          # Main Electron process
+│   └── preload.js       # Preload script for security
+├── src/                 # React application source
+├── public/              # Static assets
+├── dist/                # Built React app
+└── dist-electron/       # Electron distribution files
+```
+
+## 🔧 Technology Stack
+
+- **Frontend**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Desktop Framework**: Electron
+- **UI Components**: HeroUI, Radix UI
+- **Styling**: TailwindCSS
+- **State Management**: Zustand
+- **Data Fetching**: TanStack Query
+- **Backend**: Supabase
+- **Router**: React Router DOM
+
+## 🔒 Security Features
+
+The Electron app is configured with security best practices:
+- Context isolation enabled
+- Node integration disabled
+- Remote module disabled
+- Secure preload script
+
+---
+
+# Original Vite Template Information
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
