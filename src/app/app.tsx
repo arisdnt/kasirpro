@@ -26,7 +26,7 @@ import { TenantsPage } from "@/pages/tenants/tenants-page";
 import { UsersPage } from "@/pages/users/users-page";
 import { RolesPage } from "@/pages/roles/roles-page";
 import { SettingsPage } from "@/pages/settings/settings-page";
-import { SystemConfigPage } from "@/pages/settings/system-config-page";
+import { SystemConfigPage } from "@/pages/system-config/system-config-page";
 import { PromoPage } from "@/pages/promo/promo-page";
 import { LoginPage } from "@/pages/auth/login-page";
 

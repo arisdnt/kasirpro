@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Filter, Search } from "lucide-react";
-import type { StatusFilter } from "../purchases-types";
+import type { StatusFilter } from "@/features/purchases/types";
 
 interface PurchasesFiltersProps {
   searchTerm: string;

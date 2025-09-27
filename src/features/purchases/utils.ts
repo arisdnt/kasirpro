@@ -1,4 +1,4 @@
-import type { Purchase, PurchaseStats, StatusFilter } from "./purchases-types";
+import type { Purchase, PurchaseStats, StatusFilter } from "./types";
 
 export function calculatePurchaseStats(purchases: Purchase[]): PurchaseStats {
   const total = purchases.length;

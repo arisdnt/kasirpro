@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Plus, RefreshCw } from "lucide-react";
-import type { PurchaseStats } from "../purchases-types";
+import type { PurchaseStats } from "@/features/purchases/types";
 
 interface PurchasesStatisticsProps {
   stats: PurchaseStats;

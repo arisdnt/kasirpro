@@ -4,8 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { Package2 } from "lucide-react";
-import type { Purchase, PurchaseItem } from "../purchases-types";
-import { getStatusColor } from "../purchases-utils";
+import type { Purchase, PurchaseItem } from "@/features/purchases/types";
+import { getStatusColor } from "@/features/purchases/utils";
 
 interface PurchaseInvoiceProps {
   selectedPurchase: Purchase | null;

@@ -5,8 +5,8 @@ import { PurchasesFilters } from "./components/purchases-filters";
 import { PurchasesStatistics } from "./components/purchases-statistics";
 import { PurchasesTable } from "./components/purchases-table";
 import { PurchaseInvoice } from "./components/purchase-invoice";
-import { calculatePurchaseStats, filterPurchases } from "./purchases-utils";
-import type { StatusFilter } from "./purchases-types";
+import { calculatePurchaseStats, filterPurchases } from "@/features/purchases/utils";
+import type { StatusFilter } from "@/features/purchases/types";
 
 export function PurchasesPage() {
   const purchases = usePurchasesQuery();
