@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { InternalMessage } from "@/types/transactions";
 import type { MessageComposePayload } from "@/features/pesan/mutations";
+import { HierarchicalTargetSelector, type CascadingTarget } from "./hierarchical-target-selector";
 
 type Props = {
   open: boolean;
@@ -20,9 +21,9 @@ export function PesanComposeModal({ open, onOpenChange, onSubmit, mode = "create
   const [type, setType] = useState<string>("pesan");
   const [priority, setPriority] = useState<string>("normal");
   const [status, setStatus] = useState<string>("terkirim");
-  const [target, setTarget] = useState<"user" | "store" | "tenant">("store");
-  const [userId, setUserId] = useState<string>("");
-  const [storeId, setStoreId] = useState<string>("");
+  const [cascadingTarget, setCascadingTarget] = useState<CascadingTarget>({
+    level: "all_tenants"
+  });
 
   useEffect(() => {
     if (open) {
@@ -38,9 +39,9 @@ export function PesanComposeModal({ open, onOpenChange, onSubmit, mode = "create
         setType("pesan");
         setPriority("normal");
         setStatus("terkirim");
-        setTarget("store");
-        setUserId("");
-        setStoreId("");
+        setCascadingTarget({
+          level: "all_tenants"
+        });
       }
     }
   }, [open, initial, mode]);
@@ -54,9 +55,7 @@ export function PesanComposeModal({ open, onOpenChange, onSubmit, mode = "create
       status,
       type,
       priority,
-      target,
-      userId: userId || null,
-      storeId: storeId || null,
+      cascadingTarget,
       penerimaId: undefined,
       tokoTargetId: undefined,
     };
@@ -66,7 +65,7 @@ export function PesanComposeModal({ open, onOpenChange, onSubmit, mode = "create
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl rounded-none">
+      <DialogContent className="max-w-2xl rounded-none bg-white">
         <DialogHeader>
           <DialogTitle className="text-black">{title}</DialogTitle>
         </DialogHeader>
@@ -128,36 +127,12 @@ export function PesanComposeModal({ open, onOpenChange, onSubmit, mode = "create
             </div>
           </div>
           <div className="space-y-1">
-              <Label>Target</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" name="target" checked={target === "user"} onChange={() => setTarget("user")} />
-                  User
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" name="target" checked={target === "store"} onChange={() => setTarget("store")} />
-                  Toko
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" name="target" checked={target === "tenant"} onChange={() => setTarget("tenant")} />
-                  Tenant
-                </label>
-              </div>
-            </div>
-
-            {target === "user" && (
-              <div className="space-y-1">
-                <Label htmlFor="userId">ID User Tujuan</Label>
-                <Input id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="Masukkan ID user penerima" />
-              </div>
-            )}
-
-            {target === "store" && (
-              <div className="space-y-1">
-                <Label htmlFor="storeId">ID Toko (kosongkan untuk toko aktif)</Label>
-                <Input id="storeId" value={storeId} onChange={(e) => setStoreId(e.target.value)} placeholder="Masukkan ID toko atau kosongkan" />
-              </div>
-            )}
+            <Label>Target Penerima</Label>
+            <HierarchicalTargetSelector
+              value={cascadingTarget}
+              onChange={setCascadingTarget}
+            />
+          </div>
         </div>
         <DialogFooter className="gap-2">
           <Button variant="secondary" className="rounded-none" onClick={() => onOpenChange(false)}>

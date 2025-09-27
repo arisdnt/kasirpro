@@ -3,13 +3,12 @@ import { toast } from "sonner";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { createInternalMessage, createInternalMessagesBatch, deleteInternalMessage, fetchUsersByStore, fetchUsersByTenant, markInternalMessageRead, updateInternalMessage } from "./api";
 import type { InternalMessageInput } from "@/types/transactions";
+import type { CascadingTarget } from "./components/hierarchical-target-selector";
 
 export const MESSAGE_KEY = ["pesan-messages"] as const;
 
 export type MessageComposePayload = InternalMessageInput & {
-  target: "user" | "store" | "tenant";
-  userId?: string | null;
-  storeId?: string | null;
+  cascadingTarget: CascadingTarget;
 };
 
 export function useCreateMessageMutation() {
@@ -21,34 +20,52 @@ export function useCreateMessageMutation() {
   return useMutation({
     mutationFn: async (input: MessageComposePayload) => {
       if (!user) throw new Error("Unauthorized");
-      // Direct to a single user
-      if (input.target === "user") {
+
+      const { cascadingTarget } = input;
+
+      // Specific user
+      if (cascadingTarget.level === "specific_user" && cascadingTarget.userId) {
         return createInternalMessage({
-          tenantId: user.tenantId,
+          tenantId: cascadingTarget.tenantId || user.tenantId,
           pengirimId: user.id,
           tokoId: user.tokoId ?? null,
-          input: { ...input, penerimaId: input.userId ?? null },
+          input: { ...input, penerimaId: cascadingTarget.userId },
         });
       }
 
-      // Broadcast to store
-      if (input.target === "store") {
-        const storeId = input.storeId ?? user.tokoId;
-        if (!storeId) throw new Error("Toko belum dipilih");
-        const userIds = await fetchUsersByStore({ tenantId: user.tenantId, storeId });
+      // All users in specific store
+      if (cascadingTarget.level === "all_users_in_store" && cascadingTarget.storeId) {
+        const userIds = await fetchUsersByStore({
+          tenantId: cascadingTarget.tenantId || user.tenantId,
+          storeId: cascadingTarget.storeId
+        });
         await createInternalMessagesBatch({
-          tenantId: user.tenantId,
+          tenantId: cascadingTarget.tenantId || user.tenantId,
           pengirimId: user.id,
           tokoId: user.tokoId ?? null,
           input,
           recipientUserIds: userIds,
-          storeIdForContext: storeId,
+          storeIdForContext: cascadingTarget.storeId,
         });
         return "ok";
       }
 
-      // Broadcast to tenant
-      if (input.target === "tenant") {
+      // All stores in specific tenant
+      if (cascadingTarget.level === "all_stores_in_tenant" && cascadingTarget.tenantId) {
+        const userIds = await fetchUsersByTenant(cascadingTarget.tenantId);
+        await createInternalMessagesBatch({
+          tenantId: cascadingTarget.tenantId,
+          pengirimId: user.id,
+          tokoId: user.tokoId ?? null,
+          input,
+          recipientUserIds: userIds,
+          storeIdForContext: null,
+        });
+        return "ok";
+      }
+
+      // All tenants (fallback to current tenant for now)
+      if (cascadingTarget.level === "all_tenants") {
         const userIds = await fetchUsersByTenant(user.tenantId);
         await createInternalMessagesBatch({
           tenantId: user.tenantId,

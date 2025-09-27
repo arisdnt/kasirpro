@@ -18,6 +18,8 @@ type RawProfile = {
     level: number;
     permissions: Record<string, unknown> | null;
   } | null;
+  tenant?: { id: string; nama: string | null } | null;
+  toko?: { id: string; nama: string | null } | null;
 };
 
 export async function loadUserProfile(session: Session): Promise<AppUser> {
@@ -26,7 +28,9 @@ export async function loadUserProfile(session: Session): Promise<AppUser> {
     .from("users")
     .select(
       `id, username, email, full_name, phone, status, tenant_id, toko_id, metadata,
-       peran:peran_id ( id, nama, level, permissions )`
+       peran:peran_id ( id, nama, level, permissions ),
+       tenant:tenant_id ( id, nama ),
+       toko:toko_id ( id, nama )`
     )
     .eq("auth_user_id", session.user.id)
     .maybeSingle<RawProfile>();
@@ -55,7 +59,9 @@ export async function loadUserProfile(session: Session): Promise<AppUser> {
     phone: data.phone,
     status: (data.status as AppUser["status"]) ?? "aktif",
     tenantId: data.tenant_id,
+    tenantNama: data.tenant?.nama ?? null,
     tokoId: data.toko_id,
+    tokoNama: data.toko?.nama ?? null,
     role,
     metadata: data.metadata,
   };

@@ -17,7 +17,9 @@ export async function fetchInternalMessages(tenantId: string, tokoId: string | n
       tipe,
       prioritas,
       dibaca_pada,
-      created_at
+      created_at,
+      pengirim:users!perpesanan_pengirim_id_fkey(id, full_name, username),
+      penerima:users!perpesanan_penerima_id_fkey(id, full_name, username)
     `)
     .eq("tenant_id", tenantId)
     .or(
@@ -33,9 +35,8 @@ export async function fetchInternalMessages(tenantId: string, tokoId: string | n
     .order("created_at", { ascending: false })
     .limit(50);
 
-  if (tokoId) {
-    query.eq("toko_target_id", tokoId);
-  }
+  // Do not add an additional toko_target_id eq filter here, since the OR above
+  // already includes toko scope in addition to direct sender/receiver conditions.
 
   const { data, error } = await query;
   if (error) throw error;
@@ -52,6 +53,8 @@ export async function fetchInternalMessages(tenantId: string, tokoId: string | n
     priority: item.prioritas ?? null,
     readAt: item.dibaca_pada ?? null,
     createdAt: item.created_at,
+    pengirimNama: item.pengirim?.full_name || item.pengirim?.username || "Tanpa Nama",
+    penerimaNama: item.penerima?.full_name || item.penerima?.username || (item.toko_target_id ? "Semua pengguna toko" : "Semua pengguna tenant"),
   })) as InternalMessage[]);
 }
 

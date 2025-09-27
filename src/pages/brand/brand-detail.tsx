@@ -14,9 +14,11 @@ interface Brand {
 
 interface BrandDetailProps {
   selectedBrand: Brand | null;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function BrandDetail({ selectedBrand }: BrandDetailProps) {
+export function BrandDetail({ selectedBrand, onEdit, onDelete }: BrandDetailProps) {
   const products = useBrandProductsQuery(selectedBrand?.id ?? null);
   return (
     <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
@@ -28,6 +30,16 @@ export function BrandDetail({ selectedBrand }: BrandDetailProps) {
             {selectedBrand ? selectedBrand.nama : "Pilih brand"}
           </CardTitle>
         </div>
+        {selectedBrand ? (
+          <div className="flex gap-2">
+            {onEdit ? (
+              <button onClick={onEdit} className="text-xs rounded-none bg-slate-800 px-2 py-1 text-white">Edit</button>
+            ) : null}
+            {onDelete ? (
+              <button onClick={onDelete} className="text-xs rounded-none bg-red-600 px-2 py-1 text-white">Hapus</button>
+            ) : null}
+          </div>
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
         {selectedBrand ? (

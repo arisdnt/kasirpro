@@ -103,7 +103,18 @@ export function PosCart() {
                   {item.product.nama}
                 </p>
                 <p className="text-xs text-slate-500 truncate">
-                  {item.product.kode} • <span className="bg-[#476EAE] text-white px-1 py-0.5 text-xs font-bold">Stok {currentStock}</span>
+                  {item.product.kode} • <span className={`px-1 py-0.5 text-xs font-bold ${
+                    currentStock <= 0 ? "bg-red-600 text-white" :
+                    currentStock < 5 ? "bg-orange-500 text-white" :
+                    "bg-[#476EAE] text-white"
+                  }`}>
+                    Stok {currentStock}
+                  </span>
+                  {item.quantity > currentStock && (
+                    <span className="ml-1 bg-red-100 text-red-800 px-1 py-0.5 text-xs font-bold">
+                      MELEBIHI STOK!
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="text-center">
@@ -138,20 +149,22 @@ export function PosCart() {
                       }}
                       onBlur={() => {
                         const value = parseInt(tempValue) || 1;
-                        updateQuantity(item.product.id, value);
+                        updateQuantity(item.product.id, value, currentStock);
                         setEditingId(null);
                         setTempValue("");
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           const value = parseInt(tempValue) || 1;
-                          updateQuantity(item.product.id, value);
+                          updateQuantity(item.product.id, value, currentStock);
                           setEditingId(null);
                           setTempValue("");
                         }
                       }}
                       onFocus={(e) => e.target.select()}
                       className="w-16 h-6 text-center text-xs border-0 bg-transparent font-semibold text-slate-800 focus:bg-white focus:border focus:border-slate-300"
+                      placeholder={`Max ${currentStock}`}
+                      title={`Maksimal ${currentStock} item`}
                       autoFocus
                     />
                   ) : (
@@ -168,8 +181,14 @@ export function PosCart() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => increase(item.product.id)}
-                    className="h-7 w-7 rounded-full bg-red-600 text-white hover:bg-red-700"
+                    onClick={() => increase(item.product.id, currentStock)}
+                    disabled={item.quantity >= currentStock}
+                    className={`h-7 w-7 rounded-full ${
+                      item.quantity >= currentStock
+                        ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                        : "bg-red-600 text-white hover:bg-red-700"
+                    }`}
+                    title={item.quantity >= currentStock ? "Sudah mencapai batas stok" : "Tambah quantity"}
                   >
                     +
                   </Button>

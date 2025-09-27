@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
@@ -33,10 +32,17 @@ export function AuditStatistics({ data, onRefresh }: AuditStatisticsProps) {
         <span>Update: <strong>{stats.update}</strong></span>
         <span>Delete: <strong>{stats.delete}</strong></span>
       </div>
-      <Button variant="outline" onClick={onRefresh} className="gap-2 text-white rounded-none">
+      <Button 
+        variant="outline" 
+        onClick={onRefresh} 
+        className="gap-2 text-white rounded-none" 
+        style={{ backgroundColor: '#476EAE', color: 'white' }}
+      >
         <RefreshCw className="h-4 w-4" />
         Refresh data
       </Button>
     </div>
   );
 }
+
+export default AuditStatistics;

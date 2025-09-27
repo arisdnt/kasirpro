@@ -117,66 +117,31 @@ export function InvetarisPage() {
             isLoading={inventory.isLoading}
             selectedId={selectedId}
             onSelectItem={setSelectedId}
+            onViewDetail={(item) => {
+              setSelectedId(item.id);
+              setShowDetail(true);
+            }}
+            onEditItem={(item) => {
+              setForm({
+                produkId: item.produkId,
+                stockFisik: item.stockFisik,
+                stockTersedia: item.stockSistem,
+                stockMinimum: item.stockMinimum,
+                stockMaksimum: item.stockMaximum,
+                lokasiRak: item.lokasiRak,
+                batchNumber: item.batchNumber,
+                tanggalExpired: item.tanggalExpired,
+              });
+              setSelectedId(item.id);
+              setShowEdit(true);
+            }}
+            onDeleteItem={(item) => {
+              setSelectedId(item.id);
+              setShowDelete(true);
+            }}
           />
         </div>
-        <div className="flex w-full shrink-0 flex-col gap-2 lg:w-1/4">
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              className="rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
-              onClick={() => {
-                setForm({
-                  produkId: "",
-                  stockFisik: 0,
-                  stockTersedia: 0,
-                  stockMinimum: null,
-                  stockMaksimum: null,
-                  lokasiRak: "",
-                  batchNumber: "",
-                  tanggalExpired: null,
-                });
-                setShowCreate(true);
-              }}
-            >
-              Aset baru
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-none"
-              onClick={() => {
-                if (!selectedItem) return;
-                setForm({
-                  produkId: selectedItem.produkId,
-                  stockFisik: selectedItem.stockFisik,
-                  stockTersedia: selectedItem.stockSistem,
-                  stockMinimum: selectedItem.stockMinimum,
-                  stockMaksimum: selectedItem.stockMaximum,
-                  lokasiRak: selectedItem.lokasiRak,
-                  batchNumber: selectedItem.batchNumber,
-                  tanggalExpired: selectedItem.tanggalExpired,
-                });
-                setShowEdit(true);
-              }}
-              disabled={!selectedItem}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-none"
-              onClick={() => setShowDelete(true)}
-              disabled={!selectedItem}
-            >
-              Hapus
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-none"
-              onClick={() => setShowDetail(true)}
-              disabled={!selectedItem}
-            >
-              Detail
-            </Button>
-          </div>
+        <div className="w-full lg:w-1/4">
           <InvetarisDetail selectedItem={selectedItem} />
         </div>
       </div>

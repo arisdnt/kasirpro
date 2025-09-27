@@ -102,6 +102,8 @@ export type InternalMessage = {
   pengirimId?: string;
   penerimaId?: string | null;
   tokoTargetId?: string | null;
+  pengirimNama?: string;
+  penerimaNama?: string;
 };
 
 // Input payload for creating/updating internal messages

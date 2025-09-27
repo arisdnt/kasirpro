@@ -5,6 +5,8 @@ import { KategoriStatistics } from "./kategori-statistics";
 import { KategoriFilters } from "./kategori-filters";
 import { KategoriTable } from "./kategori-table";
 import { KategoriDetail } from "./kategori-detail";
+import { KategoriFormModal } from "./kategori-form-modal";
+import { useCreateCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation } from "@/features/kategori/mutations";
 import {
   type ScopeFilter,
   calculateStats,
@@ -20,6 +22,12 @@ export function KategoriPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [scope, setScope] = useState<ScopeFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const createMutation = useCreateCategoryMutation();
+  const updateMutation = useUpdateCategoryMutation();
+  const deleteMutation = useDeleteCategoryMutation();
 
   const stats = useMemo(() => calculateStats(categories.data ?? []), [categories.data]);
 
@@ -60,6 +68,31 @@ export function KategoriPage() {
     products.refetch();
   };
 
+  const handleAddNew = () => {
+    setEditingId(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!selectedCategory) return;
+    setEditingId(selectedCategory.id);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedCategory) return;
+    await deleteMutation.mutateAsync(selectedCategory.id);
+    setSelectedId(null);
+  };
+
+  const handleSubmitForm = async (payload: { nama: string; parentId?: string | null; tokoId?: string | null }) => {
+    if (editingId) {
+      await updateMutation.mutateAsync({ id: editingId, ...payload });
+    } else {
+      await createMutation.mutateAsync(payload);
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
       <div className="shrink-0">
@@ -73,6 +106,7 @@ export function KategoriPage() {
           <KategoriStatistics
             stats={stats}
             onRefresh={handleRefresh}
+            onAddNew={handleAddNew}
           />
         </div>
       </div>
@@ -91,9 +125,19 @@ export function KategoriPage() {
             selectedCategory={selectedCategory}
             products={products.data ?? []}
             isProductsLoading={products.isLoading}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         </div>
       </div>
+
+      <KategoriFormModal
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        initial={editingId ? selectedCategory ?? null : null}
+        onSubmit={handleSubmitForm}
+        isSubmitting={createMutation.isPending || updateMutation.isPending}
+      />
     </div>
   );
 }

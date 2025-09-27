@@ -15,6 +15,7 @@ interface ProductFiltersProps {
   stats: { total: number; aktif: number; nonaktif: number };
   isRefreshing: boolean;
   onRefresh: () => void;
+  onAddProduct: () => void;
 }
 
 export function ProductFilters({
@@ -25,6 +26,7 @@ export function ProductFilters({
   stats,
   isRefreshing,
   onRefresh,
+  onAddProduct,
 }: ProductFiltersProps) {
   return (
     <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
@@ -67,7 +69,10 @@ export function ProductFilters({
               <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
               Refresh data
             </Button>
-            <Button className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]" disabled>
+            <Button
+              className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
+              onClick={onAddProduct}
+            >
               <Plus className="h-4 w-4" />
               Produk baru
             </Button>

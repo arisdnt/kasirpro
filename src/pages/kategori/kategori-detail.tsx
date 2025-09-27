@@ -18,9 +18,11 @@ interface KategoriDetailProps {
   selectedCategory: EnrichedCategory | null;
   products: Product[];
   isProductsLoading: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function KategoriDetail({ selectedCategory, products, isProductsLoading }: KategoriDetailProps) {
+export function KategoriDetail({ selectedCategory, products, isProductsLoading, onEdit, onDelete }: KategoriDetailProps) {
   const categoryProducts = selectedCategory
     ? products
         .filter((item) => item.kategoriId === selectedCategory.id)
@@ -37,6 +39,16 @@ export function KategoriDetail({ selectedCategory, products, isProductsLoading }
             {selectedCategory ? selectedCategory.nama : "Pilih kategori"}
           </CardTitle>
         </div>
+        {selectedCategory ? (
+          <div className="flex gap-2">
+            {onEdit ? (
+              <button onClick={onEdit} className="text-xs rounded-none bg-slate-800 px-2 py-1 text-white">Edit</button>
+            ) : null}
+            {onDelete ? (
+              <button onClick={onDelete} className="text-xs rounded-none bg-red-600 px-2 py-1 text-white">Hapus</button>
+            ) : null}
+          </div>
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {selectedCategory ? (

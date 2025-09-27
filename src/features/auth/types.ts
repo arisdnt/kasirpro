@@ -28,7 +28,9 @@ export type AppUser = {
   phone: string | null;
   status: "aktif" | "nonaktif" | "suspended" | "cuti";
   tenantId: string;
+  tenantNama?: string | null;
   tokoId: string | null;
+  tokoNama?: string | null;
   role: Role | null;
   metadata: Record<string, unknown> | null;
 };

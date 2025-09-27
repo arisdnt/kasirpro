@@ -7,6 +7,7 @@ import { ProductList } from "./components/product-list";
 import { ProductStockCard } from "./components/product-stock-card";
 import { ProductDetailModal } from "./components/product-detail-modal";
 import { ProductEditModal } from "./components/product-edit-modal";
+import { ProductAddModal } from "./components/product-add-modal";
 import { ProductDeleteDialog } from "./components/product-delete-dialog";
 
 type StatusFilter = "all" | "aktif" | "nonaktif";
@@ -20,6 +21,7 @@ export function ProdukPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
 
   const stats = useMemo(() => {
     const data = products.data ?? [];
@@ -92,6 +94,7 @@ export function ProdukPage() {
         stats={stats}
         isRefreshing={products.isFetching}
         onRefresh={handleRefresh}
+        onAddProduct={() => setAddOpen(true)}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
@@ -130,6 +133,12 @@ export function ProdukPage() {
         currentStock={detailProduct ? products.stocks[detailProduct.id] ?? 0 : null}
         movementLimit={MOVEMENT_LIMIT}
         showAllMovements={true}
+      />
+
+      <ProductAddModal
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onSuccess={handleRefresh}
       />
 
       <ProductEditModal

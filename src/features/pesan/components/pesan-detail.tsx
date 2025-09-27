@@ -46,6 +46,14 @@ export function PesanDetail({ message, onEdit, onDelete, onMarkRead }: PesanDeta
               </dd>
             </div>
             <div>
+              <dt className="text-xs uppercase tracking-wide text-slate-500">Pengirim</dt>
+              <dd className="text-slate-700">{message.pengirimNama || "Unknown"}</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-slate-500">Penerima</dt>
+              <dd className="text-slate-700">{message.penerimaNama || "Broadcast"}</dd>
+            </div>
+            <div>
               <dt className="text-xs uppercase tracking-wide text-slate-500">Tanggal</dt>
               <dd className="text-slate-700">{formatDateTime(message.createdAt)}</dd>
             </div>

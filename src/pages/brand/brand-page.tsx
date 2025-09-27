@@ -5,6 +5,8 @@ import { BrandFilters } from "./brand-filters";
 import { BrandStatistics } from "./brand-statistics";
 import { BrandTable } from "./brand-table";
 import { BrandDetail } from "./brand-detail";
+import { BrandFormModal } from "./brand-form-modal";
+import { useCreateBrandMutation, useDeleteBrandMutation, useUpdateBrandMutation } from "@/features/brand/mutations";
 
 type ScopeFilter = "all" | "global" | "store";
 
@@ -13,6 +15,12 @@ export function BrandPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [scope, setScope] = useState<ScopeFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const createBrand = useCreateBrandMutation();
+  const updateBrand = useUpdateBrandMutation();
+  const deleteBrand = useDeleteBrandMutation();
 
   const filteredBrands = useMemo(() => {
     const data = brands.data ?? [];
@@ -43,6 +51,36 @@ export function BrandPage() {
     brands.refetch();
   };
 
+  const handleAddNew = () => {
+    setEditingId(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!selectedBrand) return;
+    setEditingId(selectedBrand.id);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedBrand) return;
+    const count = selectedBrand.jumlahProduk ?? 0;
+    const ok = window.confirm(
+      `Hapus brand "${selectedBrand.nama}"?${count > 0 ? `\nPeringatan: Brand ini memiliki ${count} produk terkait.` : ""}`
+    );
+    if (!ok) return;
+    await deleteBrand.mutateAsync(selectedBrand.id);
+    setSelectedId(null);
+  };
+
+  const handleSubmitForm = async (payload: { nama: string; tokoId?: string | null }) => {
+    if (editingId) {
+      await updateBrand.mutateAsync({ id: editingId, ...payload });
+    } else {
+      await createBrand.mutateAsync(payload);
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
       <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
@@ -57,6 +95,7 @@ export function BrandPage() {
             <BrandStatistics
               data={brands.data ?? []}
               onRefresh={handleRefresh}
+              onAddNew={handleAddNew}
               isRefreshing={brands.isFetching}
             />
           </div>
@@ -73,9 +112,17 @@ export function BrandPage() {
           />
         </div>
         <div className="w-full lg:w-1/4">
-          <BrandDetail selectedBrand={selectedBrand} />
+          <BrandDetail selectedBrand={selectedBrand} onEdit={handleEdit} onDelete={handleDelete} />
         </div>
       </div>
+
+      <BrandFormModal
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        initial={editingId ? selectedBrand ?? null : null}
+        onSubmit={handleSubmitForm}
+        isSubmitting={createBrand.isPending || updateBrand.isPending}
+      />
     </div>
   );
 }

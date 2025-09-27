@@ -45,6 +45,13 @@ export function ProductSearchBox({ products, inputRef, onAdd }: ProductSearchBox
       toast.error("Produk tidak ditemukan");
       return;
     }
+
+    // Check if stock is available
+    if (selected.stok < 1) {
+      toast.error(`Stok produk "${selected.nama}" kosong (${selected.stok} tersisa)`);
+      return;
+    }
+
     onAdd(selected);
     setQuery("");
     setHighlight(0);
@@ -82,28 +89,39 @@ export function ProductSearchBox({ products, inputRef, onAdd }: ProductSearchBox
       </div>
       {focused && suggestions.length > 0 && (
         <div className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden border border-slate-200 bg-white shadow-lg">
-          {suggestions.map((product, index) => (
-            <button
-              key={product.id}
-              type="button"
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => commit(index)}
-              className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm transition-colors ${
-                index === highlight
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "hover:bg-slate-100 text-black"
-              }`}
-            >
-              <span className="font-medium">{product.nama}</span>
-              <span className="text-xs">
-                <span className="text-slate-500">{product.kode}</span>
-                <span className="text-slate-300"> • </span>
-                <span className="text-red-600 font-semibold">Stok {product.stok}</span>
-                <span className="text-slate-300"> • </span>
-                <span className="text-slate-500">{formatCurrency(product.hargaJual)}</span>
-              </span>
-            </button>
-          ))}
+          {suggestions.map((product, index) => {
+            const isOutOfStock = product.stok < 1;
+            return (
+              <button
+                key={product.id}
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => commit(index)}
+                disabled={isOutOfStock}
+                className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm transition-colors ${
+                  isOutOfStock
+                    ? "bg-red-50 text-red-800 cursor-not-allowed opacity-75"
+                    : index === highlight
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "hover:bg-slate-100 text-black"
+                }`}
+              >
+                <span className={`font-medium ${isOutOfStock ? "line-through" : ""}`}>
+                  {product.nama}
+                  {isOutOfStock && <span className="ml-2 text-red-600 text-xs">(STOK HABIS)</span>}
+                </span>
+                <span className="text-xs">
+                  <span className="text-slate-500">{product.kode}</span>
+                  <span className="text-slate-300"> • </span>
+                  <span className={`font-semibold ${isOutOfStock ? "text-red-600" : "text-emerald-600"}`}>
+                    Stok {product.stok}
+                  </span>
+                  <span className="text-slate-300"> • </span>
+                  <span className="text-slate-500">{formatCurrency(product.hargaJual)}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
