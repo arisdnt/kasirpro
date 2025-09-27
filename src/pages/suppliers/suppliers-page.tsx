@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSupplierProductsQuery, useSupplierPurchasesQuery, useSuppliersQuery } from "@/features/suppliers/use-suppliers";
 import { useCreateSupplier, useDeleteSupplier, useUpdateSupplier } from "@/features/suppliers/use-supplier-mutations";
 import { cn } from "@/lib/utils";
-import { Factory, Filter, Plus, RefreshCw, Search } from "lucide-react";
+import { Factory, Filter, Plus, RefreshCw, Search, Phone, Mail, User, MapPin, CreditCard, Building2, Calendar, Hash } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -183,54 +183,126 @@ export function SuppliersPage() {
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-3 p-4 md:grid-cols-2">
+                <div className="space-y-2 p-3">
                   {filteredSuppliers.map((item) => (
                     <div
                       key={item.id}
                       onClick={() => setSelectedId(item.id)}
                       className={cn(
-                        "cursor-pointer rounded-none border border-primary/10 bg-white/80 px-4 py-3 text-sm shadow-sm transition",
+                        "cursor-pointer rounded-none border border-primary/10 bg-white/80 p-3 text-sm shadow-sm transition hover:shadow-md",
                         item.id === selectedId
-                          ? "!bg-gray-100 border-gray-300"
+                          ? "!bg-gray-100 border-gray-300 shadow-md"
                           : "hover:bg-slate-50 hover:border-primary/20"
                       )}
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className={cn(
-                          "font-semibold leading-none",
-                          item.id === selectedId ? "text-black" : "text-slate-900"
-                        )}>
-                          {item.nama}
-                        </h3>
-                        <Badge
-                          variant={item.status === "aktif" ? "outline" : "destructive"}
-                          className="text-xs rounded-none"
-                        >
-                          {item.status ?? "-"}
-                        </Badge>
+                      <div className="grid grid-cols-3 gap-4">
+                        {/* Kolom 1: Identitas dan Status */}
+                        <div className="space-y-1">
+                          <div className="flex items-start justify-between mb-1">
+                            <div className="flex-1 min-w-0">
+                              <h3 className={cn(
+                                "font-semibold text-sm leading-tight truncate",
+                                item.id === selectedId ? "text-black" : "text-slate-900"
+                              )}>
+                                {item.nama}
+                              </h3>
+                              {item.kode && (
+                                <div className="flex items-center gap-1 mt-0.5">
+                                  <Hash className="h-3 w-3 text-slate-400 shrink-0" />
+                                  <p className={cn(
+                                    "text-xs font-mono",
+                                    item.id === selectedId ? "text-gray-600" : "text-slate-500"
+                                  )}>
+                                    {item.kode}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <Badge
+                            variant={item.status === "aktif" ? "outline" : "destructive"}
+                            className="text-xs rounded-none"
+                          >
+                            {item.status ?? "-"}
+                          </Badge>
+                          {item.tokoId && (
+                            <div className="text-xs text-slate-500 truncate">
+                              <span className="font-medium">Store ID:</span> {item.tokoId}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Kolom 2: Kontak & Alamat */}
+                        <div className="space-y-1 text-xs">
+                          <div className="flex items-center gap-1 truncate">
+                            <Phone className="h-3 w-3 text-slate-500 shrink-0" />
+                            <span>{item.telepon ?? "-"}</span>
+                          </div>
+                          <div className="flex items-center gap-1 truncate">
+                            <Mail className="h-3 w-3 text-slate-500 shrink-0" />
+                            <span>{item.email ?? "-"}</span>
+                          </div>
+                          <div className="flex items-center gap-1 truncate">
+                            <User className="h-3 w-3 text-slate-500 shrink-0" />
+                            <span>{item.kontakPerson ?? "-"}</span>
+                          </div>
+                          {item.alamat && (
+                            <div className="flex items-start gap-1 text-[11px] text-slate-600 mt-1">
+                              <MapPin className="h-3 w-3 text-slate-400 shrink-0 mt-0.5" />
+                              <span className="line-clamp-2">{item.alamat}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Kolom 3: Info Bisnis & Lokasi */}
+                        <div className="space-y-1 text-xs text-right">
+                          <div className="flex items-center gap-1 justify-end truncate">
+                            <span>{item.kota ?? "-"}</span>
+                            <MapPin className="h-3 w-3 text-slate-500 shrink-0" />
+                          </div>
+                          {item.provinsi && (
+                            <div className="text-[11px] text-slate-500 truncate">
+                              {item.provinsi}
+                              {item.kodePos && ` • ${item.kodePos}`}
+                            </div>
+                          )}
+                          {(item.tempoPembayaran || item.limitKredit) && (
+                            <div className="flex items-center gap-1 justify-end truncate">
+                              <span>
+                                {item.tempoPembayaran ? `${item.tempoPembayaran}d` : ""}
+                                {item.limitKredit ? `${item.tempoPembayaran ? " • " : ""}${new Intl.NumberFormat('id-ID', {
+                                  style: 'currency',
+                                  currency: 'IDR',
+                                  notation: 'compact',
+                                  maximumFractionDigits: 0
+                                }).format(item.limitKredit)}` : ""}
+                              </span>
+                              <CreditCard className="h-3 w-3 text-slate-500 shrink-0" />
+                            </div>
+                          )}
+                          {item.npwp && (
+                            <div className="flex items-center gap-1 justify-end truncate">
+                              <span className="font-mono text-[11px]">{item.npwp}</span>
+                              <Building2 className="h-3 w-3 text-slate-500 shrink-0" />
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="space-y-1">
-                        <p className={cn(
-                          "text-xs",
-                          item.id === selectedId ? "text-gray-700" : "text-slate-600"
-                        )}>
-                          Kontak: {item.kontakPerson ?? "-"} • {item.telepon ?? "-"}
-                        </p>
-                        <p className={cn(
-                          "text-xs",
-                          item.id === selectedId ? "text-gray-700" : "text-slate-600"
-                        )}>
-                          Wilayah: {item.kota ?? "-"}, {item.provinsi ?? "-"}
-                        </p>
-                        {item.kode && (
-                          <p className={cn(
-                            "text-xs",
-                            item.id === selectedId ? "text-gray-600" : "text-slate-500"
-                          )}>
-                            Kode: {item.kode}
-                          </p>
-                        )}
+                      {/* Footer dengan tanggal dan ID */}
+                      <div className="border-t border-slate-100 pt-1.5 mt-2">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>
+                              {item.updatedAt ? formatDateTime(item.updatedAt).split(' ')[0] :
+                               item.createdAt ? formatDateTime(item.createdAt).split(' ')[0] : '-'}
+                            </span>
+                          </div>
+                          <div className="font-mono text-[10px] truncate max-w-20" title={item.id}>
+                            ID: {item.id.slice(-8)}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -245,174 +317,191 @@ export function SuppliersPage() {
           <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
           <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Supplier</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-black">Aktivitas Supplier</span>
               <span className="text-black">•</span>
               <CardTitle className="text-sm text-black">
                 {selectedSupplier ? selectedSupplier.nama : "Pilih supplier"}
               </CardTitle>
             </div>
+            {selectedSupplier && (
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  className="rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
+                  onClick={() => {
+                    setForm({
+                      kode: selectedSupplier.kode ?? "",
+                      nama: selectedSupplier.nama ?? "",
+                      kontakPerson: selectedSupplier.kontakPerson ?? "",
+                      telepon: selectedSupplier.telepon ?? "",
+                      email: selectedSupplier.email ?? "",
+                      status: (selectedSupplier.status as "aktif" | "nonaktif") ?? "aktif",
+                      alamat: selectedSupplier.alamat ?? "",
+                      kota: selectedSupplier.kota ?? "",
+                      provinsi: selectedSupplier.provinsi ?? "",
+                      kodePos: selectedSupplier.kodePos ?? "",
+                      npwp: selectedSupplier.npwp ?? "",
+                      tempoPembayaran: selectedSupplier.tempoPembayaran ?? 30,
+                      limitKredit: selectedSupplier.limitKredit ?? 0,
+                    });
+                    setShowEdit(true);
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  className="rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
+                  onClick={() => setShowDelete(true)}
+                >
+                  Hapus
+                </Button>
+              </div>
+            )}
           </CardHeader>
           <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
             {selectedSupplier ? (
               <>
                 <div className="shrink-0 rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-                  <dl className="space-y-3 text-sm text-slate-600">
+                  <div className="flex items-center justify-between mb-3">
                     <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Nama Supplier</dt>
-                      <dd className="font-bold text-lg text-slate-900">{selectedSupplier.nama}</dd>
+                      <h3 className="font-bold text-lg text-slate-900 mb-1">{selectedSupplier.nama}</h3>
+                      {selectedSupplier.kode && (
+                        <p className="text-xs font-mono text-slate-600">{selectedSupplier.kode}</p>
+                      )}
                     </div>
-                    {selectedSupplier.kode && (
-                      <div>
-                        <dt className="text-xs uppercase tracking-wide text-slate-500">Kode</dt>
-                        <dd className="font-medium text-slate-900">{selectedSupplier.kode}</dd>
-                      </div>
-                    )}
+                    <Badge
+                      variant={selectedSupplier.status === "aktif" ? "outline" : "destructive"}
+                      className="text-xs rounded-none"
+                    >
+                      {selectedSupplier.status ?? "-"}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <dt className="text-xs uppercase tracking-wide text-slate-500">Status</dt>
-                      <dd>
-                        <Badge
-                          variant={selectedSupplier.status === "aktif" ? "outline" : "destructive"}
-                          className="text-xs rounded-none"
-                        >
-                          {selectedSupplier.status ?? "-"}
-                        </Badge>
-                      </dd>
+                      <span className="text-xs uppercase tracking-wide text-slate-500">Total Transaksi</span>
+                      <p className="font-semibold text-slate-900">
+                        {supplierPurchases.isLoading ? "..." : (supplierPurchases.data ?? []).length} transaksi
+                      </p>
                     </div>
-                  </dl>
+                    <div>
+                      <span className="text-xs uppercase tracking-wide text-slate-500">Produk Tersedia</span>
+                      <p className="font-semibold text-slate-900">
+                        {supplierProducts.isLoading ? "..." : (supplierProducts.data ?? []).length} produk
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wide text-slate-500">Total Pembelian</span>
+                      <p className="font-semibold text-slate-900">
+                        {supplierPurchases.isLoading ? "..." :
+                          new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
+                            (supplierPurchases.data ?? []).reduce((sum, t) => sum + t.total, 0)
+                          )
+                        }
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-xs uppercase tracking-wide text-slate-500">Terakhir Beli</span>
+                      <p className="font-semibold text-slate-900">
+                        {supplierPurchases.isLoading ? "..." :
+                          (supplierPurchases.data ?? []).length > 0
+                            ? formatDateTime((supplierPurchases.data ?? [])[0]?.tanggal)
+                            : "Belum ada"
+                        }
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
-                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-800">
-                      Informasi Kontak & Ringkasan
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="rounded-none"
-                        onClick={() => {
-                          setForm({
-                            kode: selectedSupplier.kode ?? "",
-                            nama: selectedSupplier.nama ?? "",
-                            kontakPerson: selectedSupplier.kontakPerson ?? "",
-                            telepon: selectedSupplier.telepon ?? "",
-                            email: selectedSupplier.email ?? "",
-                            status: (selectedSupplier.status as "aktif" | "nonaktif") ?? "aktif",
-                            alamat: selectedSupplier.alamat ?? "",
-                            kota: selectedSupplier.kota ?? "",
-                            provinsi: selectedSupplier.provinsi ?? "",
-                            kodePos: selectedSupplier.kodePos ?? "",
-                            npwp: selectedSupplier.npwp ?? "",
-                            tempoPembayaran: selectedSupplier.tempoPembayaran ?? 30,
-                            limitKredit: selectedSupplier.limitKredit ?? 0,
-                          });
-                          setShowEdit(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="rounded-none"
-                        onClick={() => setShowDelete(true)}
-                      >
-                        Hapus
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex-1 p-4">
-                    <div className="space-y-4 text-sm">
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Kontak Person</span>
-                        <p className="font-semibold text-slate-900">{selectedSupplier.kontakPerson ?? "Tidak ada"}</p>
-                      </div>
-
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Telepon</span>
-                        <p className="text-slate-700">{selectedSupplier.telepon ?? "Tidak ada"}</p>
-                      </div>
-
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Email</span>
-                        <p className="text-slate-700">{selectedSupplier.email ?? "Tidak ada"}</p>
-                      </div>
-
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Kota</span>
-                        <p className="text-slate-700">{selectedSupplier.kota ?? "Tidak diketahui"}</p>
-                      </div>
-
-                      <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Provinsi</span>
-                        <p className="text-slate-700">{selectedSupplier.provinsi ?? "Tidak diketahui"}</p>
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <Tabs defaultValue="purchases">
-                        <TabsList className="rounded-none">
-                          <TabsTrigger value="purchases" className="rounded-none">Transaksi</TabsTrigger>
-                          <TabsTrigger value="products" className="rounded-none">Produk</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="purchases" className="mt-3">
+                  <div className="shrink-0 border-b border-slate-200">
+                    <Tabs defaultValue="purchases" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 rounded-none bg-[#476EAE]">
+                        <TabsTrigger value="purchases" className="rounded-none text-white data-[state=active]:bg-white data-[state=active]:text-[#476EAE]">Riwayat Transaksi</TabsTrigger>
+                        <TabsTrigger value="products" className="rounded-none text-white data-[state=active]:bg-white data-[state=active]:text-[#476EAE]">Produk Supplier</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="purchases" className="mt-0">
+                        <div className="p-4">
                           {supplierPurchases.isLoading ? (
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               {Array.from({ length: 4 }).map((_, i) => (
-                                <Skeleton key={i} className="h-10 w-full" />
+                                <Skeleton key={i} className="h-16 w-full" />
                               ))}
                             </div>
                           ) : (supplierPurchases.data ?? []).length === 0 ? (
-                            <div className="text-xs text-slate-500">Belum ada transaksi pembelian.</div>
+                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                              <div className="text-slate-400 mb-2">📋</div>
+                              <p className="text-sm font-medium text-slate-600">Belum ada transaksi pembelian</p>
+                              <p className="text-xs text-slate-500">Transaksi akan muncul setelah melakukan pembelian</p>
+                            </div>
                           ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-3 max-h-96 overflow-y-auto">
                               {(supplierPurchases.data ?? []).map((t) => (
-                                <div key={t.id} className="flex items-center justify-between rounded border border-slate-200 p-2 text-xs">
-                                  <div className="flex flex-col">
-                                    <span className="font-mono font-semibold">{t.nomorTransaksi}</span>
-                                    <span className="text-slate-600">{formatDateTime(t.tanggal)}</span>
+                                <div key={t.id} className="border border-slate-200 rounded-lg p-3 bg-white shadow-sm">
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div>
+                                      <span className="font-mono font-semibold text-sm text-slate-800">{t.nomorTransaksi}</span>
+                                      <p className="text-xs text-slate-500">{formatDateTime(t.tanggal)}</p>
+                                    </div>
+                                    <div className="text-right">
+                                      <div className="font-bold text-sm text-slate-900">{formatCurrency(t.total)}</div>
+                                      <Badge
+                                        variant={t.status === "lunas" ? "outline" : "secondary"}
+                                        className="text-xs rounded-none"
+                                      >
+                                        {t.status ?? "Pending"}
+                                      </Badge>
+                                    </div>
                                   </div>
-                                  <div className="text-right">
-                                    <div className="font-semibold">{formatCurrency(t.total)}</div>
-                                    <div className="capitalize text-slate-600">{t.status ?? "-"}</div>
-                                  </div>
+                                  {/* keterangan tidak tersedia pada SupplierPurchase */}
                                 </div>
                               ))}
                             </div>
                           )}
-                        </TabsContent>
-                        <TabsContent value="products" className="mt-3">
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="products" className="mt-0">
+                        <div className="p-4">
                           {supplierProducts.isLoading ? (
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               {Array.from({ length: 4 }).map((_, i) => (
-                                <Skeleton key={i} className="h-10 w-full" />
+                                <Skeleton key={i} className="h-16 w-full" />
                               ))}
                             </div>
                           ) : (supplierProducts.data ?? []).length === 0 ? (
-                            <div className="text-xs text-slate-500">Belum ada produk dari supplier ini.</div>
+                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                              <div className="text-slate-400 mb-2">📦</div>
+                              <p className="text-sm font-medium text-slate-600">Belum ada produk</p>
+                              <p className="text-xs text-slate-500">Produk akan muncul setelah ditambahkan ke supplier</p>
+                            </div>
                           ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-3 max-h-96 overflow-y-auto">
                               {(supplierProducts.data ?? []).map((p) => (
-                                <div key={p.produkId} className="grid grid-cols-12 items-center gap-2 rounded border border-slate-200 p-2 text-xs">
-                                  <div className="col-span-6">
-                                    <div className="font-medium text-slate-800">{p.produkNama}</div>
-                                    <div className="text-slate-500">{p.produkKode ?? "-"} {p.kategoriNama ? `• ${p.kategoriNama}` : ""}</div>
-                                  </div>
-                                  <div className="col-span-3 text-right">
-                                    <div>Total Qty</div>
-                                    <div className="font-semibold">{p.totalQty}</div>
-                                  </div>
-                                  <div className="col-span-3 text-right">
-                                    <div>Terakhir</div>
-                                    <div className="text-slate-600">{p.lastPurchasedAt ? formatDateTime(p.lastPurchasedAt) : "-"}</div>
+                                <div key={p.produkId} className="border border-slate-200 rounded-lg p-3 bg-white shadow-sm">
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex-1">
+                                      <h4 className="font-medium text-sm text-slate-800 mb-1">{p.produkNama}</h4>
+                                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                                        {p.produkKode && <span className="font-mono">{p.produkKode}</span>}
+                                        {p.kategoriNama && <span>• {p.kategoriNama}</span>}
+                                      </div>
+                                    </div>
+                                    <div className="text-right text-xs text-slate-600">
+                                      <div className="font-semibold text-slate-900">Qty {p.totalQty}</div>
+                                      <div>Transaksi {p.transaksiCount}</div>
+                                      {p.lastPurchasedAt && (
+                                        <div className="text-[11px]">Terakhir {formatDateTime(p.lastPurchasedAt)}</div>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               ))}
                             </div>
                           )}
-                        </TabsContent>
-                      </Tabs>
-                    </div>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 </div>
               </>
@@ -432,7 +521,7 @@ export function SuppliersPage() {
 
       {/* Create Modal */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent>
+        <DialogContent className="bg-white">
           <DialogHeader>
             <DialogTitle>Supplier baru</DialogTitle>
           </DialogHeader>
@@ -511,7 +600,14 @@ export function SuppliersPage() {
           </div>
           <DialogFooter>
             <Button
+              variant="outline"
+              onClick={() => setShowCreate(false)}
               className="rounded-none"
+            >
+              Batal
+            </Button>
+            <Button
+              className="rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
               disabled={createSupplier.isPending}
               onClick={async () => {
                 if (!form.kode || !form.nama) {
@@ -541,7 +637,7 @@ export function SuppliersPage() {
                 }
               }}
             >
-              Simpan
+              {createSupplier.isPending ? "Menyimpan..." : "Simpan"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -549,7 +645,7 @@ export function SuppliersPage() {
 
       {/* Edit Modal */}
       <Dialog open={showEdit} onOpenChange={setShowEdit}>
-        <DialogContent>
+        <DialogContent className="bg-white">
           <DialogHeader>
             <DialogTitle>Edit supplier</DialogTitle>
           </DialogHeader>
@@ -628,7 +724,14 @@ export function SuppliersPage() {
           </div>
           <DialogFooter>
             <Button
+              variant="outline"
+              onClick={() => setShowEdit(false)}
               className="rounded-none"
+            >
+              Batal
+            </Button>
+            <Button
+              className="rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]"
               disabled={updateSupplier.isPending || !selectedId}
               onClick={async () => {
                 if (!selectedId) return;
@@ -662,7 +765,7 @@ export function SuppliersPage() {
                 }
               }}
             >
-              Simpan perubahan
+              {updateSupplier.isPending ? "Menyimpan..." : "Simpan perubahan"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -670,7 +773,7 @@ export function SuppliersPage() {
 
       {/* Delete Modal */}
       <Dialog open={showDelete} onOpenChange={setShowDelete}>
-        <DialogContent>
+        <DialogContent className="bg-white">
           <DialogHeader>
             <DialogTitle>Hapus supplier?</DialogTitle>
           </DialogHeader>

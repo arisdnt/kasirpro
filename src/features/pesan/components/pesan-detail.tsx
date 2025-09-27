@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDateTime } from "@/lib/format";
 import { Mail } from "lucide-react";
@@ -6,9 +7,12 @@ import type { InternalMessage } from "@/types/transactions";
 
 interface PesanDetailProps {
   message: InternalMessage | null;
+  onEdit?: (message: InternalMessage) => void;
+  onDelete?: (id: string) => void;
+  onMarkRead?: (id: string) => void;
 }
 
-export function PesanDetail({ message }: PesanDetailProps) {
+export function PesanDetail({ message, onEdit, onDelete, onMarkRead }: PesanDetailProps) {
   if (!message) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
@@ -46,6 +50,19 @@ export function PesanDetail({ message }: PesanDetailProps) {
               <dd className="text-slate-700">{formatDateTime(message.createdAt)}</dd>
             </div>
           </dl>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {message.status !== "dibaca" && (
+              <Button size="sm" className="rounded-none" onClick={() => onMarkRead?.(message.id)}>
+                Tandai Dibaca
+              </Button>
+            )}
+            <Button size="sm" variant="secondary" className="rounded-none" onClick={() => onEdit?.(message)}>
+              Edit
+            </Button>
+            <Button size="sm" variant="destructive" className="rounded-none" onClick={() => onDelete?.(message.id)}>
+              Hapus
+            </Button>
+          </div>
         </div>
 
         <div className="rounded-none border border-slate-200 bg-white p-4 shadow-inner">

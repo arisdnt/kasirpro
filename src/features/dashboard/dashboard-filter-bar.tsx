@@ -155,71 +155,130 @@ export function DashboardFilterBar({
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3">
-        <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-          <Filter className="h-4 w-4" /> Filter Analitik
+    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      {/* Header with title and reset button */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50">
+            <Filter className="h-4 w-4 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900">Filter Analitik</h3>
+            <p className="text-xs text-gray-500">Atur parameter untuk analisis data</p>
+          </div>
         </div>
         <Button
           size="sm"
           variant="light"
           startContent={<RefreshCcw className="h-4 w-4" />}
           onPress={onReset}
+          className="text-gray-600 hover:text-gray-900"
         >
-          Reset Filter
+          Reset
         </Button>
       </div>
-      <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr_1.2fr]">
-        <Select
-          variant="flat"
-          label="Toko"
-          items={storeItems}
-          selectedKeys={new Set([filters.tokoId])}
-          onSelectionChange={handleStoreChange}
-          startContent={<SlidersHorizontal className="h-4 w-4 text-slate-400" />}
-          isLoading={isLoadingStores}
-        >
-          {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
-        </Select>
-        <Select
-          variant="flat"
-          label="Status Transaksi"
-          selectionMode="multiple"
-          items={statusOptions}
-          selectedKeys={new Set(filters.statuses)}
-          onSelectionChange={handleStatusChange}
-        >
-          {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
-        </Select>
-        <Tabs
-          aria-label="Granularitas"
-          selectedKey={filters.granularity}
-          onSelectionChange={handleGranularityChange}
-          variant="bordered"
-          radius="lg"
-          classNames={{
-            tabList: "bg-slate-50",
-          }}
-        >
-          <Tab key="day" title="Harian" />
-          <Tab key="week" title="Mingguan" />
-          <Tab key="month" title="Bulanan" />
-        </Tabs>
-      </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <CalendarDays className="h-4 w-4 text-slate-400" />
-        {quickRanges.map((preset) => (
-          <Button
-            key={preset.key}
-            size="sm"
-            variant={currentPreset === preset.key ? "solid" : "light"}
-            color={currentPreset === preset.key ? "primary" : "default"}
-            onPress={() => handlePreset(preset.key)}
-            className="text-xs"
+
+      {/* Single row layout for all filters */}
+      <div className="grid grid-cols-1 lg:grid-cols-[200px_180px_160px_1fr_120px] gap-4 items-end">
+        {/* Store Selection */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-700">Toko</label>
+          <Select
+            variant="bordered"
+            placeholder="Pilih toko"
+            items={storeItems}
+            selectedKeys={new Set([filters.tokoId])}
+            onSelectionChange={handleStoreChange}
+            startContent={<SlidersHorizontal className="h-4 w-4 text-gray-400" />}
+            isLoading={isLoadingStores}
+            classNames={{
+              trigger: "h-10 bg-white border-gray-200 hover:border-gray-300",
+              value: "text-sm",
+            }}
           >
-            {preset.label}
+            {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
+          </Select>
+        </div>
+
+        {/* Status Selection */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-700">Status</label>
+          <Select
+            variant="bordered"
+            placeholder="Pilih status"
+            selectionMode="multiple"
+            items={statusOptions}
+            selectedKeys={new Set(filters.statuses)}
+            onSelectionChange={handleStatusChange}
+            classNames={{
+              trigger: "h-10 bg-white border-gray-200 hover:border-gray-300",
+              value: "text-sm",
+            }}
+          >
+            {(item) => <SelectItem key={item.value}>{item.label}</SelectItem>}
+          </Select>
+        </div>
+
+        {/* Granularity Tabs */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-700">Periode</label>
+          <Tabs
+            aria-label="Granularitas"
+            selectedKey={filters.granularity}
+            onSelectionChange={handleGranularityChange}
+            variant="light"
+            radius="md"
+            size="sm"
+            classNames={{
+              tabList: "bg-gray-50 border border-gray-200 h-10",
+              tab: "h-8 text-xs",
+              cursor: "bg-white shadow-sm",
+            }}
+          >
+            <Tab key="day" title="Hari" />
+            <Tab key="week" title="Minggu" />
+            <Tab key="month" title="Bulan" />
+          </Tabs>
+        </div>
+
+        {/* Date Range Presets */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-700">Rentang Waktu</label>
+          <div className="flex items-center gap-1">
+            <CalendarDays className="h-3 w-3 text-gray-400 mr-1" />
+            <div className="flex flex-wrap gap-1">
+              {quickRanges.map((preset) => (
+                <Button
+                  key={preset.key}
+                  size="sm"
+                  variant={currentPreset === preset.key ? "solid" : "light"}
+                  color={currentPreset === preset.key ? "primary" : "default"}
+                  onPress={() => handlePreset(preset.key)}
+                  className={`h-8 px-2 text-xs min-w-0 ${
+                    currentPreset === preset.key
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  {preset.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Apply Button */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-transparent">Action</label>
+          <Button
+            color="primary"
+            variant="solid"
+            size="sm"
+            className="h-10 w-full bg-blue-600 hover:bg-blue-700"
+          >
+            Terapkan
           </Button>
-        ))}
+        </div>
       </div>
 
       <Modal isOpen={isCustomRangeOpen} onOpenChange={setCustomRangeOpen}>

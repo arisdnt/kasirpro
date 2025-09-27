@@ -99,6 +99,21 @@ export type InternalMessage = {
   readAt?: string | null;
   type?: string | null;
   priority?: string | null;
+  pengirimId?: string;
+  penerimaId?: string | null;
+  tokoTargetId?: string | null;
+};
+
+// Input payload for creating/updating internal messages
+export type InternalMessageInput = {
+  judul: string;
+  isi: string;
+  status?: string | null; // e.g., 'draft' | 'terkirim' | 'dibaca'
+  type?: string | null; // e.g., 'pesan', 'informasi', etc.
+  priority?: string | null; // e.g., 'normal', 'tinggi', 'urgent'
+  // Targeting
+  penerimaId?: string | null; // optional direct user target
+  tokoTargetId?: string | null; // by default current store if applicable
 };
 
 export type AuditEntry = {

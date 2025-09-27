@@ -10,6 +10,7 @@ interface PesanSearchFiltersProps {
   onSearchChange: (value: string) => void;
   onStatusFilterChange: (value: StatusFilter) => void;
   onRefresh: () => void;
+  onCreateNew?: () => void;
   stats: {
     total: number;
     terkirim: number;
@@ -24,6 +25,7 @@ export function PesanSearchFilters({
   onSearchChange,
   onStatusFilterChange,
   onRefresh,
+  onCreateNew,
   stats,
   isRefreshing = false,
 }: PesanSearchFiltersProps) {
@@ -67,7 +69,8 @@ export function PesanSearchFilters({
           <RefreshCw className={isRefreshing ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
           Refresh data
         </Button>
-        <Button className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]" disabled>
+        <Button className="gap-2 rounded-none bg-[#476EAE] text-white hover:bg-[#3f63a0]" onClick={onCreateNew}
+        >
           <Plus className="h-4 w-4" />
           Pesan baru
         </Button>

@@ -11,9 +11,9 @@ export function useMessagesQuery() {
   } = useSupabaseAuth();
 
   return useQuery<InternalMessage[]>({
-    queryKey: [...MESSAGE_KEY, user?.tenantId, user?.tokoId],
+    queryKey: [...MESSAGE_KEY, user?.tenantId, user?.tokoId, user?.id],
     enabled: Boolean(user?.tenantId),
-    queryFn: () => fetchInternalMessages(user!.tenantId, user?.tokoId ?? null),
+    queryFn: () => fetchInternalMessages(user!.tenantId, user?.tokoId ?? null, user!.id),
     staleTime: 1000 * 30,
   });
 }

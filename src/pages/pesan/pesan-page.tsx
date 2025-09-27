@@ -5,6 +5,9 @@ import { useMessagesQuery } from "@/features/pesan/use-messages";
 import { PesanSearchFilters } from "@/features/pesan/components/pesan-search-filters";
 import { PesanList } from "@/features/pesan/components/pesan-list";
 import { PesanDetail } from "@/features/pesan/components/pesan-detail";
+import { PesanComposeModal } from "@/features/pesan/components/pesan-compose-modal";
+import { useCreateMessageMutation, useDeleteMessageMutation, useMarkReadMessageMutation, useUpdateMessageMutation } from "@/features/pesan/mutations";
+import type { InternalMessage } from "@/types/transactions";
 
 type StatusFilter = "all" | "terkirim" | "draft" | "dibaca";
 
@@ -13,6 +16,13 @@ export function PesanPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [editMessage, setEditMessage] = useState<InternalMessage | null>(null);
+
+  const createMutation = useCreateMessageMutation();
+  const deleteMutation = useDeleteMessageMutation();
+  const markReadMutation = useMarkReadMessageMutation();
+  const updateMutation = useUpdateMessageMutation(editMessage?.id ?? "");
 
   const stats = useMemo(() => {
     const data = messages.data ?? [];
@@ -48,6 +58,25 @@ export function PesanPage() {
     messages.refetch();
   };
 
+  const handleOpenCreate = () => {
+    setEditMessage(null);
+    setComposeOpen(true);
+  };
+
+  const handleEdit = (msg: InternalMessage) => {
+    setEditMessage(msg);
+    setComposeOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    await deleteMutation.mutateAsync(id);
+    if (selectedId === id) setSelectedId(null);
+  };
+
+  const handleMarkRead = async (id: string) => {
+    await markReadMutation.mutateAsync(id);
+  };
+
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
       <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
@@ -58,6 +87,7 @@ export function PesanPage() {
             onSearchChange={setSearchTerm}
             onStatusFilterChange={setStatusFilter}
             onRefresh={handleRefresh}
+            onCreateNew={handleOpenCreate}
             stats={stats}
             isRefreshing={messages.isFetching}
           />
@@ -100,11 +130,30 @@ export function PesanPage() {
             </div>
           </CardHeader>
           <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
-            <PesanDetail message={selectedMessage} />
+            <PesanDetail
+              message={selectedMessage}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onMarkRead={handleMarkRead}
+            />
           </CardContent>
         </Card>
         </div>
       </div>
+
+      <PesanComposeModal
+        open={composeOpen}
+        onOpenChange={setComposeOpen}
+        mode={editMessage ? "edit" : "create"}
+        initial={editMessage}
+        onSubmit={async (input) => {
+          if (editMessage) {
+            await updateMutation.mutateAsync({ ...input });
+          } else {
+            await createMutation.mutateAsync(input);
+          }
+        }}
+      />
     </div>
   );
 }

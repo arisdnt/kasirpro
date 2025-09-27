@@ -77,26 +77,45 @@ export function Sidebar({ isOpen, onNavigate }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-40 flex w-72 shrink-0 flex-col border-r border-[#3a5998] bg-[#476EAE] p-4 shadow-xl transition-transform duration-300 ease-out lg:relative lg:shadow-none",
-        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-        !isOpen && "lg:hidden"
+        "fixed inset-y-0 left-0 z-40 flex w-72 shrink-0 flex-col border-r border-[#3a5998] bg-[#476EAE] p-4 shadow-xl transition-all duration-500 ease-in-out lg:relative lg:shadow-none",
+        isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 lg:translate-x-0 lg:opacity-100",
+        !isOpen && "lg:w-0 lg:p-0 lg:overflow-hidden"
       )}
     >
-      <div className="flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 text-sm font-semibold text-white">
+      <div
+        className={cn(
+          "flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 text-sm font-semibold text-white transition-all duration-500 ease-out",
+          isOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
+        )}
+        style={{ transitionDelay: isOpen ? "100ms" : "0ms" }}
+      >
         <Sparkles className="h-4 w-4" />
         KasirPro Delight
       </div>
-      <p className="mt-2 text-xs text-white/80">
+      <p
+        className={cn(
+          "mt-2 text-xs text-white/80 transition-all duration-500 ease-out",
+          isOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
+        )}
+        style={{ transitionDelay: isOpen ? "200ms" : "0ms" }}
+      >
         Jalankan operasional dengan antarmuka cerah dan menyenangkan.
       </p>
       <ScrollArea className="mt-6 flex-1">
         <nav className="space-y-2">
-          {navigationSections.map((section) => {
+          {navigationSections.map((section, index) => {
             const SectionIcon = section.icon;
             const isExpanded = currentOpenSection === section.id;
 
             return (
-              <div key={section.id} className="space-y-2 text-white/75">
+              <div
+                key={section.id}
+                className={cn(
+                  "space-y-2 text-white/75 transition-all duration-500 ease-out",
+                  isOpen ? "translate-x-0 opacity-100" : "-translate-x-6 opacity-0"
+                )}
+                style={{ transitionDelay: isOpen ? `${300 + index * 50}ms` : "0ms" }}
+              >
                 <button
                   type="button"
                   onClick={() => setOpenSection((prev) => (prev === section.id ? null : section.id))}
@@ -143,7 +162,7 @@ export function Sidebar({ isOpen, onNavigate }: SidebarProps) {
                         const itemContent = (
                           <div
                             className={cn(
-                              "flex items-center gap-3 rounded-md px-2.5 py-1.5 text-sm transition",
+                              "flex items-center gap-3 rounded-md px-2.5 py-1.5 text-sm transition-all duration-300 ease-out",
                               active
                                 ? "bg-white/20 text-white shadow-sm"
                                 : "text-white/80 hover:bg-white/10 hover:text-white",
@@ -232,7 +251,13 @@ export function Sidebar({ isOpen, onNavigate }: SidebarProps) {
           })}
         </nav>
       </ScrollArea>
-      <div className="rounded-lg border border-dashed border-white/30 bg-white/10 px-3 py-2 text-xs text-white/80">
+      <div
+        className={cn(
+          "rounded-lg border border-dashed border-white/30 bg-white/10 px-3 py-2 text-xs text-white/80 transition-all duration-500 ease-out",
+          isOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
+        )}
+        style={{ transitionDelay: isOpen ? `${300 + navigationSections.length * 50 + 100}ms` : "0ms" }}
+      >
         Tips: kamu dapat menyembunyikan menu untuk fokus penuh pada transaksi.
       </div>
     </aside>

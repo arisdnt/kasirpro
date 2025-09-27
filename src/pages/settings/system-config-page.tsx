@@ -256,7 +256,8 @@ export function SystemConfigPage() {
       </Card>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
-        <Card className="flex flex-1 min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
+        <div className="w-full lg:w-3/4">
+          <Card className="flex h-full min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
           <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">Konfigurasi</span>
@@ -319,8 +320,10 @@ export function SystemConfigPage() {
             </ScrollArea>
           </CardContent>
         </Card>
+        </div>
 
-        <Card className="flex w-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm lg:w-[420px] rounded-none">
+        <div className="w-full lg:w-1/4">
+          <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
           <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">Detail</span>
@@ -416,6 +419,7 @@ export function SystemConfigPage() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
