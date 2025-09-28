@@ -51,28 +51,58 @@ export function StatusBar() {
   useEffect(() => {
     const client = getSupabaseClient();
     let statusCheckInterval: NodeJS.Timeout;
+    let heartbeatChannel: any;
 
-    const checkRealtimeStatus = () => {
+    // Create a heartbeat channel to test realtime connectivity
+    const testRealtimeConnection = () => {
       try {
-        const rtClient = client.realtime as any;
-        if (rtClient?.connection?.readyState === 1) {
-          setRealtimeStatus('connected');
-        } else if (rtClient?.connection?.readyState === 0) {
-          setRealtimeStatus('connecting');
-        } else {
-          setRealtimeStatus('disconnected');
+        // Remove existing heartbeat channel if exists
+        if (heartbeatChannel) {
+          client.removeChannel(heartbeatChannel);
         }
-      } catch {
-        // Fallback: assume connected if no errors in basic operations
-        setRealtimeStatus('connected');
+
+        // Create a lightweight heartbeat channel
+        heartbeatChannel = client
+          .channel('heartbeat-status-check')
+          .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+              setRealtimeStatus('connected');
+            } else if (status === 'CHANNEL_ERROR') {
+              setRealtimeStatus('disconnected');
+            } else if (status === 'TIMED_OUT') {
+              setRealtimeStatus('disconnected');
+            } else if (status === 'CLOSED') {
+              setRealtimeStatus('disconnected');
+            }
+          });
+
+        // Set a timeout to detect if subscription never completes
+        setTimeout(() => {
+          if (heartbeatChannel && heartbeatChannel.state !== 'joined') {
+            setRealtimeStatus('disconnected');
+          }
+        }, 10000); // 10 seconds timeout
+
+      } catch (error) {
+        console.error('Realtime connection test failed:', error);
+        setRealtimeStatus('disconnected');
       }
     };
 
-    checkRealtimeStatus();
-    statusCheckInterval = setInterval(checkRealtimeStatus, 5000);
+    // Initial connection test
+    setRealtimeStatus('connecting');
+    testRealtimeConnection();
+
+    // Check connection every 30 seconds (recommended heartbeat interval)
+    statusCheckInterval = setInterval(() => {
+      testRealtimeConnection();
+    }, 30000);
 
     return () => {
       if (statusCheckInterval) clearInterval(statusCheckInterval);
+      if (heartbeatChannel) {
+        client.removeChannel(heartbeatChannel);
+      }
     };
   }, []);
 

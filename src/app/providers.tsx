@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SupabaseAuthProvider } from "@/features/auth/supabase-auth-provider";
 import { CalculatorProvider } from "@/components/providers/calculator-provider";
 import { useAppLifecycle } from "@/hooks/use-app-lifecycle";
+import "./toast-styles.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,0 +1,32 @@
+/* Toast positioning styles to avoid navbar overlap */
+:root {
+  --navbar-height: 50px; /* Approximate navbar height */
+  --toast-top-offset: calc(var(--navbar-height) + 1rem); /* Navbar height + margin */
+}
+
+/* Override Sonner's default positioning for top-right toasts */
+[data-sonner-toaster][data-theme] {
+  top: var(--toast-top-offset) !important;
+  right: 1rem !important;
+}
+
+/* Ensure toast container doesn't overlap with navbar */
+[data-sonner-toaster][data-theme] ol {
+  margin-top: 0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: 45px; /* Slightly smaller on mobile */
+  }
+
+  [data-sonner-toaster][data-theme] {
+    right: 0.5rem !important; /* Less margin on mobile */
+  }
+}
+
+/* Additional z-index to ensure toasts appear above other content but below modals */
+[data-sonner-toaster][data-theme] {
+  z-index: 100 !important;
+}

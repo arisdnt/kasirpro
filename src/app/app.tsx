@@ -30,6 +30,8 @@ import { SystemConfigPage } from "@/pages/system-config/system-config-page";
 import { DeviceInfoPage } from "@/pages/settings/device-info-page";
 import { PromoPage } from "@/pages/promo/promo-page";
 import { LoginPage } from "@/pages/auth/login-page";
+import { ProfileDetailPage } from "@/pages/profile/profile-detail-page";
+import ProfileSettingsPage from "@/pages/profile/profile-settings-page";
 
 function ShellOutlet() {
   return (
@@ -78,6 +80,8 @@ export function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/settings/system-config" element={<SystemConfigPage />} />
           <Route path="/settings/device-info" element={<DeviceInfoPage />} />
+          <Route path="/profile" element={<ProfileDetailPage />} />
+          <Route path="/profile/settings" element={<ProfileSettingsPage />} />
         </Route>
       </Route>
 

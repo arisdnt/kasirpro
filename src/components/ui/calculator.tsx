@@ -16,6 +16,7 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
   const [position, setPosition] = useState({ x: 0, y: 80 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [pressedKey, setPressedKey] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const inputNumber = useCallback((num: string) => {
@@ -102,6 +103,11 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
     }
   }, [display]);
 
+  // Helper function to check if button is currently pressed
+  const isButtonPressed = (buttonText: string) => {
+    return pressedKey === buttonText;
+  };
+
   // Drag handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains('drag-handle')) {
@@ -158,6 +164,105 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
     }
   }, [isOpen]);
 
+  // Keyboard input support
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      // Prevent default behavior for calculator keys
+      const calculatorKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/', '=', 'Enter', '.', 'Escape', 'Backspace', 'Delete', 'c', 'C'];
+      if (calculatorKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+
+      // Set pressed key for visual feedback
+      let displayKey = e.key;
+      if (e.key === '*') displayKey = '×';
+      if (e.key === '/') displayKey = '÷';
+      if (e.key === 'Enter') displayKey = '=';
+      if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') displayKey = 'C';
+      if (e.key === 'Backspace' || e.key === 'Delete') displayKey = '⌫';
+
+      setPressedKey(displayKey);
+
+      switch (e.key) {
+        // Numbers
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          inputNumber(e.key);
+          break;
+
+        // Operations
+        case '+':
+          inputOperation('+');
+          break;
+        case '-':
+          inputOperation('-');
+          break;
+        case '*':
+          inputOperation('×');
+          break;
+        case '/':
+          inputOperation('÷');
+          break;
+
+        // Calculate
+        case '=':
+        case 'Enter':
+          performCalculation();
+          break;
+
+        // Decimal
+        case '.':
+          inputDecimal();
+          break;
+
+        // Clear
+        case 'Escape':
+        case 'c':
+        case 'C':
+          clear();
+          break;
+
+        // Backspace
+        case 'Backspace':
+        case 'Delete':
+          backspace();
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      // Clear pressed key highlight after a short delay
+      setTimeout(() => {
+        setPressedKey(null);
+      }, 150);
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('keyup', handleKeyUp);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isOpen, inputNumber, inputOperation, performCalculation, inputDecimal, clear, backspace]);
+
   if (!isOpen) return null;
 
   return (
@@ -178,7 +283,10 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
         >
           <div className="flex items-center gap-2 pointer-events-none">
             <CalculatorIcon className="h-4 w-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Kalkulator</span>
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-gray-700">Kalkulator</span>
+              <span className="text-xs text-gray-500">Keyboard support enabled</span>
+            </div>
           </div>
           <Button
             variant="ghost"
@@ -213,7 +321,9 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
             <Button
               variant="outline"
               onClick={clear}
-              className="h-10 text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+              className={`h-10 text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors ${
+                isButtonPressed('C') ? 'bg-red-100 text-red-700 border-red-300' : ''
+              }`}
             >
               C
             </Button>
@@ -227,7 +337,9 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
             <Button
               variant="outline"
               onClick={backspace}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className={`h-10 text-sm font-medium hover:bg-gray-50 transition-colors ${
+                isButtonPressed('⌫') ? 'bg-gray-200 text-gray-900' : ''
+              }`}
             >
               ⌫
             </Button>
@@ -243,7 +355,9 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
             <Button
               variant="outline"
               onClick={() => inputNumber('7')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className={`h-10 text-sm font-medium hover:bg-gray-50 transition-colors ${
+                isButtonPressed('7') ? 'bg-gray-200 text-gray-900' : ''
+              }`}
             >
               7
             </Button>
@@ -346,7 +460,9 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
             </Button>
             <Button
               onClick={performCalculation}
-              className="h-10 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white"
+              className={`h-10 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors ${
+                isButtonPressed('=') ? 'bg-blue-800' : ''
+              }`}
             >
               =
             </Button>

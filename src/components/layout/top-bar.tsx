@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { CommandDialog, CommandInput, CommandList } from "@/components/ui/command";
 import { WindowControls } from "./window-controls";
 import { useCalculatorStore } from "@/hooks/use-calculator-store";
-import { Keyboard, PanelLeft, PanelRight, Power, Search, Calculator } from "lucide-react";
+import { Keyboard, PanelLeft, PanelRight, Power, Search, Calculator, User, Settings, Key, RefreshCw } from "lucide-react";
 
 export function TopBar({
   onToggleSidebar,
@@ -29,8 +29,26 @@ export function TopBar({
     signOut,
   } = useSupabaseAuth();
   const [open, setOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { toggleCalculator } = useCalculatorStore();
-  const initial = user?.fullName?.charAt(0) ?? user?.username.charAt(0) ?? "U";
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Invalidate all queries to trigger refetch
+      await queryClient.invalidateQueries();
+
+      // Optional: Add a small delay for better UX (showing the spinning animation)
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      setIsRefreshing(false);
+    }
+  };
 
   return (
     <header 
@@ -88,26 +106,55 @@ export function TopBar({
           </Tooltip>
         </TooltipProvider>
 
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="h-8 w-8 p-0 hover:bg-white/20 text-white hover:text-white disabled:opacity-50"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="text-xs">
+              {isRefreshing ? 'Memuat ulang data...' : 'Muat ulang data'}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-2 py-0.5 text-left text-sm shadow-sm transition hover:bg-white/30">
-              <Avatar className="h-7 w-7 border-2 border-white shadow-sm">
-                <AvatarFallback className="bg-blue-50 text-blue-700">{initial}</AvatarFallback>
-              </Avatar>
-              <div className="hidden text-left sm:block">
-                <div className="font-medium leading-tight text-white">
-                  {user?.fullName ?? user?.username}
-                </div>
-                <div className="text-xs text-white/80">
-                  {user?.role?.nama ?? "Pengguna"}
-                </div>
-              </div>
-            </button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 hover:bg-white/20 text-white hover:text-white"
+            >
+              <User className="h-4 w-4" />
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Profil</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user?.fullName ?? user?.username}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user?.role?.nama ?? "Pengguna"}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2" onClick={() => navigate('/profile')}>
+              <Settings className="h-4 w-4" />
+              Detail Profil
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2" onClick={() => navigate('/profile/settings')}>
+              <Key className="h-4 w-4" />
+              Pengaturan Profil
+            </DropdownMenuItem>
             <DropdownMenuItem className="gap-2 text-xs text-muted-foreground">
-              <Keyboard className="h-3.5 w-3.5" />
+              <Keyboard className="h-4 w-4" />
               Pintasan keyboard
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -117,7 +164,7 @@ export function TopBar({
                 void signOut();
               }}
             >
-              <Power className="h-3.5 w-3.5" /> Keluar
+              <Power className="h-4 w-4" /> Keluar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

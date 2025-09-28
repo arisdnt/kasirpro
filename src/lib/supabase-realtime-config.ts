@@ -9,16 +9,23 @@ export const ENHANCED_REALTIME_CONFIG = {
   // Increase events per second for better responsiveness
   eventsPerSecond: 10,
 
-  // Connection retry settings
-  heartbeatIntervalMs: 30000,
+  // Connection retry settings - sesuai dokumentasi: heartbeat setiap 25 detik
+  heartbeatIntervalMs: 25000,
 
-  // Timeout settings
-  timeout: 20000,
+  // Timeout settings - lebih toleran untuk koneksi lambat
+  timeout: 30000,
 
   // Reconnection settings
   reconnectAfterMs: (tries: number) => {
     return Math.min(tries * 1000, 30000);
   },
+
+  // Additional stability settings
+  params: {
+    eventsPerSecond: 10,
+    heartbeatIntervalMs: 25000,
+    timeout: 30000,
+  }
 } as const;
 
 /**
