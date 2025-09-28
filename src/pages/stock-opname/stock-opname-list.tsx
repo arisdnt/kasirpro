@@ -136,4 +136,3 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem }: S
     </Card>
   );
 }
-}

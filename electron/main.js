@@ -4,6 +4,7 @@ const os = require('os');
 const fs = require('fs');
 const { exec } = require('child_process');
 const si = require('systeminformation');
+const { machineIdSync } = require('node-machine-id');
 
 function getDeviceInfoCachePath() {
   try {
@@ -296,3 +297,21 @@ const template = [
 
 const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);
+
+// Device ID (machine id) IPC
+function getMachineIdSafe() {
+  try {
+    // Prefer original machine id when possible
+    return machineIdSync(true);
+  } catch (_) {
+    try {
+      return machineIdSync();
+    } catch {
+      return '';
+    }
+  }
+}
+
+ipcMain.handle('device-id:get', async () => {
+  return getMachineIdSafe();
+});

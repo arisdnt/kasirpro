@@ -11,36 +11,22 @@ export function LoginBranding() {
       />
       <div className="absolute inset-0 bg-[#476EAE] mix-blend-multiply opacity-60"></div>
       <div className="text-center text-white max-w-lg relative z-10">
-        <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
-          {storeInfo.logoUrl ? (
-            <div className="w-20 h-20 mx-auto bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30 mb-6 shadow-lg overflow-hidden">
-              <img
-                src={storeInfo.logoUrl}
-                alt={`${storeInfo.name} Logo`}
-                className="w-16 h-16 object-contain"
-              />
-            </div>
-          ) : (
-            <div className="w-20 h-20 mx-auto bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30 mb-6 shadow-lg">
-              <div className="text-3xl font-bold">🏪</div>
-            </div>
-          )}
-
-          <div className="space-y-3 mb-8">
+        <div className="bg-white/10 backdrop-blur-md p-6 border border-white/20 shadow-2xl">
+          <div className="space-y-2 mb-5">
             <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-lg">
               {storeInfo.name}
             </h1>
             {storeInfo.tagline && (
               <p className="text-xl text-white/90 font-medium">{storeInfo.tagline}</p>
             )}
-            <div className="w-16 h-1 bg-white/30 rounded-full mx-auto"></div>
+            <div className="w-16 h-1 bg-white/30 mx-auto"></div>
           </div>
 
           {storeInfo.features && storeInfo.features.length > 0 && (
-            <div className="space-y-4 mb-8">
+            <div className="space-y-2 mb-5">
               {storeInfo.features.map((feature) => (
                 <div key={feature} className="flex items-center space-x-4 text-white/90">
-                  <div className="w-3 h-3 bg-white/60 rounded-full shadow-sm"></div>
+                  <div className="w-3 h-3 bg-white/60 shadow-sm"></div>
                   <span className="font-medium">{feature}</span>
                 </div>
               ))}
@@ -48,7 +34,7 @@ export function LoginBranding() {
           )}
 
           {(storeInfo.address || storeInfo.phone || storeInfo.operatingHours) && (
-            <div className="border-t border-white/20 pt-6 space-y-2">
+            <div className="border-t border-white/20 pt-4 space-y-1">
               {storeInfo.address && (
                 <p className="text-sm text-white/80">{storeInfo.address}</p>
               )}

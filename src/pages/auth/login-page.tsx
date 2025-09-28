@@ -2,9 +2,11 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import type { Location } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import { toast } from "sonner";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { env } from "@/lib/env";
+import { Button } from "@/components/ui/button";
 import { LoginBranding } from "./login-branding";
 import { LoginForm } from "./login-form";
 import { QuickLogin } from "./quick-login";
@@ -50,15 +52,50 @@ export function LoginPage() {
     }
   };
 
+  const handleCloseApp = async () => {
+    try {
+      if (window.electronAPI?.windowControls?.close) {
+        await window.electronAPI.windowControls.close();
+      }
+    } catch (error) {
+      console.error("Error closing application:", error);
+    }
+  };
+
   return (
     <div className="flex min-h-screen">
       <LoginBranding />
 
-      <div className="flex-[1] bg-gray-50 flex items-center justify-center p-12">
+      <div className="flex-[1] bg-gray-50 flex items-center justify-center p-12 relative">
+        {/* Close Button */}
+        <Button
+          onClick={handleCloseApp}
+          variant="ghost"
+          className="absolute top-4 right-4 h-12 px-4 bg-red-500 hover:bg-red-600 text-white font-bold shadow-xl hover:shadow-2xl transition-all duration-300 rounded-none border border-red-500 hover:border-red-600 flex items-center gap-2"
+        >
+          <X className="h-5 w-5" />
+          <span className="text-sm">Tutup Aplikasi</span>
+        </Button>
         <div className="w-full max-w-sm space-y-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold text-gray-900">Selamat Datang</h2>
-            <p className="text-gray-600">Masuk ke dashboard KasirPro</p>
+          {/* Greeting Text */}
+          <div className="text-center space-y-4">
+            <div className="relative inline-block">
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 transform -skew-y-1 rounded-sm opacity-70"></div>
+              <h1 className="relative text-3xl font-bold text-gray-900 px-4 py-2 tracking-tight">
+                Selamat Datang
+              </h1>
+            </div>
+            <div className="relative inline-block">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100 transform skew-y-1 rounded-sm opacity-60"></div>
+              <p className="relative text-lg text-gray-700 font-medium px-3 py-1">
+                Masuk ke <span className="font-semibold text-blue-700">KasirPro Dashboard</span>
+              </p>
+            </div>
+            <div className="flex items-center justify-center mt-4">
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent w-24"></div>
+              <div className="mx-4 w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent w-24"></div>
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -80,8 +117,9 @@ export function LoginPage() {
             )}
           </div>
 
-          <div className="text-center text-sm text-gray-500">
-            © 2024 KasirPro. Sistem POS Terpercaya
+          {/* Trademark Section */}
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-center">
+            <p className="relative text-sm text-gray-700 font-medium px-3 py-1 bg-gradient-to-r from-red-200 via-red-300 to-red-200 rounded-sm whitespace-nowrap">© 2024 KasirPro - Sistem POS Terpercaya</p>
           </div>
         </div>
       </div>

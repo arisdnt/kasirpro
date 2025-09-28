@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, Package } from "lucide-react";
+import { usePurchaseReturnItemsQuery } from "@/features/purchase-returns/use-purchase-return-items";
 
 interface PurchaseReturn {
   id: string;
@@ -40,6 +42,8 @@ const getStatusColor = (status: string | null) => {
 };
 
 export function PurchaseReturnDetails({ selectedReturn }: PurchaseReturnDetailsProps) {
+  const itemsQuery = usePurchaseReturnItemsQuery(selectedReturn?.id ?? "");
+
   return (
     <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
       <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
@@ -103,6 +107,69 @@ export function PurchaseReturnDetails({ selectedReturn }: PurchaseReturnDetailsP
                     <p className="bg-gray-100 p-2 rounded border italic">
                       {selectedReturn.alasan ?? "Tidak ada alasan yang dicatat"}
                     </p>
+                  </div>
+                </div>
+
+                {/* Return Items */}
+                <div className="mb-4 border-b border-gray-300 pb-2">
+                  <div className="text-center mb-2">
+                    <p className="font-bold text-sm flex items-center justify-center gap-1">
+                      <Package className="h-3 w-3" />
+                      ITEM RETUR
+                    </p>
+                  </div>
+                  <div className="text-xs">
+                    {itemsQuery.isLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ) : itemsQuery.data && itemsQuery.data.length > 0 ? (
+                      <div className="space-y-2">
+                        {/* Items Header */}
+                        <div className="flex justify-between font-bold border-b border-gray-200 pb-1">
+                          <span className="w-[45%]">Produk</span>
+                          <span className="w-[15%] text-center">Qty</span>
+                          <span className="w-[20%] text-right">Harga</span>
+                          <span className="w-[20%] text-right">Subtotal</span>
+                        </div>
+
+                        {/* Items List */}
+                        {itemsQuery.data.map((item, index) => (
+                          <div key={item.id} className={cn(
+                            "flex justify-between py-1",
+                            index % 2 === 1 && "bg-gray-50"
+                          )}>
+                            <span className="w-[45%] text-left truncate" title={item.produkNama}>
+                              {item.produkNama}
+                            </span>
+                            <span className="w-[15%] text-center font-mono">
+                              {item.qty}
+                            </span>
+                            <span className="w-[20%] text-right font-mono">
+                              {formatCurrency(item.hargaSatuan).replace('Rp ', '')}
+                            </span>
+                            <span className="w-[20%] text-right font-mono font-semibold">
+                              {formatCurrency(item.subtotal).replace('Rp ', '')}
+                            </span>
+                          </div>
+                        ))}
+
+                        {/* Items Summary */}
+                        <div className="border-t border-gray-300 pt-1 mt-2">
+                          <div className="flex justify-between font-bold">
+                            <span>Total Item: {itemsQuery.data.length}</span>
+                            <span>Total Qty: {itemsQuery.data.reduce((sum, item) => sum + item.qty, 0)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center p-4 bg-gray-50 rounded border">
+                        <Package className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                        <p className="text-gray-500">Tidak ada item retur</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

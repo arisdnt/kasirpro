@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, Eye, Edit, Trash2 } from "lucide-react";
 import type { UseQueryResult } from "@tanstack/react-query";
 
 interface PurchaseReturn {
@@ -30,6 +31,9 @@ interface PurchaseReturnsTableProps {
   selectedId: string | null;
   onSelectReturn: (id: string) => void;
   purchaseReturns: UseQueryResult<PurchaseReturn[]>;
+  onViewDetail: (purchaseReturn: PurchaseReturn) => void;
+  onEdit: (purchaseReturn: PurchaseReturn) => void;
+  onDelete: (purchaseReturn: PurchaseReturn) => void;
 }
 
 const getStatusColor = (status: string | null) => {
@@ -54,6 +58,9 @@ export function PurchaseReturnsTable({
   selectedId,
   onSelectReturn,
   purchaseReturns,
+  onViewDetail,
+  onEdit,
+  onDelete,
 }: PurchaseReturnsTableProps) {
   return (
     <Card className="flex h-full min-h-0 flex-col border border-primary/10 rounded-none" style={{
@@ -91,12 +98,13 @@ export function PurchaseReturnsTable({
               <Table className="min-w-full text-sm">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[20%] text-slate-500">Nomor Retur</TableHead>
-                    <TableHead className="w-[20%] text-slate-500">Supplier</TableHead>
-                    <TableHead className="w-[15%] text-slate-500">Total</TableHead>
-                    <TableHead className="w-[15%] text-slate-500">Status</TableHead>
-                    <TableHead className="w-[20%] text-slate-500">Alasan</TableHead>
+                    <TableHead className="w-[18%] text-slate-500">Nomor Retur</TableHead>
+                    <TableHead className="w-[18%] text-slate-500">Supplier</TableHead>
+                    <TableHead className="w-[12%] text-slate-500 text-right">Total</TableHead>
+                    <TableHead className="w-[12%] text-slate-500">Status</TableHead>
+                    <TableHead className="w-[18%] text-slate-500">Alasan</TableHead>
                     <TableHead className="w-[10%] text-slate-500">Tanggal</TableHead>
+                    <TableHead className="w-[12%] text-slate-500 text-center">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
               </Table>
@@ -107,9 +115,8 @@ export function PurchaseReturnsTable({
                   {filteredReturns.map((item, index) => (
                     <TableRow
                       key={item.id}
-                      onClick={() => onSelectReturn(item.id)}
                       className={cn(
-                        "cursor-pointer border-b border-slate-100 transition h-14",
+                        "border-b border-slate-100 transition h-14",
                         item.id === selectedId
                           ? "text-black"
                           : index % 2 === 0
@@ -118,18 +125,30 @@ export function PurchaseReturnsTable({
                       )}
                       style={item.id === selectedId ? { backgroundColor: '#e6f4f1' } : undefined}
                     >
-                      <TableCell className="align-middle py-4">
+                      <TableCell
+                        className="align-middle py-4 cursor-pointer"
+                        onClick={() => onSelectReturn(item.id)}
+                      >
                         <span className="font-medium font-mono text-xs">
                           {item.nomorRetur}
                         </span>
                       </TableCell>
-                      <TableCell className="align-middle py-4">
+                      <TableCell
+                        className="align-middle py-4 cursor-pointer"
+                        onClick={() => onSelectReturn(item.id)}
+                      >
                         {item.supplierNama}
                       </TableCell>
-                      <TableCell className="align-middle py-4 font-semibold">
+                      <TableCell
+                        className="align-middle py-4 font-semibold cursor-pointer text-right"
+                        onClick={() => onSelectReturn(item.id)}
+                      >
                         {formatCurrency(item.total)}
                       </TableCell>
-                      <TableCell className="align-middle py-4">
+                      <TableCell
+                        className="align-middle py-4 cursor-pointer"
+                        onClick={() => onSelectReturn(item.id)}
+                      >
                         <span className={cn(
                           "px-2 py-1 rounded text-xs font-semibold border capitalize",
                           getStatusColor(item.status)
@@ -137,11 +156,57 @@ export function PurchaseReturnsTable({
                           {item.status ?? "Unknown"}
                         </span>
                       </TableCell>
-                      <TableCell className="align-middle py-4 max-w-32 truncate">
+                      <TableCell
+                        className="align-middle py-4 max-w-32 truncate cursor-pointer"
+                        onClick={() => onSelectReturn(item.id)}
+                      >
                         {item.alasan ?? "-"}
                       </TableCell>
-                      <TableCell className="align-middle py-4 text-xs">
+                      <TableCell
+                        className="align-middle py-4 text-xs cursor-pointer"
+                        onClick={() => onSelectReturn(item.id)}
+                      >
                         {formatDateTime(item.tanggal)}
+                      </TableCell>
+                      <TableCell className="align-middle py-4">
+                        <div className="flex items-center justify-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onViewDetail(item);
+                            }}
+                            className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-600"
+                            title="Lihat Detail"
+                          >
+                            <Eye className="h-4 w-4 text-blue-500" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(item);
+                            }}
+                            className="h-8 w-8 p-0 hover:bg-amber-100 hover:text-amber-600"
+                            title="Edit"
+                          >
+                            <Edit className="h-4 w-4 text-amber-500" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(item);
+                            }}
+                            className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
+                            title="Hapus"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

@@ -5,6 +5,10 @@ import { PurchaseReturnsHeader } from "./components/purchase-returns-header";
 import { PurchaseReturnsTable } from "./components/purchase-returns-table";
 import { PurchaseReturnDetails } from "./components/purchase-return-details";
 import { PurchaseReturnModals } from "./components/purchase-return-modals";
+import { PurchaseReturnDetailModal } from "./components/purchase-return-detail-modal";
+import { PurchaseReturnEditModal } from "./components/purchase-return-edit-modal";
+import { PurchaseReturnDeleteModal } from "./components/purchase-return-delete-modal";
+import type { PurchaseReturnTransaction } from "@/features/purchase-returns/types";
 
 type StatusFilter = "all" | "draft" | "diterima" | "sebagian" | "selesai" | "batal";
 
@@ -18,6 +22,12 @@ export function PurchaseReturnsPage() {
   const [selectedModalPurchaseId, setSelectedModalPurchaseId] = useState<string>("");
   const [showItemSelectionDialog, setShowItemSelectionDialog] = useState(false);
   const [selectedPurchaseForItems, setSelectedPurchaseForItems] = useState<string>("");
+
+  // Modal states for CRUD operations
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedPurchaseReturn, setSelectedPurchaseReturn] = useState<PurchaseReturnTransaction | null>(null);
 
   const stats = useMemo(() => {
     const data = purchaseReturns.data ?? [];
@@ -76,6 +86,31 @@ export function PurchaseReturnsPage() {
     void purchaseReturns.refetch();
   };
 
+  // CRUD Action handlers
+  const handleViewDetail = (purchaseReturn: PurchaseReturnTransaction) => {
+    setSelectedPurchaseReturn(purchaseReturn);
+    setShowDetailModal(true);
+  };
+
+  const handleEdit = (purchaseReturn: PurchaseReturnTransaction) => {
+    setSelectedPurchaseReturn(purchaseReturn);
+    setShowEditModal(true);
+  };
+
+  const handleDelete = (purchaseReturn: PurchaseReturnTransaction) => {
+    setSelectedPurchaseReturn(purchaseReturn);
+    setShowDeleteModal(true);
+  };
+
+  const handleEditSuccess = () => {
+    void purchaseReturns.refetch();
+  };
+
+  const handleDeleteSuccess = () => {
+    void purchaseReturns.refetch();
+    setSelectedId(null); // Clear selection if deleted item was selected
+  };
+
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
       <PurchaseReturnsHeader
@@ -96,6 +131,9 @@ export function PurchaseReturnsPage() {
             selectedId={selectedId}
             onSelectReturn={setSelectedId}
             purchaseReturns={purchaseReturns}
+            onViewDetail={handleViewDetail}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         </div>
 
@@ -119,6 +157,27 @@ export function PurchaseReturnsPage() {
         selectedPurchaseForItems={selectedPurchaseForItems}
         onModalProceed={handleModalProceed}
         onReturnCreated={handleReturnCreated}
+      />
+
+      {/* CRUD Modals */}
+      <PurchaseReturnDetailModal
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        purchaseReturn={selectedPurchaseReturn}
+      />
+
+      <PurchaseReturnEditModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        purchaseReturn={selectedPurchaseReturn}
+        onSuccess={handleEditSuccess}
+      />
+
+      <PurchaseReturnDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        purchaseReturn={selectedPurchaseReturn}
+        onSuccess={handleDeleteSuccess}
       />
     </div>
   );

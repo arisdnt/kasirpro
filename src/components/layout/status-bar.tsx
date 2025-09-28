@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 import { useLocation } from "react-router-dom";
-import { Copy, Database, Cpu, MemoryStick, Wifi, WifiOff, Monitor } from "lucide-react";
+import { Copy, Database, Cpu, MemoryStick, Wifi, WifiOff, Monitor, HardDrive } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getSupabaseClient } from "@/lib/supabase-client";
 import { useRealtimeHealth } from "@/hooks/use-realtime-health";
@@ -12,6 +12,7 @@ export function StatusBar() {
   } = useSupabaseAuth();
   const location = useLocation();
   const [copied, setCopied] = useState(false);
+  const [deviceIdCopied, setDeviceIdCopied] = useState(false);
 
   // Time and date state
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -28,6 +29,7 @@ export function StatusBar() {
 
   const [dbPing, setDbPing] = useState<number | null>(null);
   const [dbStatus, setDbStatus] = useState<'online' | 'offline' | 'checking'>('checking');
+  const [deviceId, setDeviceId] = useState<string | null>(null);
 
   // System performance states
   const [systemInfo, setSystemInfo] = useState<{
@@ -45,6 +47,18 @@ export function StatusBar() {
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy path:', error);
+    }
+  };
+
+  const handleCopyDeviceId = async () => {
+    try {
+      if (deviceId) {
+        await navigator.clipboard.writeText(deviceId);
+        setDeviceIdCopied(true);
+        setTimeout(() => setDeviceIdCopied(false), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to copy device ID:', error);
     }
   };
 
@@ -85,6 +99,22 @@ export function StatusBar() {
     const dbCheckInterval = setInterval(checkDatabaseStatus, 10000);
 
     return () => clearInterval(dbCheckInterval);
+  }, []);
+
+  // Fetch device ID from Electron preload (if available)
+  useEffect(() => {
+    const api = (window as any).electronAPI;
+    if (!api || typeof api.getDeviceId !== 'function') return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const id = await api.getDeviceId();
+        if (!cancelled) setDeviceId(id || null);
+      } catch {
+        // ignore
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
   // Monitor system performance
@@ -218,6 +248,25 @@ export function StatusBar() {
             <div className="flex items-center gap-1" title={`CPU Load: ${systemInfo.cpu}%`}>
               <Cpu className="h-3 w-3" />
               <span>{systemInfo.cpu}%</span>
+            </div>
+            <Separator orientation="vertical" className="hidden h-3 lg:block" />
+          </>
+        )}
+
+        {/* Device ID (Machine ID) */}
+        {deviceId && (
+          <>
+            <div className="flex items-center gap-1 max-w-[220px]" title={`Device ID: ${deviceId}`}>
+              <HardDrive className="h-3 w-3" />
+              <span className="truncate" style={{ maxWidth: 160 }}>{deviceId}</span>
+              <button
+                onClick={handleCopyDeviceId}
+                className="inline-flex items-center justify-center rounded p-1 hover:bg-gray-100 transition-colors"
+                title={deviceIdCopied ? "Copied!" : "Copy device ID"}
+              >
+                <Copy className="h-3 w-3" />
+              </button>
+              {deviceIdCopied && <span className="text-green-600 text-[9px]">Copied!</span>}
             </div>
             <Separator orientation="vertical" className="hidden h-3 lg:block" />
           </>

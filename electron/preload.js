@@ -37,6 +37,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // Return cleanup
     return () => ipcRenderer.removeListener('device-info:ready', handler);
   },
+  // Device ID (machine id)
+  getDeviceId: () => ipcRenderer.invoke('device-id:get'),
   
   // Example IPC communication methods (currently empty, add as needed)
   // invoke: (channel, data) => ipcRenderer.invoke(channel, data),

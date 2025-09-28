@@ -16,6 +16,7 @@ declare global {
       getDeviceInfoCached: () => Promise<{ data: any; fetchedAt: number } | null>;
       refreshDeviceInfo: () => Promise<boolean>;
       onDeviceInfoReady: (cb: () => void) => () => void;
+      getDeviceId: () => Promise<string>;
     };
   }
 }
