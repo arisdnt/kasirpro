@@ -7,6 +7,7 @@ interface StoreTableRowProps {
   store: Toko;
   isSelected: boolean;
   onSelect: (id: string) => void;
+  index: number;
 }
 
 function getStatusColor(status: string) {
@@ -22,43 +23,35 @@ function getStatusColor(status: string) {
   }
 }
 
-export function StoreTableRow({ store, isSelected, onSelect }: StoreTableRowProps) {
+export function StoreTableRow({ store, isSelected, onSelect, index }: StoreTableRowProps) {
   return (
     <TableRow
       onClick={() => onSelect(store.id)}
-      data-state={isSelected ? "selected" : undefined}
       className={cn(
-        "cursor-pointer border-b border-slate-100 transition",
-        isSelected ? "!bg-gray-100 text-black" : "hover:bg-slate-50"
+        "cursor-pointer border-b border-slate-100 transition h-14",
+        store.id === isSelected
+          ? "text-black"
+          : index % 2 === 0
+            ? "bg-white hover:bg-slate-50"
+            : "bg-gray-50/50 hover:bg-slate-100"
       )}
+      style={isSelected ? { backgroundColor: '#e6f4f1' } : undefined}
     >
-      <TableCell className="align-top">
-        <span className={cn(
-          "font-medium",
-          isSelected ? "text-black" : "text-slate-900"
-        )}>
+      <TableCell className="align-middle py-4">
+        <span className="font-medium text-slate-800">
           {store.nama}
         </span>
       </TableCell>
-      <TableCell className={cn(
-        "align-top font-mono text-xs",
-        isSelected ? "text-black" : "text-slate-700"
-      )}>
+      <TableCell className="align-middle py-4 font-mono text-xs text-slate-700">
         {store.kode ?? "-"}
       </TableCell>
-      <TableCell className={cn(
-        "align-top",
-        isSelected ? "text-black" : "text-slate-700"
-      )}>
+      <TableCell className="align-middle py-4 text-slate-700">
         {store.alamat ?? "-"}
       </TableCell>
-      <TableCell className={cn(
-        "align-top",
-        isSelected ? "text-black" : "text-slate-700"
-      )}>
+      <TableCell className="align-middle py-4 text-slate-700">
         {store.timezone ?? "-"}
       </TableCell>
-      <TableCell className="align-top">
+      <TableCell className="align-middle py-4">
         <span className={cn(
           "px-2 py-1 rounded text-xs font-semibold border capitalize",
           getStatusColor(store.status)
@@ -66,10 +59,7 @@ export function StoreTableRow({ store, isSelected, onSelect }: StoreTableRowProp
           {store.status}
         </span>
       </TableCell>
-      <TableCell className={cn(
-        "align-top text-xs",
-        isSelected ? "text-black" : "text-slate-600"
-      )}>
+      <TableCell className="align-middle py-4 text-xs text-slate-600">
         {formatDateTime(store.createdAt)}
       </TableCell>
     </TableRow>

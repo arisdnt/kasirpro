@@ -56,22 +56,25 @@ export function TenantsPage() {
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
         stats={stats}
-        tenants={tenants}
         onRefresh={handleRefresh}
+        isRefreshing={tenants.isFetching}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-3/4">
           <TenantsTable
-            filteredTenants={filteredTenants}
+            tenants={filteredTenants}
+            isLoading={tenants.isLoading}
             selectedId={selectedId}
             onSelectTenant={setSelectedId}
-            tenants={tenants}
           />
         </div>
 
-        <div className="w-full lg:w-1/4">
-          <TenantDetails selectedTenant={selectedTenant} />
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
+          <TenantDetails tenant={selectedTenant} />
         </div>
       </div>
     </div>

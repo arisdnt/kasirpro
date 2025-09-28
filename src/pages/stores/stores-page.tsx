@@ -57,6 +57,7 @@ export function StoresPage() {
         onStatusFilterChange={setStatusFilter}
         stats={stats}
         onRefresh={handleRefresh}
+        isRefreshing={stores.isFetching}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
@@ -69,7 +70,10 @@ export function StoresPage() {
           />
         </div>
 
-        <div className="w-full lg:w-1/4">
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
           <StoreDetails store={selectedStore} />
         </div>
       </div>
