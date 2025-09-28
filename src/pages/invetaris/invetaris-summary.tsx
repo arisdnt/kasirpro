@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardBody } from "@heroui/react";
 import type { InventoryItem } from "@/features/inventory/types";
 import type { SummaryAccent } from "./invetaris-utils";
 import { numberFormatter, summaryAccentMap, getStockState } from "./invetaris-utils";
@@ -19,25 +19,22 @@ export function InvetarisSummary({ data }: { data: InventoryItem[] }) {
   ];
 
   return (
-    <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardContent className="py-3">
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
-          {items.map((item) => (
-            <div
-              key={item.label}
-              className="flex items-center justify-between rounded-none border border-slate-200 bg-white px-3 py-2"
-            >
-              <div>
-                <div className="text-xs text-slate-500">{item.label}</div>
-                <div className="text-xl font-bold text-slate-800">{numberFormatter.format(item.value)}</div>
+    <Card className="shrink-0 shadow-sm rounded-none border border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
+      <CardBody className="flex flex-col gap-2 py-3 px-4">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+          <div className="flex flex-wrap items-center gap-3">
+            {items.map((item, index) => (
+              <div key={item.label} className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-3 shadow-sm border border-slate-300 h-9">
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-slate-500 text-[9px] font-medium leading-none">{item.label}</span>
+                  <span className="font-bold text-xs text-slate-800 leading-none mt-0.5">{numberFormatter.format(item.value)}</span>
+                </div>
+                {index < items.length - 1 && <div className="w-px h-6 bg-slate-300"></div>}
               </div>
-              <div className={`rounded-full px-2 py-1 text-xs font-semibold ${summaryAccentMap[item.accent]}`}>
-                {Math.round((item.value / Math.max(1, total)) * 100)}%
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

@@ -7,7 +7,6 @@ import { useStoresQuery } from "@/features/stores/use-stores";
 import { useInventoryQuery } from "@/features/inventory/use-inventory";
 import { useCreateInventaris, useDeleteInventaris, useUpdateInventaris, type InventarisInput } from "@/features/inventory/mutations";
 import { useAssetProductsQuery } from "@/features/inventory/use-asset-products";
-import { InvetarisSummary } from "@/pages/invetaris/invetaris-summary";
 import { InvetarisFilters } from "@/pages/invetaris/invetaris-filters";
 import { InvetarisTable } from "@/pages/invetaris/invetaris-table";
 import { InvetarisDetail } from "@/pages/invetaris/invetaris-detail";
@@ -51,6 +50,16 @@ export function InvetarisPage() {
     setSelectedId(inventory.data[0]?.id ?? null);
   }, [inventory.data, selectedId]);
 
+  const stats = useMemo(() => {
+    const data = inventory.data ?? [];
+    const total = data.length;
+    const healthy = data.filter((i) => getStockState(i) === "healthy").length;
+    const low = data.filter((i) => getStockState(i) === "low").length;
+    const out = data.filter((i) => getStockState(i) === "out").length;
+    const over = data.filter((i) => getStockState(i) === "over").length;
+    return { total, healthy, low, out, over };
+  }, [inventory.data]);
+
   const filteredInventory = useMemo(() => {
     const data = inventory.data ?? [];
     const query = searchTerm.trim().toLowerCase();
@@ -83,31 +92,17 @@ export function InvetarisPage() {
 
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2 text-slate-900">
-      <InvetarisSummary data={inventory.data ?? []} />
-
       <InvetarisFilters
         searchTerm={searchTerm}
         storeFilter={storeFilter}
         stockState={stockState}
         stores={stores.data ?? []}
+        stats={stats}
         onSearchChange={setSearchTerm}
         onStoreFilterChange={setStoreFilter}
         onStockStateChange={setStockState}
         onRefresh={handleRefresh}
         isRefreshing={inventory.isFetching}
-        onCreate={() => {
-          setForm({
-            produkId: "",
-            stockFisik: 0,
-            stockTersedia: 0,
-            stockMinimum: null,
-            stockMaksimum: null,
-            lokasiRak: "",
-            batchNumber: "",
-            tanggalExpired: null,
-          });
-          setShowCreate(true);
-        }}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
@@ -139,11 +134,22 @@ export function InvetarisPage() {
               setSelectedId(item.id);
               setShowDelete(true);
             }}
+            onCreate={() => {
+              setForm({
+                produkId: "",
+                stockFisik: 0,
+                stockTersedia: 0,
+                stockMinimum: null,
+                stockMaksimum: null,
+                lokasiRak: "",
+                batchNumber: "",
+                tanggalExpired: null,
+              });
+              setShowCreate(true);
+            }}
           />
         </div>
-        <div className="w-full lg:w-1/4">
-          <InvetarisDetail selectedItem={selectedItem} />
-        </div>
+        <InvetarisDetail selectedItem={selectedItem} />
       </div>
 
       {/* Create Modal */}

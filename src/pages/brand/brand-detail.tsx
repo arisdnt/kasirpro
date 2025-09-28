@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
+import { formatDateTime } from "@/lib/format";
 import { Tag } from "lucide-react";
 import { getBrandScopeText, getBrandScopeDisplay } from "./brand-utils";
 import { useBrandProductsQuery } from "@/features/brand/queries";
@@ -14,78 +14,101 @@ interface Brand {
 
 interface BrandDetailProps {
   selectedBrand: Brand | null;
-  onEdit?: () => void;
-  onDelete?: () => void;
 }
 
-export function BrandDetail({ selectedBrand, onEdit, onDelete }: BrandDetailProps) {
+export function BrandDetail({ selectedBrand }: BrandDetailProps) {
   const products = useBrandProductsQuery(selectedBrand?.id ?? null);
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
+    <Card
+      className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none"
+      style={{ backgroundColor: "transparent" }}
+    >
       <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {selectedBrand ? (
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
               <div className="p-6 font-mono text-sm">
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Brand</span>
-                    <span className="text-black">•</span>
-                    <span className="text-sm text-black">{selectedBrand.nama}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    {onEdit ? (
-                      <button onClick={onEdit} className="text-xs rounded-none bg-slate-800 px-2 py-1 text-white">Edit</button>
-                    ) : null}
-                    {onDelete ? (
-                      <button onClick={onDelete} className="text-xs rounded-none bg-red-600 px-2 py-1 text-white">Hapus</button>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="mb-4 grid grid-cols-2 gap-x-4 gap-y-3 text-slate-700">
-                  <div>
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Nama Brand</div>
-                    <div className="font-semibold text-slate-900">{selectedBrand.nama}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Cakupan</div>
-                    <div className="font-semibold text-slate-900">{getBrandScopeText(selectedBrand.tokoId ?? null)}</div>
-                  </div>
-                  <div className="col-span-2">
-                    <div className="text-xs uppercase tracking-wide text-slate-500">Toko</div>
-                    <div className="font-semibold text-slate-900">{getBrandScopeDisplay(selectedBrand.tokoId ?? null)}</div>
+                <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
+                  <h1 className="text-xl font-bold mb-2">KASIR PRO</h1>
+                  <p className="text-xs">Master Data • Brand</p>
+                  <div className="mt-3 pt-2 border-t border-gray-300">
+                    <p className="font-bold text-blue-600">RINCIAN BRAND</p>
                   </div>
                 </div>
 
-                <div className="rounded-none border border-slate-200 bg-white">
-                  <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                    <span className="text-sm font-semibold text-slate-800">Produk Dalam Brand Ini</span>
+                <div className="mb-4 space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span>Nama Brand</span>
+                    <span className="font-bold text-black">{selectedBrand.nama}</span>
                   </div>
-                  <div className="p-4">
-                    {products.isLoading ? (
-                      <div className="space-y-2">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                          <Skeleton key={i} className="h-10 w-full" />
-                        ))}
-                      </div>
-                    ) : (products.data ?? []).length === 0 ? (
-                      <div className="text-xs text-slate-500">Belum ada produk untuk brand ini.</div>
-                    ) : (
-                      <div className="space-y-2 text-sm">
-                        {(products.data ?? []).map((p: { id: string; nama: string; kode: string; kategoriNama: string | null; }) => (
-                          <div key={p.id} className="flex items-center justify-between rounded border border-slate-200 p-2">
-                            <div className="flex flex-col">
-                              <span className="font-medium text-slate-800">{p.nama}</span>
-                              <span className="text-slate-500">{p.kode}</span>
+                  <div className="flex justify-between">
+                    <span>Cakupan</span>
+                    <span className="font-bold text-black">{getBrandScopeText(selectedBrand.tokoId ?? null)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Toko Terkait</span>
+                    <span className="text-right max-w-[60%]">{getBrandScopeDisplay(selectedBrand.tokoId ?? null)}</span>
+                  </div>
+                  {selectedBrand.createdAt ? (
+                    <div className="flex justify-between">
+                      <span>Dibuat Pada</span>
+                      <span>{formatDateTime(selectedBrand.createdAt)}</span>
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="mt-6 border-t-2 border-b-2 border-dashed border-gray-400 py-2">
+                  <div className="text-xs font-bold mb-2 grid grid-cols-12 gap-1">
+                    <div className="col-span-6">Produk</div>
+                    <div className="col-span-3 text-center">Kode</div>
+                    <div className="col-span-3 text-right">Kategori</div>
+                  </div>
+
+                  {products.isLoading ? (
+                    <div className="space-y-2">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <div key={index} className="grid grid-cols-12 gap-1 text-xs">
+                          <div className="col-span-6">
+                            <div className="h-3 bg-gray-200 animate-pulse" />
+                          </div>
+                          <div className="col-span-3">
+                            <div className="h-3 bg-gray-200 animate-pulse" />
+                          </div>
+                          <div className="col-span-3">
+                            <div className="h-3 bg-gray-200 animate-pulse" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (products.data ?? []).length === 0 ? (
+                    <div className="text-xs text-slate-500 py-2 text-center">
+                      Belum ada produk untuk brand ini.
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {(products.data ?? []).map(
+                        (p: { id: string; nama: string; kode: string; kategoriNama: string | null }) => (
+                          <div key={p.id} className="grid grid-cols-12 gap-1 text-xs">
+                            <div className="col-span-6 truncate font-semibold text-slate-800">
+                              {p.nama}
                             </div>
-                            <div className="text-right text-xs text-slate-600">
+                            <div className="col-span-3 text-center text-slate-600">
+                              {p.kode}
+                            </div>
+                            <div className="col-span-3 text-right text-slate-600">
                               {p.kategoriNama ?? "-"}
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-center mt-6 pt-4 border-t-2 border-dashed border-gray-400">
+                  <p className="text-xs">Dokumen Rincian Brand</p>
+                  <p className="text-xs">Gunakan untuk memastikan data brand tetap konsisten.</p>
+                  <p className="text-xs mt-2">== KASIR PRO ==</p>
                 </div>
               </div>
             </ScrollArea>

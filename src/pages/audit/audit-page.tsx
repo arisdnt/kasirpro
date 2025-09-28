@@ -1,8 +1,6 @@
 import { useState, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { useAuditLogsQuery } from "@/features/audit/use-audit";
 import { AuditFilters } from "./audit-filters";
-import { AuditStatistics } from "./audit-statistics";
 import { AuditTable } from "./audit-table";
 import { AuditDetail } from "./audit-detail";
 
@@ -13,6 +11,15 @@ export function AuditPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [actionFilter, setActionFilter] = useState<ActionFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const stats = useMemo(() => {
+    const data = audits.data ?? [];
+    const total = data.length;
+    const insert = data.filter((item) => item.aksi === "INSERT").length;
+    const update = data.filter((item) => item.aksi === "UPDATE").length;
+    const deleteCount = data.filter((item) => item.aksi === "DELETE").length;
+    return { total, insert, update, delete: deleteCount };
+  }, [audits.data]);
 
   const filteredAudits = useMemo(() => {
     const data = audits.data ?? [];
@@ -42,22 +49,15 @@ export function AuditPage() {
 
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
-      <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
-        <CardContent className="flex flex-col gap-3 py-4 text-black">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <AuditFilters
-              searchTerm={searchTerm}
-              actionFilter={actionFilter}
-              onSearchChange={setSearchTerm}
-              onActionFilterChange={setActionFilter}
-            />
-            <AuditStatistics
-              data={audits.data ?? []}
-              onRefresh={handleRefresh}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <AuditFilters
+        searchTerm={searchTerm}
+        actionFilter={actionFilter}
+        stats={stats}
+        onSearchChange={setSearchTerm}
+        onActionFilterChange={setActionFilter}
+        onRefresh={handleRefresh}
+        isRefreshing={audits.isFetching}
+      />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-3/4">
@@ -68,7 +68,11 @@ export function AuditPage() {
             onSelectItem={setSelectedId}
           />
         </div>
-        <div className="w-full lg:w-1/4">
+
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
           <AuditDetail selectedAudit={selectedAudit} />
         </div>
       </div>

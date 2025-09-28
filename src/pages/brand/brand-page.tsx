@@ -6,7 +6,7 @@ import { BrandStatistics } from "./brand-statistics";
 import { BrandTable } from "./brand-table";
 import { BrandDetail } from "./brand-detail";
 import { BrandFormModal } from "./brand-form-modal";
-import { useCreateBrandMutation, useDeleteBrandMutation, useUpdateBrandMutation } from "@/features/brand/mutations";
+import { useCreateBrandMutation, useUpdateBrandMutation } from "@/features/brand/mutations";
 
 type ScopeFilter = "all" | "global" | "store";
 
@@ -20,7 +20,6 @@ export function BrandPage() {
 
   const createBrand = useCreateBrandMutation();
   const updateBrand = useUpdateBrandMutation();
-  const deleteBrand = useDeleteBrandMutation();
 
   const filteredBrands = useMemo(() => {
     const data = brands.data ?? [];
@@ -54,23 +53,6 @@ export function BrandPage() {
   const handleAddNew = () => {
     setEditingId(null);
     setIsFormOpen(true);
-  };
-
-  const handleEdit = () => {
-    if (!selectedBrand) return;
-    setEditingId(selectedBrand.id);
-    setIsFormOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (!selectedBrand) return;
-    const count = selectedBrand.jumlahProduk ?? 0;
-    const ok = window.confirm(
-      `Hapus brand "${selectedBrand.nama}"?${count > 0 ? `\nPeringatan: Brand ini memiliki ${count} produk terkait.` : ""}`
-    );
-    if (!ok) return;
-    await deleteBrand.mutateAsync(selectedBrand.id);
-    setSelectedId(null);
   };
 
   const handleSubmitForm = async (payload: { nama: string; tokoId?: string | null }) => {
@@ -119,7 +101,7 @@ export function BrandPage() {
           className="w-full lg:w-1/4"
           style={{ backgroundColor: '#e6f4f1', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}
         >
-          <BrandDetail selectedBrand={selectedBrand} onEdit={handleEdit} onDelete={handleDelete} />
+          <BrandDetail selectedBrand={selectedBrand} />
         </div>
       </div>
 

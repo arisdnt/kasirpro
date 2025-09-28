@@ -79,65 +79,54 @@ export function PesanPage() {
 
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
-      <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
-        <CardContent className="flex flex-col gap-3 py-4 text-black">
-          <PesanSearchFilters
-            searchTerm={searchTerm}
-            statusFilter={statusFilter}
-            onSearchChange={setSearchTerm}
-            onStatusFilterChange={setStatusFilter}
-            onRefresh={handleRefresh}
-            onCreateNew={handleOpenCreate}
-            stats={stats}
-            isRefreshing={messages.isFetching}
-          />
-        </CardContent>
-      </Card>
+      <PesanSearchFilters
+        searchTerm={searchTerm}
+        statusFilter={statusFilter}
+        onSearchChange={setSearchTerm}
+        onStatusFilterChange={setStatusFilter}
+        onRefresh={handleRefresh}
+        onCreateNew={handleOpenCreate}
+        stats={stats}
+        isRefreshing={messages.isFetching}
+      />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-3/4">
-          <Card className="flex h-full min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-          <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-black">Perpesanan Internal</span>
-              <span className="text-black">•</span>
-              <CardTitle className="text-sm text-black">Daftar Pesan</CardTitle>
-            </div>
-            <Badge variant="secondary" className="bg-slate-100 text-slate-700 rounded-none">
-              {filteredMessages.length} pesan
-            </Badge>
-          </CardHeader>
-          <CardContent className="flex-1 min-h-0 overflow-hidden p-0">
-            <PesanList
-              messages={filteredMessages}
-              isLoading={messages.isLoading}
-              selectedId={selectedId}
-              onSelectMessage={setSelectedId}
-            />
-          </CardContent>
-        </Card>
+          <Card className="flex h-full min-h-0 flex-col border border-primary/10 rounded-none" style={{
+            backgroundColor: '#f6f9ff',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+          }}>
+            <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2" style={{ backgroundColor: '#f6f9ff' }}>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-black">Transaksi Pesan</span>
+                <span className="text-black">•</span>
+                <CardTitle className="text-sm text-black">Daftar Pesan</CardTitle>
+              </div>
+              <Badge variant="secondary" className="text-white rounded-none" style={{ backgroundColor: '#3b91f9' }}>
+                {filteredMessages.length} pesan
+              </Badge>
+            </CardHeader>
+            <CardContent className="flex-1 min-h-0 overflow-hidden p-0 flex flex-col">
+              <PesanList
+                messages={filteredMessages}
+                isLoading={messages.isLoading}
+                selectedId={selectedId}
+                onSelectMessage={setSelectedId}
+              />
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="w-full lg:w-1/4">
-          <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-          <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Pesan</span>
-              <span className="text-black">•</span>
-              <CardTitle className="text-sm text-black">
-                {selectedMessage ? selectedMessage.judul : "Pilih pesan"}
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
-            <PesanDetail
-              message={selectedMessage}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onMarkRead={handleMarkRead}
-            />
-          </CardContent>
-        </Card>
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
+          <PesanDetail
+            message={selectedMessage}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onMarkRead={handleMarkRead}
+          />
         </div>
       </div>
 
