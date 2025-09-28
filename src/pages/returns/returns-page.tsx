@@ -105,7 +105,15 @@ export function ReturnsPage() {
               setShowDeleteModal(true);
             }}
           />
-          <ReturnInvoicePreview selectedReturn={selectedReturn} getStatusColor={getStatusColor} />
+          <div
+            className="w-full lg:w-1/4"
+            style={{
+              backgroundColor: "#e6f4f1",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+            }}
+          >
+            <ReturnInvoicePreview selectedReturn={selectedReturn} getStatusColor={getStatusColor} />
+          </div>
         </div>
       </div>
 

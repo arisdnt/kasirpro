@@ -11,29 +11,16 @@ interface ReturnInvoicePreviewProps {
 }
 
 export function ReturnInvoicePreview({ selectedReturn, getStatusColor }: ReturnInvoicePreviewProps) {
-  if (!selectedReturn) {
-    return (
-      <div className="w-full lg:w-1/4">
-        <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white shadow-sm rounded-none">
-          <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
-            <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
-              <ClipboardList className="h-8 w-8 text-slate-300" />
-              <p className="text-sm font-medium text-slate-600">Pilih retur untuk melihat detail</p>
-              <p className="text-xs text-slate-500">Klik salah satu baris untuk melihat dokumen retur.</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full lg:w-1/4">
-      <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white shadow-sm rounded-none">
-        <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
+    <Card
+      className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none"
+      style={{ backgroundColor: "transparent" }}
+    >
+      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
+        {selectedReturn ? (
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="bg-white p-6 font-mono text-sm">
+              <div className="p-6 font-mono text-sm">
                 <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
                   <h1 className="text-xl font-bold mb-2">KASIR PRO</h1>
                   <p className="text-xs">Jl. Contoh No. 123, Kota</p>
@@ -62,7 +49,12 @@ export function ReturnInvoicePreview({ selectedReturn, getStatusColor }: ReturnI
                   </div>
                   <div className="flex justify-between">
                     <span>Status</span>
-                    <span className={cn("px-2 py-1 rounded text-xs font-semibold border", getStatusColor(selectedReturn.status ?? ""))}>
+                    <span
+                      className={cn(
+                        "px-2 py-1 text-xs font-semibold border rounded-none",
+                        getStatusColor(selectedReturn.status ?? "")
+                      )}
+                    >
                       {selectedReturn.status ?? "-"}
                     </span>
                   </div>
@@ -79,11 +71,15 @@ export function ReturnInvoicePreview({ selectedReturn, getStatusColor }: ReturnI
                 <div className="mt-4 space-y-1 text-xs">
                   <div className="flex justify-between border-b border-gray-300 pb-2">
                     <span>Subtotal Retur</span>
-                    <span className="font-bold text-red-600">{formatCurrency(selectedReturn.total).replace('Rp ', '')}</span>
+                    <span className="font-bold text-red-600">
+                      {formatCurrency(selectedReturn.total).replace("Rp ", "")}
+                    </span>
                   </div>
                   <div className="flex justify-between text-lg font-bold border-b-2 border-dashed border-gray-400 pb-2">
                     <span className="text-red-600">TOTAL RETUR</span>
-                    <span className="text-red-600">Rp {formatCurrency(selectedReturn.total).replace('Rp ', '')}</span>
+                    <span className="text-red-600">
+                      Rp {formatCurrency(selectedReturn.total).replace("Rp ", "")}
+                    </span>
                   </div>
                 </div>
 
@@ -99,8 +95,14 @@ export function ReturnInvoicePreview({ selectedReturn, getStatusColor }: ReturnI
               </div>
             </ScrollArea>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
+            <ClipboardList className="h-8 w-8 text-slate-300" />
+            <p className="text-sm font-medium text-slate-600">Pilih retur untuk melihat detail</p>
+            <p className="text-xs text-slate-500">Klik salah satu baris untuk melihat dokumen retur.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
