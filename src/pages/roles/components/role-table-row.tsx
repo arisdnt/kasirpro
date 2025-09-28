@@ -8,6 +8,7 @@ interface RoleTableRowProps {
   role: ManagementRole;
   isSelected: boolean;
   onSelect: (id: string) => void;
+  index: number;
 }
 
 function getLevelIcon(level: number) {
@@ -30,49 +31,41 @@ function getStatusColor(isActive: boolean) {
     : "text-slate-600 bg-slate-50 border-slate-200";
 }
 
-export function RoleTableRow({ role, isSelected, onSelect }: RoleTableRowProps) {
+export function RoleTableRow({ role, isSelected, onSelect, index }: RoleTableRowProps) {
   return (
     <TableRow
       onClick={() => onSelect(role.id)}
-      data-state={isSelected ? "selected" : undefined}
       className={cn(
-        "cursor-pointer border-b border-slate-100 transition",
-        isSelected ? "!bg-gray-100 text-black" : "hover:bg-slate-50"
+        "cursor-pointer border-b border-slate-100 transition h-14",
+        isSelected
+          ? "text-black"
+          : index % 2 === 0
+            ? "bg-white hover:bg-slate-50"
+            : "bg-gray-50/50 hover:bg-slate-100"
       )}
+      style={isSelected ? { backgroundColor: '#e6f4f1' } : undefined}
     >
-      <TableCell className="align-top">
+      <TableCell className="align-middle py-4">
         <div className="flex items-center gap-2">
           {getLevelIcon(role.level)}
-          <span className={cn(
-            "font-medium",
-            isSelected ? "text-black" : "text-slate-900"
-          )}>
+          <span className="font-medium text-slate-800">
             {role.nama}
           </span>
         </div>
       </TableCell>
-      <TableCell className={cn(
-        "align-top",
-        isSelected ? "text-black" : "text-slate-700"
-      )}>
+      <TableCell className="align-middle py-4 text-slate-700">
         <div className="flex items-center gap-1">
           <span className="font-mono text-xs">{role.level}</span>
           <span className="text-xs text-slate-500">({getLevelLabel(role.level)})</span>
         </div>
       </TableCell>
-      <TableCell className={cn(
-        "align-top max-w-32 truncate",
-        isSelected ? "text-black" : "text-slate-700"
-      )}>
+      <TableCell className="align-middle py-4 text-slate-700 max-w-32 truncate">
         {role.deskripsi ?? "-"}
       </TableCell>
-      <TableCell className={cn(
-        "align-top text-center font-semibold",
-        isSelected ? "text-black" : "text-slate-900"
-      )}>
+      <TableCell className="align-middle py-4 text-center font-semibold text-slate-800">
         {role.userCount}
       </TableCell>
-      <TableCell className="align-top">
+      <TableCell className="align-middle py-4">
         <span className={cn(
           "px-2 py-1 rounded text-xs font-semibold border",
           getStatusColor(role.isActive)
@@ -80,16 +73,10 @@ export function RoleTableRow({ role, isSelected, onSelect }: RoleTableRowProps) 
           {role.isActive ? "Aktif" : "Nonaktif"}
         </span>
       </TableCell>
-      <TableCell className={cn(
-        "align-top text-center font-mono text-xs",
-        isSelected ? "text-black" : "text-slate-600"
-      )}>
+      <TableCell className="align-middle py-4 text-center font-mono text-xs text-slate-600">
         {Object.keys(role.permissions).length}
       </TableCell>
-      <TableCell className={cn(
-        "align-top text-xs",
-        isSelected ? "text-black" : "text-slate-600"
-      )}>
+      <TableCell className="align-middle py-4 text-xs text-slate-600">
         {formatDateTime(role.createdAt)}
       </TableCell>
     </TableRow>

@@ -58,22 +58,25 @@ export function UsersPage() {
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
         stats={stats}
-        users={users}
         onRefresh={handleRefresh}
+        isRefreshing={users.isFetching}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-3/4">
           <UsersTable
-            filteredUsers={filteredUsers}
+            users={filteredUsers}
+            isLoading={users.isLoading}
             selectedId={selectedId}
             onSelectUser={setSelectedId}
-            users={users}
           />
         </div>
 
-        <div className="w-full lg:w-1/4">
-          <UserDetails selectedUser={selectedUser} />
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
+          <UserDetails user={selectedUser} />
         </div>
       </div>
     </div>

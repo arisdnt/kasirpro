@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,7 @@ interface User {
 }
 
 interface UserDetailsProps {
-  selectedUser: User | null;
+  user: User | null;
 }
 
 const getStatusColor = (status: string) => {
@@ -39,119 +39,125 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export function UserDetails({ selectedUser }: UserDetailsProps) {
+export function UserDetails({ user }: UserDetailsProps) {
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail User</span>
-          <span className="text-black">•</span>
-          <CardTitle className="text-sm text-black">
-            {selectedUser ? selectedUser.username : "Pilih user"}
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
-        {selectedUser ? (
-          <>
-            <div className="shrink-0 rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-              <dl className="space-y-3 text-sm text-slate-600">
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Username</dt>
-                  <dd className="font-bold text-lg text-slate-900">{selectedUser.username}</dd>
-                </div>
-                {selectedUser.fullName && (
-                  <div>
-                    <dt className="text-xs uppercase tracking-wide text-slate-500">Nama Lengkap</dt>
-                    <dd className="font-medium text-slate-900">{selectedUser.fullName}</dd>
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
+      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
+        {user ? (
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6 font-mono text-sm">
+                {/* User Header */}
+                <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
+                  <h1 className="text-xl font-bold mb-2">KASIR PRO</h1>
+                  <p className="text-xs">Sistem Manajemen User</p>
+                  <div className="mt-3 pt-2 border-t border-gray-300">
+                    <p className="font-bold">INFORMASI USER</p>
                   </div>
-                )}
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Status</dt>
-                  <dd>
-                    <span className={cn(
-                      "px-3 py-1 rounded text-sm font-semibold border capitalize",
-                      getStatusColor(selectedUser.status)
-                    )}>
-                      {selectedUser.status}
+                </div>
+
+                {/* User Info */}
+                <div className="mb-4 space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span>ID User</span>
+                    <span className="font-bold">{user.id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Username</span>
+                    <span className="font-bold">{user.username}</span>
+                  </div>
+                  {user.fullName && (
+                    <div className="flex justify-between">
+                      <span>Nama Lengkap</span>
+                      <span className="font-bold">{user.fullName}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span>Status</span>
+                    <span>
+                      <span className={cn(
+                        "px-2 py-1 rounded text-xs font-semibold border capitalize",
+                        getStatusColor(user.status)
+                      )}>
+                        {user.status}
+                      </span>
                     </span>
-                  </dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Dibuat</span>
+                    <span>{formatDateTime(user.createdAt)}</span>
+                  </div>
                 </div>
-              </dl>
-            </div>
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
-              <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                <span className="text-sm font-semibold text-slate-800">
-                  Informasi User
-                </span>
-              </div>
-              <ScrollArea className="flex-1">
-                <div className="p-4">
-                  <div className="space-y-4 text-sm">
-                    <div className="grid grid-cols-2 gap-4">
+                {/* Contact & Personal */}
+                <div className="mt-4 border-t border-gray-300 pt-4">
+                  <h4 className="text-xs uppercase tracking-wide text-slate-500 mb-2">Informasi Kontak:</h4>
+                  <div className="bg-gray-50 p-3 rounded border space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Email</span>
-                        <p className="text-slate-700">{selectedUser.email ?? "Tidak ada email"}</p>
+                        <span className="text-xs font-semibold">Email:</span>
+                        <p className="text-sm text-slate-700">{user.email ?? "Tidak ada email"}</p>
                       </div>
                       <div>
-                        <span className="text-xs uppercase tracking-wide text-slate-500">Telepon</span>
-                        <p className="text-slate-700">{selectedUser.phone ?? "-"}</p>
+                        <span className="text-xs font-semibold">Telepon:</span>
+                        <p className="text-sm text-slate-700">{user.phone ?? "-"}</p>
                       </div>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Role</span>
-                      <p className="text-slate-700 font-medium">
-                        {selectedUser.roleName ?? "Tidak ada role"}
-                        {selectedUser.roleLevel && (
-                          <span className="text-slate-500 ml-2">
-                            (Level {selectedUser.roleLevel})
-                          </span>
-                        )}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Toko</span>
-                      <p className="text-slate-700">
-                        {selectedUser.tokoNama ?? "Tidak terikat dengan toko"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Tenant</span>
-                      <p className="text-slate-700">{selectedUser.tenantNama ?? "Unknown"}</p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Terakhir Login</span>
-                      <p className="text-slate-700">
-                        {selectedUser.lastLogin ? formatDateTime(selectedUser.lastLogin) : "Belum pernah login"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Dibuat</span>
-                      <p className="text-slate-700">{formatDateTime(selectedUser.createdAt)}</p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Terakhir Diupdate</span>
-                      <p className="text-slate-700">{formatDateTime(selectedUser.updatedAt)}</p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">ID User</span>
-                      <p className="font-mono text-slate-700">{selectedUser.id}</p>
                     </div>
                   </div>
                 </div>
-              </ScrollArea>
-            </div>
-          </>
+
+                {/* Role & Access */}
+                <div className="mt-4 border-t border-gray-300 pt-4">
+                  <h4 className="text-xs uppercase tracking-wide text-slate-500 mb-2">Role & Akses:</h4>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span>Role</span>
+                      <span className="font-bold">{user.roleName ?? "Tidak ada role"}</span>
+                    </div>
+                    {user.roleLevel && (
+                      <div className="flex justify-between">
+                        <span>Level Role</span>
+                        <span className="font-bold">{user.roleLevel}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span>Toko</span>
+                      <span className="font-bold">{user.tokoNama ?? "Tidak terikat"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tenant</span>
+                      <span className="font-bold">{user.tenantNama ?? "Unknown"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Activity */}
+                <div className="mt-4 border-t border-gray-300 pt-4">
+                  <h4 className="text-xs uppercase tracking-wide text-slate-500 mb-2">Aktivitas:</h4>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span>Terakhir Login</span>
+                      <span className="font-bold">
+                        {user.lastLogin ? formatDateTime(user.lastLogin) : "Belum pernah"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Update Terakhir</span>
+                      <span>{formatDateTime(user.updatedAt)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-6 pt-4 border-t-2 border-dashed border-gray-400 text-center">
+                  <p className="text-xs text-gray-500">Sistem Manajemen User KasirPro</p>
+                  <p className="text-xs text-gray-500">User terverifikasi</p>
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
             <Users className="h-8 w-8 text-slate-300" />
             <p className="text-sm font-medium text-slate-600">Pilih user untuk melihat detail</p>
             <p className="text-xs text-slate-500">

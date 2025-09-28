@@ -5,8 +5,7 @@ import {
   useStockOpnameList,
 } from "@/features/stock-opname/use-stock-opname";
 import type { StockOpnameSummary } from "@/features/stock-opname/types";
-import { StockOpnameStatistics } from "./stock-opname-statistics";
-import { StockOpnameFilters } from "./stock-opname-filters";
+import { StockOpnameHeader } from "./components/stock-opname-header";
 import { StockOpnameList } from "./stock-opname-list";
 import { StockOpnameDetail } from "./stock-opname-detail";
 import { summarizeOpnames } from "./stock-opname-utils";
@@ -55,23 +54,17 @@ export function StockOpnamePage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2 text-slate-900">
-      <div className="shrink-0">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center bg-white/95 border border-primary/10 shadow-sm rounded-none p-4">
-          <StockOpnameFilters
-            searchTerm={searchTerm}
-            storeFilter={storeFilter}
-            stores={stores.data ?? []}
-            onSearchChange={setSearchTerm}
-            onStoreFilterChange={setStoreFilter}
-          />
-          <StockOpnameStatistics
-            data={summaryMetrics}
-            onRefresh={handleRefresh}
-            isRefreshing={listQuery.isFetching || detailQuery.isFetching}
-          />
-        </div>
-      </div>
+    <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
+      <StockOpnameHeader
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        storeFilter={storeFilter}
+        onStoreFilterChange={setStoreFilter}
+        stores={stores.data ?? []}
+        stats={summaryMetrics}
+        onRefresh={handleRefresh}
+        isRefreshing={listQuery.isFetching || detailQuery.isFetching}
+      />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-3/4">
@@ -83,9 +76,12 @@ export function StockOpnamePage() {
           />
         </div>
 
-        <div className="w-full lg:w-1/4">
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
           <StockOpnameDetail
-            data={selectedDetail}
+            opname={selectedDetail}
             isLoading={detailQuery.isLoading}
           />
         </div>

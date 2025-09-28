@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { ManagementRole } from "@/features/auth/types";
 import { formatDateTime } from "@/lib/format";
@@ -32,100 +32,105 @@ function getStatusColor(isActive: boolean) {
 
 export function RoleDetails({ role }: RoleDetailsProps) {
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Role</span>
-          <span className="text-black">•</span>
-          <CardTitle className="text-sm text-black">
-            {role ? role.nama : "Pilih role"}
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
+      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {role ? (
-          <>
-            <div className="shrink-0 rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-              <dl className="space-y-3 text-sm text-slate-600">
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Nama Role</dt>
-                  <dd className="flex items-center gap-2">
-                    {getLevelIcon(role.level)}
-                    <span className="font-bold text-lg text-slate-900">{role.nama}</span>
-                  </dd>
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6 font-mono text-sm">
+                {/* Role Header */}
+                <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
+                  <h1 className="text-xl font-bold mb-2">KASIR PRO</h1>
+                  <p className="text-xs">Sistem Manajemen Role</p>
+                  <div className="mt-3 pt-2 border-t border-gray-300">
+                    <p className="font-bold">INFORMASI ROLE</p>
+                  </div>
                 </div>
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Level & Hierarki</dt>
-                  <dd className="flex items-center gap-2">
-                    <span className="font-mono text-slate-900">{role.level}</span>
-                    <span className="text-slate-600">({getLevelLabel(role.level)})</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Status</dt>
-                  <dd>
-                    <span className={cn(
-                      "px-3 py-1 rounded text-sm font-semibold border",
-                      getStatusColor(role.isActive)
-                    )}>
-                      {role.isActive ? "Aktif" : "Nonaktif"}
+
+                {/* Role Info */}
+                <div className="mb-4 space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span>ID Role</span>
+                    <span className="font-bold">{role.id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Nama Role</span>
+                    <span className="font-bold flex items-center gap-1">
+                      {getLevelIcon(role.level)}
+                      {role.nama}
                     </span>
-                  </dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Level</span>
+                    <span className="font-bold">{role.level} ({getLevelLabel(role.level)})</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Status</span>
+                    <span>
+                      <span className={cn(
+                        "px-2 py-1 rounded text-xs font-semibold border",
+                        getStatusColor(role.isActive)
+                      )}>
+                        {role.isActive ? "Aktif" : "Nonaktif"}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Dibuat</span>
+                    <span>{formatDateTime(role.createdAt)}</span>
+                  </div>
                 </div>
-              </dl>
-            </div>
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
-              <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                <span className="text-sm font-semibold text-slate-800">
-                  Informasi Role
-                </span>
-              </div>
-              <ScrollArea className="flex-1">
-                <div className="p-4">
-                  <div className="space-y-4 text-sm">
+                {/* Description & Users */}
+                <div className="mt-4 border-t border-gray-300 pt-4">
+                  <h4 className="text-xs uppercase tracking-wide text-slate-500 mb-2">Deskripsi & Statistik:</h4>
+                  <div className="bg-gray-50 p-3 rounded border space-y-2">
                     <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Deskripsi</span>
-                      <p className="text-slate-700">
-                        {role.deskripsi ?? "Tidak ada deskripsi"}
-                      </p>
+                      <span className="text-xs font-semibold">Deskripsi:</span>
+                      <p className="text-sm text-slate-700">{role.deskripsi ?? "Tidak ada deskripsi"}</p>
                     </div>
-
                     <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Jumlah User</span>
-                      <p className="text-slate-700 font-semibold text-lg">
-                        {role.userCount} user
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Permissions</span>
-                      <div className="mt-2 space-y-2">
-                        <RolePermissionsList permissions={role.permissions} />
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Dibuat</span>
-                      <p className="text-slate-700">{formatDateTime(role.createdAt)}</p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">Terakhir Diupdate</span>
-                      <p className="text-slate-700">{formatDateTime(role.updatedAt)}</p>
-                    </div>
-
-                    <div>
-                      <span className="text-xs uppercase tracking-wide text-slate-500">ID Role</span>
-                      <p className="font-mono text-slate-700">{role.id}</p>
+                      <span className="text-xs font-semibold">Jumlah User:</span>
+                      <p className="text-sm text-slate-700 font-bold">{role.userCount} user</p>
                     </div>
                   </div>
                 </div>
-              </ScrollArea>
-            </div>
-          </>
+
+                {/* Permissions */}
+                <div className="mt-4 border-t border-gray-300 pt-4">
+                  <h4 className="text-xs uppercase tracking-wide text-slate-500 mb-2">Permissions:</h4>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span>Total Permissions</span>
+                      <span className="font-bold">{Object.keys(role.permissions).length}</span>
+                    </div>
+                  </div>
+                  <div className="mt-2 bg-gray-50 p-3 rounded border">
+                    <RolePermissionsList permissions={role.permissions} />
+                  </div>
+                </div>
+
+                {/* System Info */}
+                <div className="mt-4 border-t border-gray-300 pt-4">
+                  <h4 className="text-xs uppercase tracking-wide text-slate-500 mb-2">Informasi Sistem:</h4>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span>Update Terakhir</span>
+                      <span>{formatDateTime(role.updatedAt)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-6 pt-4 border-t-2 border-dashed border-gray-400 text-center">
+                  <p className="text-xs text-gray-500">Sistem Manajemen Role KasirPro</p>
+                  <p className="text-xs text-gray-500">Role terverifikasi</p>
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
             <Shield className="h-8 w-8 text-slate-300" />
             <p className="text-sm font-medium text-slate-600">Pilih role untuk melihat detail</p>
             <p className="text-xs text-slate-500">
