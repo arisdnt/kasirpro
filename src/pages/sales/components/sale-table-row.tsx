@@ -48,11 +48,12 @@ export function SaleTableRow({ sale, index, isSelected, onSelect }: SaleTableRow
       className={cn(
         "cursor-pointer border-b border-slate-100 transition h-14",
         isSelected
-          ? "!bg-gray-100 text-black"
+          ? "text-black"
           : index % 2 === 0
             ? "bg-white hover:bg-slate-50"
             : "bg-gray-50/50 hover:bg-slate-100"
       )}
+      style={isSelected ? { backgroundColor: '#e6f4f1' } : undefined}
     >
       <TableCell className="align-middle py-4">
         <span className={cn(

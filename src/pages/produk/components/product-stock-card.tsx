@@ -66,21 +66,18 @@ export function ProductStockCard({
   };
 
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-        <div className="flex items-center gap-2">
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden">
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
+      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {product ? (
-          <ScrollArea className="h-full pr-1">
-            <div className="relative w-full">
-              <div className="absolute right-0 top-0">
-                <Badge variant={product.status === "aktif" ? "outline" : "destructive"} className="rounded-none border border-slate-400 text-[11px] uppercase tracking-wide">
-                  {product.status ?? "-"}
-                </Badge>
-              </div>
-              <div className="p-0 font-mono text-xs text-slate-800">
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6 font-mono text-sm">
+                <div className="relative w-full">
+                  <div className="absolute right-0 top-0">
+                    <Badge variant={product.status === "aktif" ? "outline" : "destructive"} className="rounded-none border border-slate-400 text-[11px] uppercase tracking-wide">
+                      {product.status ?? "-"}
+                    </Badge>
+                  </div>
                 <div className="text-center border-b-2 border-dashed border-slate-400 pb-3 mb-4">
                   <h2 className="text-lg font-bold tracking-[0.3em] text-slate-900">KARTU STOK</h2>
                   <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Item Movement</p>
@@ -207,11 +204,12 @@ export function ProductStockCard({
                   </div>
                   <div className="mt-3 text-center text-[10px]">Saldo akhir • {currentStock ?? "-"}</div>
                 </div>
+                </div>
               </div>
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
             <Package className="h-8 w-8 text-slate-300" />
             <p className="text-sm font-medium text-slate-600">Pilih produk untuk melihat detail</p>
             <p className="text-xs text-slate-500">

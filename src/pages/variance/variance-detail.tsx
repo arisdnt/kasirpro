@@ -31,93 +31,116 @@ interface VarianceDetailProps {
 
 export function VarianceDetail({ selectedItem, batches, isBatchesLoading }: VarianceDetailProps) {
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-black">Detail Inventori</span>
-          <span className="text-black">•</span>
-          <CardTitle className="text-sm text-black">
-            {selectedItem ? selectedItem.produkNama : "Pilih item"}
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
+      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {selectedItem ? (
-          <>
-            <div className="shrink-0 rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-slate-600">
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Stok Sistem</dt>
-                  <dd className="font-bold text-lg text-slate-900">{selectedItem.stockSistem}</dd>
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6 font-mono text-sm">
+                {/* Detail Header */}
+                <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
+                  <h1 className="text-xl font-bold mb-2">DETAIL INVENTORI</h1>
+                  <p className="text-xs">Selisih Stok Sistem vs Fisik</p>
+                  <div className="mt-3 pt-2 border-t border-gray-300">
+                    <p className="font-bold">VARIANCE REPORT</p>
+                  </div>
                 </div>
-                <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Stok Fisik</dt>
-                  <dd className="font-bold text-lg text-slate-900">{selectedItem.stockFisik}</dd>
+
+                {/* Product Info */}
+                <div className="mb-4 space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span>Nama Produk</span>
+                    <span className="font-bold">{selectedItem.produkNama}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>ID Item</span>
+                    <span>{selectedItem.id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Produk ID</span>
+                    <span>{selectedItem.produkId ?? "-"}</span>
+                  </div>
                 </div>
-                <div className="col-span-2">
-                  <dt className="text-xs uppercase tracking-wide text-slate-500">Selisih</dt>
-                  <dd className={cn(
-                    "font-bold text-2xl",
+
+                {/* Stock Details */}
+                <div className="mt-4 space-y-1 text-xs">
+                  <div className="flex justify-between border-b border-gray-300 pb-2">
+                    <span>Stok Sistem</span>
+                    <span className="font-bold">{selectedItem.stockSistem}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-gray-300 pb-2">
+                    <span>Stok Fisik</span>
+                    <span className="font-bold">{selectedItem.stockFisik}</span>
+                  </div>
+                  <div className={cn(
+                    "flex justify-between text-lg font-bold border-b-2 border-dashed border-gray-400 pb-2",
                     getVarianceColorClass(selectedItem.selisih)
                   )}>
-                    {formatVariance(selectedItem.selisih)}
-                  </dd>
+                    <span>SELISIH</span>
+                    <span>{formatVariance(selectedItem.selisih)}</span>
+                  </div>
                 </div>
-              </dl>
-            </div>
 
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white">
-              <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-                <span className="text-sm font-semibold text-slate-800">
-                  Batch & Kedaluwarsa
-                </span>
-                <Badge variant="secondary" className="bg-slate-100 text-slate-700 rounded-none text-xs">
-                  {batches.length} batch
-                </Badge>
-              </div>
-              <ScrollArea className="flex-1">
-                <div className="p-4">
+                {/* Batch Information */}
+                <div className="mt-6">
+                  <div className="text-center border-b border-gray-300 pb-2 mb-4">
+                    <p className="font-bold text-sm">INFORMASI BATCH</p>
+                    <p className="text-xs">Total: {batches.length} batch</p>
+                  </div>
+
                   {isBatchesLoading ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {Array.from({ length: 3 }).map((_, index) => (
-                        <Skeleton key={index} className="h-16 w-full rounded-md" />
+                        <Skeleton key={index} className="h-12 w-full rounded-md" />
                       ))}
                     </div>
                   ) : batches.length === 0 ? (
-                    <div className="text-center text-slate-500 py-6">
-                      <Package className="h-6 w-6 mx-auto text-slate-300 mb-2" />
-                      <p className="text-sm">Tidak ada batch tersedia</p>
+                    <div className="text-center py-4">
+                      <Package className="h-6 w-6 mx-auto text-gray-400 mb-2" />
+                      <p className="text-xs text-gray-600">Tidak ada batch tersedia</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {batches.map((batch) => (
-                        <div
-                          key={batch.id}
-                          className="rounded-none border border-slate-200 bg-white/80 px-3 py-2 text-sm shadow-sm"
-                        >
-                          <p className="font-medium leading-none text-slate-900">
-                            Batch {batch.batchNumber ?? "-"}
-                          </p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            Kedaluwarsa: {formatDate(batch.tanggalExpired)}
-                          </p>
-                          <p className="text-xs text-slate-600">
-                            Stok: {batch.stockFisik ?? 0}
-                          </p>
+                      {batches.map((batch, index) => (
+                        <div key={batch.id} className="border-b border-gray-300 pb-2">
+                          <div className="flex justify-between text-xs">
+                            <span>Batch #{index + 1}</span>
+                            <span className="font-bold">{batch.batchNumber ?? "-"}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span>Expired</span>
+                            <span>{formatDate(batch.tanggalExpired)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span>Stok</span>
+                            <span className="font-bold">{batch.stockFisik ?? 0}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-              </ScrollArea>
-            </div>
-          </>
+
+                {/* Footer */}
+                <div className="text-center mt-6 pt-4 border-t-2 border-dashed border-gray-400">
+                  <p className="text-xs">Data diperbaharui secara real-time</p>
+                  <p className="text-xs">Lakukan stock opname untuk menyesuaikan</p>
+                  <p className="text-xs mt-2">== KASIR PRO ==</p>
+                </div>
+
+                {/* Item ID Footer */}
+                <div className="text-center mt-4 pt-2 border-t border-gray-300">
+                  <p className="text-xs text-gray-600">Item ID: {selectedItem.id}</p>
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
             <Package className="h-8 w-8 text-slate-300" />
-            <p className="text-sm font-medium text-slate-600">Pilih item untuk melihat detail</p>
+            <p className="text-sm font-medium text-slate-600">Pilih item untuk melihat detail inventori</p>
             <p className="text-xs text-slate-500">
-              Klik salah satu baris inventori untuk melihat informasi lengkap.
+              Klik salah satu baris untuk melihat informasi selisih dan batch.
             </p>
           </div>
         )}

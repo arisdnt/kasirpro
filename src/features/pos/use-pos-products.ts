@@ -85,8 +85,8 @@ export function usePosProductsQuery(options?: { subscribe?: boolean }) {
 
   const subscribe = options?.subscribe !== false;
   // Always call hooks to preserve order; gate the callback
-  useSupabaseRealtime("pos-products", { table: "produk" }, subscribe ? refetchData : () => {});
-  useProductStockRealtime("pos-products-stocks", subscribe ? refetchData : () => {});
+  useSupabaseRealtime("pos-products", { table: "produk" }, refetchData, { enabled: subscribe });
+  useProductStockRealtime("pos-products-stocks", refetchData, { enabled: subscribe });
 
   return query;
 }

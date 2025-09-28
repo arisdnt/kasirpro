@@ -46,7 +46,10 @@ export function useSupabaseRealtime(
         event: payload.eventType,
         new: payload.new?.id,
         old: payload.old?.id,
+        fullPayload: payload,
+        filter: configRef.current.filter
       });
+      console.log(`🔄 Calling callback for channel ${channel}`);
       callbackRef.current();
     };
 
@@ -59,7 +62,7 @@ export function useSupabaseRealtime(
       };
     }
 
-  channelManager.createChannel(channel, channelConfig, wrappedCallback as unknown as () => void);
+  channelManager.createChannel(channel, channelConfig, wrappedCallback);
 
     return () => {
       channelManager.removeChannel(channel);

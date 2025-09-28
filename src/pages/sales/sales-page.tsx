@@ -1,17 +1,32 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSalesQuery, useSaleItemsQuery } from "@/features/sales/use-sales";
 import { SalesHeader } from "./components/sales-header";
 import { SalesTable } from "./components/sales-table";
 import { SaleInvoice } from "./components/sale-invoice";
+import { useRealtimeDebug, useRealtimeConnectionTest } from "@/hooks/use-realtime-debug";
+import { setupRealtimeTestFunctions } from "@/utils/realtime-test";
+import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 
 type PaymentMethodFilter = "all" | "cash" | "card" | "transfer" | "qris";
 
 export function SalesPage() {
+  const { state: { user } } = useSupabaseAuth();
   const sales = useSalesQuery();
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentFilter, setPaymentFilter] = useState<PaymentMethodFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const saleItems = useSaleItemsQuery(selectedId);
+
+  // Debug hooks untuk development
+  useRealtimeDebug();
+  useRealtimeConnectionTest();
+
+  // Setup test functions
+  useEffect(() => {
+    if (user?.tenantId) {
+      setupRealtimeTestFunctions(user.tenantId, user.tokoId);
+    }
+  }, [user?.tenantId, user?.tokoId]);
 
   const stats = useMemo(() => {
     const data = sales.data ?? [];
@@ -45,6 +60,7 @@ export function SalesPage() {
   }, [filteredSales, selectedId]);
 
   const handleRefresh = () => {
+    console.log("🔄 Manual refresh triggered");
     sales.refetch();
   };
 
@@ -57,6 +73,7 @@ export function SalesPage() {
         onPaymentFilterChange={setPaymentFilter}
         stats={stats}
         onRefresh={handleRefresh}
+        isLoading={sales.isLoading || sales.isFetching}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
@@ -69,7 +86,10 @@ export function SalesPage() {
           />
         </div>
 
-        <div className="w-full lg:w-1/4">
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
           <SaleInvoice
             sale={selectedSale}
             saleItems={{ data: saleItems.data, isLoading: saleItems.isLoading }}

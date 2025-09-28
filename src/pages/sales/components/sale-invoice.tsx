@@ -30,12 +30,12 @@ function getPaymentMethodLabel(method: string | null) {
 
 export function SaleInvoice({ sale, saleItems }: SaleInvoiceProps) {
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white shadow-sm rounded-none">
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
       <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {sale ? (
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="bg-white p-6 font-mono text-sm">
+              <div className="p-6 font-mono text-sm">
                 {/* Invoice Header */}
                 <div className="text-center border-b-2 border-dashed border-gray-400 pb-4 mb-4">
                   <h1 className="text-xl font-bold mb-2">KASIR PRO</h1>

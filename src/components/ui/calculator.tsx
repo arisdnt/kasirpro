@@ -267,9 +267,9 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
 
   return (
     <div className="fixed inset-0 z-50 pointer-events-none">
-      <Card 
+      <Card
         ref={cardRef}
-        className="absolute w-80 bg-white shadow-2xl border-gray-200 pointer-events-auto select-none"
+        className="absolute w-80 bg-white shadow-2xl border-gray-200 pointer-events-auto select-none rounded-none"
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
@@ -277,16 +277,13 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
         }}
       >
         {/* Header */}
-        <div 
-          className="flex items-center justify-between p-3 border-b border-gray-200 drag-handle cursor-grab active:cursor-grabbing"
+        <div
+          className="flex items-center justify-between p-2 drag-handle cursor-grab active:cursor-grabbing"
           onMouseDown={handleMouseDown}
         >
           <div className="flex items-center gap-2 pointer-events-none">
             <CalculatorIcon className="h-4 w-4 text-gray-600" />
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-700">Kalkulator</span>
-              <span className="text-xs text-gray-500">Keyboard support enabled</span>
-            </div>
+            <span className="text-sm font-medium text-gray-700">Kalkulator</span>
           </div>
           <Button
             variant="ghost"
@@ -300,7 +297,7 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
 
         {/* Display */}
         <div className="p-4 pb-0">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+          <div className="bg-gray-50 border border-gray-200 p-4 mb-4">
             <div className="text-right">
               {operation && (
                 <div className="text-xs text-gray-500 mb-1">
@@ -319,149 +316,131 @@ export function Calculator({ isOpen, onClose }: CalculatorProps) {
           <div className="grid grid-cols-4 gap-2">
             {/* Row 1 */}
             <Button
-              variant="outline"
               onClick={clear}
-              className={`h-10 text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors ${
-                isButtonPressed('C') ? 'bg-red-100 text-red-700 border-red-300' : ''
+              className={`h-10 text-sm font-medium bg-[#b91c1c] text-white hover:bg-[#991b1b] transition-colors ${
+                isButtonPressed('C') ? 'bg-[#7f1d1d]' : ''
               }`}
             >
               C
             </Button>
             <Button
-              variant="outline"
               onClick={clearEntry}
-              className="h-10 text-sm font-medium hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200"
+              className="h-10 text-sm font-medium bg-[#b91c1c] text-white hover:bg-[#991b1b]"
             >
               CE
             </Button>
             <Button
-              variant="outline"
               onClick={backspace}
-              className={`h-10 text-sm font-medium hover:bg-gray-50 transition-colors ${
-                isButtonPressed('⌫') ? 'bg-gray-200 text-gray-900' : ''
+              className={`h-10 text-sm font-medium bg-[#b91c1c] text-white hover:bg-[#991b1b] transition-colors ${
+                isButtonPressed('⌫') ? 'bg-[#7f1d1d]' : ''
               }`}
             >
               ⌫
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputOperation('÷')}
-              className="h-10 text-sm font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+              className="h-10 text-sm font-medium bg-[#3b91f9] text-white hover:bg-[#2563eb]"
             >
               ÷
             </Button>
 
             {/* Row 2 */}
             <Button
-              variant="outline"
               onClick={() => inputNumber('7')}
-              className={`h-10 text-sm font-medium hover:bg-gray-50 transition-colors ${
-                isButtonPressed('7') ? 'bg-gray-200 text-gray-900' : ''
+              className={`h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95] transition-colors ${
+                isButtonPressed('7') ? 'bg-[#2d4570]' : ''
               }`}
             >
               7
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputNumber('8')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               8
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputNumber('9')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               9
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputOperation('×')}
-              className="h-10 text-sm font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+              className="h-10 text-sm font-medium bg-[#3b91f9] text-white hover:bg-[#2563eb]"
             >
               ×
             </Button>
 
             {/* Row 3 */}
             <Button
-              variant="outline"
               onClick={() => inputNumber('4')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               4
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputNumber('5')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               5
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputNumber('6')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               6
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputOperation('-')}
-              className="h-10 text-sm font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+              className="h-10 text-sm font-medium bg-[#3b91f9] text-white hover:bg-[#2563eb]"
             >
               -
             </Button>
 
             {/* Row 4 */}
             <Button
-              variant="outline"
               onClick={() => inputNumber('1')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               1
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputNumber('2')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               2
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputNumber('3')}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               3
             </Button>
             <Button
-              variant="outline"
               onClick={() => inputOperation('+')}
-              className="h-10 text-sm font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+              className="h-10 text-sm font-medium bg-[#3b91f9] text-white hover:bg-[#2563eb]"
             >
               +
             </Button>
 
             {/* Row 5 */}
             <Button
-              variant="outline"
               onClick={() => inputNumber('0')}
-              className="col-span-2 h-10 text-sm font-medium hover:bg-gray-50"
+              className="col-span-2 h-10 text-sm font-medium bg-[#476eae] text-white hover:bg-[#3a5a95]"
             >
               0
             </Button>
             <Button
-              variant="outline"
               onClick={inputDecimal}
-              className="h-10 text-sm font-medium hover:bg-gray-50"
+              className="h-10 text-sm font-medium bg-[#008181] text-white hover:bg-[#006666]"
             >
               .
             </Button>
             <Button
               onClick={performCalculation}
-              className={`h-10 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors ${
-                isButtonPressed('=') ? 'bg-blue-800' : ''
+              className={`h-10 text-sm font-medium bg-[#008181] text-white hover:bg-[#006666] transition-colors ${
+                isButtonPressed('=') ? 'bg-[#004d4d]' : ''
               }`}
             >
               =

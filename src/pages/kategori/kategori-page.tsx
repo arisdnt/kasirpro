@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useProductsQuery } from "@/features/produk/use-products";
 import { useCategoriesQuery } from "@/features/kategori/use-categories";
+import { useStoresQuery } from "@/features/stores/use-stores";
+import { Card, CardBody } from "@heroui/react";
 import { KategoriStatistics } from "./kategori-statistics";
 import { KategoriFilters } from "./kategori-filters";
 import { KategoriTable } from "./kategori-table";
@@ -12,6 +14,7 @@ import {
   calculateStats,
   buildProductCountMap,
   buildCategoryIndex,
+  buildStoreIndex,
   filterAndEnrichCategories
 } from "./kategori-utils";
 
@@ -19,6 +22,7 @@ import {
 export function KategoriPage() {
   const categories = useCategoriesQuery();
   const products = useProductsQuery();
+  const stores = useStoresQuery();
   const [searchTerm, setSearchTerm] = useState("");
   const [scope, setScope] = useState<ScopeFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -35,15 +39,18 @@ export function KategoriPage() {
 
   const categoryIndex = useMemo(() => buildCategoryIndex(categories.data ?? []), [categories.data]);
 
+  const storeIndex = useMemo(() => buildStoreIndex(stores.data ?? []), [stores.data]);
+
   const filteredCategories = useMemo(() =>
     filterAndEnrichCategories(
       categories.data ?? [],
       searchTerm,
       scope,
       productCountByCategory,
-      categoryIndex
+      categoryIndex,
+      storeIndex
     ),
-    [categories.data, searchTerm, scope, productCountByCategory, categoryIndex]
+    [categories.data, searchTerm, scope, productCountByCategory, categoryIndex, storeIndex]
   );
 
   useEffect(() => {
@@ -66,6 +73,7 @@ export function KategoriPage() {
   const handleRefresh = () => {
     categories.refetch();
     products.refetch();
+    stores.refetch();
   };
 
   const handleAddNew = () => {
@@ -95,21 +103,24 @@ export function KategoriPage() {
 
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
-      <div className="shrink-0">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center bg-white/95 border border-primary/10 shadow-sm rounded-none p-4 text-black">
-          <KategoriFilters
-            searchTerm={searchTerm}
-            scope={scope}
-            onSearchChange={setSearchTerm}
-            onScopeChange={setScope}
-          />
-          <KategoriStatistics
-            stats={stats}
-            onRefresh={handleRefresh}
-            onAddNew={handleAddNew}
-          />
-        </div>
-      </div>
+      <Card className="shrink-0 shadow-sm rounded-none border border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
+        <CardBody className="flex flex-col gap-2 py-3 px-4">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+            <KategoriFilters
+              searchTerm={searchTerm}
+              scope={scope}
+              onSearchChange={setSearchTerm}
+              onScopeChange={setScope}
+            />
+            <KategoriStatistics
+              stats={stats}
+              onRefresh={handleRefresh}
+              onAddNew={handleAddNew}
+              isRefreshing={categories.isFetching}
+            />
+          </div>
+        </CardBody>
+      </Card>
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-3/4">
@@ -120,7 +131,10 @@ export function KategoriPage() {
             onSelectItem={setSelectedId}
           />
         </div>
-        <div className="w-full lg:w-1/4">
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
           <KategoriDetail
             selectedCategory={selectedCategory}
             products={products.data ?? []}

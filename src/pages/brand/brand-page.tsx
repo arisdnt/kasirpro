@@ -83,9 +83,13 @@ export function BrandPage() {
 
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2">
-      <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
-        <CardContent className="flex flex-col gap-3 py-4 text-black">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+      {/* Header Form - glassmorphism */}
+      <Card
+        className="shrink-0 shadow-sm rounded-none border border-slate-200"
+        style={{ backgroundColor: '#f6f9ff' }}
+      >
+        <CardContent className="flex flex-col gap-2 py-3 px-4">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
             <BrandFilters
               searchTerm={searchTerm}
               scope={scope}
@@ -111,7 +115,10 @@ export function BrandPage() {
             onSelectItem={setSelectedId}
           />
         </div>
-        <div className="w-full lg:w-1/4">
+        <div
+          className="w-full lg:w-1/4"
+          style={{ backgroundColor: '#e6f4f1', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}
+        >
           <BrandDetail selectedBrand={selectedBrand} onEdit={handleEdit} onDelete={handleDelete} />
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Copy, Database, Cpu, MemoryStick, Wifi, WifiOff, Monitor } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getSupabaseClient } from "@/lib/supabase-client";
+import { useRealtimeHealth } from "@/hooks/use-realtime-health";
 
 export function StatusBar() {
   const {
@@ -15,8 +16,16 @@ export function StatusBar() {
   // Time and date state
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Connection status states
-  const [realtimeStatus, setRealtimeStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connecting');
+  // Use improved realtime health monitoring
+  const realtimeHealth = useRealtimeHealth(15000); // Check every 15 seconds
+
+  // Derive realtime status from health
+  const realtimeStatus = realtimeHealth.isHealthy && realtimeHealth.totalChannels > 0
+    ? 'connected'
+    : realtimeHealth.totalChannels > 0
+    ? 'connecting'
+    : 'disconnected';
+
   const [dbPing, setDbPing] = useState<number | null>(null);
   const [dbStatus, setDbStatus] = useState<'online' | 'offline' | 'checking'>('checking');
 
@@ -47,64 +56,6 @@ export function StatusBar() {
     return () => clearInterval(timer);
   }, []);
 
-  // Monitor realtime connection status
-  useEffect(() => {
-    const client = getSupabaseClient();
-    let statusCheckInterval: NodeJS.Timeout;
-    let heartbeatChannel: any;
-
-    // Create a heartbeat channel to test realtime connectivity
-    const testRealtimeConnection = () => {
-      try {
-        // Remove existing heartbeat channel if exists
-        if (heartbeatChannel) {
-          client.removeChannel(heartbeatChannel);
-        }
-
-        // Create a lightweight heartbeat channel
-        heartbeatChannel = client
-          .channel('heartbeat-status-check')
-          .subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-              setRealtimeStatus('connected');
-            } else if (status === 'CHANNEL_ERROR') {
-              setRealtimeStatus('disconnected');
-            } else if (status === 'TIMED_OUT') {
-              setRealtimeStatus('disconnected');
-            } else if (status === 'CLOSED') {
-              setRealtimeStatus('disconnected');
-            }
-          });
-
-        // Set a timeout to detect if subscription never completes
-        setTimeout(() => {
-          if (heartbeatChannel && heartbeatChannel.state !== 'joined') {
-            setRealtimeStatus('disconnected');
-          }
-        }, 10000); // 10 seconds timeout
-
-      } catch (error) {
-        console.error('Realtime connection test failed:', error);
-        setRealtimeStatus('disconnected');
-      }
-    };
-
-    // Initial connection test
-    setRealtimeStatus('connecting');
-    testRealtimeConnection();
-
-    // Check connection every 30 seconds (recommended heartbeat interval)
-    statusCheckInterval = setInterval(() => {
-      testRealtimeConnection();
-    }, 30000);
-
-    return () => {
-      if (statusCheckInterval) clearInterval(statusCheckInterval);
-      if (heartbeatChannel) {
-        client.removeChannel(heartbeatChannel);
-      }
-    };
-  }, []);
 
   // Monitor database ping and connection
   useEffect(() => {
@@ -228,7 +179,7 @@ export function StatusBar() {
         <Separator orientation="vertical" className="hidden h-3 lg:block" />
 
         {/* Realtime Status */}
-        <div className="flex items-center gap-1" title={`Realtime: ${realtimeStatus}`}>
+        <div className="flex items-center gap-1" title={`Realtime: ${realtimeStatus} (${realtimeHealth.totalChannels} channels${realtimeHealth.staleChannels.length > 0 ? `, ${realtimeHealth.staleChannels.length} stale` : ''})`}>
           {realtimeStatus === 'connected' ? (
             <Wifi className="h-3 w-3 text-green-500" />
           ) : realtimeStatus === 'connecting' ? (
@@ -237,7 +188,7 @@ export function StatusBar() {
             <WifiOff className="h-3 w-3 text-red-500" />
           )}
           <span className={realtimeStatus === 'connected' ? 'text-green-600' : realtimeStatus === 'connecting' ? 'text-yellow-600' : 'text-red-600'}>
-            RT
+            RT{realtimeHealth.totalChannels > 0 ? `(${realtimeHealth.totalChannels})` : ''}
           </span>
         </div>
         <Separator orientation="vertical" className="hidden h-3 lg:block" />

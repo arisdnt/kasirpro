@@ -1,4 +1,4 @@
-import type { Purchase, PurchaseStats, StatusFilter } from "./types";
+import type { Purchase, PurchaseStats, StatusFilter, SupplierFilter } from "./types";
 
 export function calculatePurchaseStats(purchases: Purchase[]): PurchaseStats {
   const total = purchases.length;
@@ -10,7 +10,12 @@ export function calculatePurchaseStats(purchases: Purchase[]): PurchaseStats {
   return { total, draft, diterima, sebagian, selesai, batal };
 }
 
-export function filterPurchases(purchases: Purchase[], searchTerm: string, statusFilter: StatusFilter): Purchase[] {
+export function filterPurchases(
+  purchases: Purchase[],
+  searchTerm: string,
+  statusFilter: StatusFilter,
+  supplierFilter: SupplierFilter = "all"
+): Purchase[] {
   const query = searchTerm.trim().toLowerCase();
   return purchases
     .filter((item) => {
@@ -21,7 +26,10 @@ export function filterPurchases(purchases: Purchase[], searchTerm: string, statu
       const matchesStatus =
         statusFilter === "all" ||
         item.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesSupplier =
+        supplierFilter === "all" ||
+        item.supplierNama === supplierFilter;
+      return matchesSearch && matchesStatus && matchesSupplier;
     })
     .sort((a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime());
 }

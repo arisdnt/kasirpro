@@ -1,4 +1,5 @@
 export type StatusFilter = "all" | "draft" | "diterima" | "sebagian" | "selesai" | "batal";
+export type SupplierFilter = "all" | string;
 
 export interface PurchaseStats {
   total: number;

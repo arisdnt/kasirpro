@@ -30,36 +30,19 @@ export function KategoriDetail({ selectedCategory, products, isProductsLoading, 
     : [];
 
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2 px-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Detail & Produk</span>
-          <span className="text-slate-400">•</span>
-          <CardTitle className="text-sm">
-            {selectedCategory ? selectedCategory.nama : "Pilih kategori"}
-          </CardTitle>
-        </div>
-        {selectedCategory ? (
-          <div className="flex gap-2">
-            {onEdit ? (
-              <button onClick={onEdit} className="text-xs rounded-none bg-slate-800 px-2 py-1 text-white">Edit</button>
-            ) : null}
-            {onDelete ? (
-              <button onClick={onDelete} className="text-xs rounded-none bg-red-600 px-2 py-1 text-white">Hapus</button>
-            ) : null}
-          </div>
-        ) : null}
-      </CardHeader>
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
       <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {selectedCategory ? (
-          <ScrollArea className="h-full">
-            <div className="relative w-full">
-              <div className="absolute right-0 top-0">
-                <Badge variant="outline" className="rounded-none border border-slate-400 text-[11px] uppercase tracking-wide">
-                  {selectedCategory.tokoId ? "Kategori Toko" : "Kategori Global"}
-                </Badge>
-              </div>
-              <div className="font-mono text-xs text-slate-800">
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6 font-mono text-sm">
+                <div className="relative w-full">
+                  <div className="absolute right-0 top-0">
+                    <Badge variant="outline" className="rounded-none border border-slate-400 text-[11px] uppercase tracking-wide">
+                      {selectedCategory.tokoId ? "Kategori Toko" : "Kategori Global"}
+                    </Badge>
+                  </div>
+                  <div className="font-mono text-xs text-slate-800">
                 <div className="mb-4 border-b-2 border-dashed border-slate-400 pb-3 text-center">
                   <h2 className="text-lg font-bold tracking-[0.3em] text-slate-900">KATEGORI</h2>
                   <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">Ringkasan & Produk</p>
@@ -69,7 +52,7 @@ export function KategoriDetail({ selectedCategory, products, isProductsLoading, 
                   <div className="flex justify-between"><span>Nama</span><span className="max-w-[60%] truncate text-right font-semibold text-slate-900">{selectedCategory.nama}</span></div>
                   <div className="flex justify-between"><span>ID</span><span className="font-mono text-[10px] text-slate-700">{selectedCategory.id}</span></div>
                   <div className="flex justify-between"><span>Cakupan</span><span className="text-slate-900">{selectedCategory.tokoId ? "Kategori Toko" : "Kategori Global"}</span></div>
-                  <div className="flex justify-between"><span>Toko</span><span className="text-slate-900">{selectedCategory.tokoId ?? "Semua toko"}</span></div>
+                  <div className="flex justify-between"><span>Toko</span><span className="text-slate-900">{selectedCategory.tokoId ? (selectedCategory.storeName ?? selectedCategory.tokoId) : "Semua toko"}</span></div>
                   <div className="flex justify-between"><span>Induk</span><span className="text-slate-900">{selectedCategory.parentId ? (selectedCategory.parentName ?? selectedCategory.parentId) : "Tidak ada"}</span></div>
                   <div className="flex justify-between"><span>Jumlah Produk</span><span className="font-semibold text-slate-900">{selectedCategory.productCount}</span></div>
                 </div>
@@ -112,15 +95,17 @@ export function KategoriDetail({ selectedCategory, products, isProductsLoading, 
                             <td className="px-2 py-2 text-right text-slate-600">{currencyFormatter.format(item.hargaJual)}</td>
                           </tr>
                         ))}
-                      </tbody>
-                    </table>
-                  )}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
             <FolderTree className="h-8 w-8 text-slate-300" />
             <p className="text-sm font-medium text-slate-600">Pilih kategori untuk melihat detail</p>
             <p className="text-xs text-slate-500">

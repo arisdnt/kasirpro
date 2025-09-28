@@ -1,10 +1,12 @@
 import type { Category } from "@/features/kategori/types";
+import type { Toko } from "@/features/stores/types";
 
 export type ScopeFilter = "all" | "global" | "store";
 
 export type EnrichedCategory = Category & {
   productCount: number;
   parentName: string | null;
+  storeName: string | null;
 };
 
 export const currencyFormatter = new Intl.NumberFormat("id-ID", {
@@ -37,12 +39,21 @@ export function buildCategoryIndex(categories: Category[]) {
   return lookup;
 }
 
+export function buildStoreIndex(stores: Toko[]) {
+  const lookup: Record<string, { nama: string }> = {};
+  for (const item of stores) {
+    lookup[item.id] = { nama: item.nama };
+  }
+  return lookup;
+}
+
 export function filterAndEnrichCategories(
   categories: Category[],
   searchTerm: string,
   scope: ScopeFilter,
   productCountByCategory: Record<string, number>,
-  categoryIndex: Record<string, { nama: string }>
+  categoryIndex: Record<string, { nama: string }>,
+  storeIndex: Record<string, { nama: string }>
 ): EnrichedCategory[] {
   const query = searchTerm.trim().toLowerCase();
   return categories
@@ -64,6 +75,9 @@ export function filterAndEnrichCategories(
       productCount: productCountByCategory[item.id] ?? 0,
       parentName: item.parentId
         ? categoryIndex[item.parentId]?.nama ?? "Kategori induk"
+        : null,
+      storeName: item.tokoId
+        ? storeIndex[item.tokoId]?.nama ?? "Toko tidak ditemukan"
         : null,
     }))
     .sort((a, b) => a.nama.localeCompare(b.nama));

@@ -1,0 +1,343 @@
+# PROMPT DESAIN GLOBAL - KASIRPRO
+# Template Desain untuk Halaman Data List dengan Search, Filter, dan Detail Card
+
+## STRUKTUR LAYOUT UTAMA
+
+### 1. Container Utama
+```css
+className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2"
+```
+
+### 2. Layout 3 Bagian Utama
+- Header Form (Search & Filter)
+- Table Area (3/4 width)
+- Detail Card (1/4 width)
+
+```jsx
+<div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
+  <div className="w-full lg:w-3/4">{/* Table */}</div>
+  <div className="w-full lg:w-1/4">{/* Detail Card */}</div>
+</div>
+```
+
+## HEADER FORM DESIGN
+
+### HeroUI Card Structure
+```jsx
+import { Card, CardBody } from "@heroui/react";
+
+<Card className="shrink-0 shadow-sm rounded-none border border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
+  <CardBody className="flex flex-col gap-2 py-3 px-4">
+    <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+      {/* Filters Component */}
+      {/* Statistics Component */}
+    </div>
+  </CardBody>
+</Card>
+```
+
+### Search Input Design
+```jsx
+<div className="relative flex-1">
+  <Input
+    value={searchTerm}
+    onChange={(event) => onSearchChange(event.target.value)}
+    placeholder="Cari nomor transaksi atau [entity]..."
+    className="h-9 rounded-none border-slate-300 pl-10 text-sm text-slate-700 bg-white/80 backdrop-blur-sm shadow-sm transition-all duration-200 focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:border-blue-400 hover:border-slate-400 w-full"
+  />
+  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-500 pointer-events-none z-20" />
+</div>
+```
+
+### Filter Dropdown Design
+```jsx
+<div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm shadow-sm border border-slate-300 h-9 px-3">
+  <[IconName] className="h-4 w-4" style={{ color: '#3b91f9' }} />
+  <select
+    value={filterValue}
+    onChange={(event) => onFilterChange(event.target.value)}
+    className="bg-transparent border-none text-sm text-slate-700 focus:outline-none cursor-pointer pr-6"
+  >
+    <option value="all">Semua [category]</option>
+    {/* Dynamic options */}
+  </select>
+</div>
+```
+
+### Summary Statistics Design
+```jsx
+<div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-3 shadow-sm border border-slate-300 h-9">
+  <div className="flex flex-col items-center justify-center">
+    <span className="text-slate-500 text-[9px] font-medium leading-none">[Label]</span>
+    <span className="font-bold text-xs text-slate-800 leading-none mt-0.5">{value}</span>
+  </div>
+  <div className="w-px h-6 bg-slate-300"></div>
+  {/* Repeat for more stats */}
+</div>
+```
+
+### Refresh Button Design
+```jsx
+<Button
+  onClick={onRefresh}
+  disabled={isLoading}
+  className="gap-2 text-white rounded-none px-3 py-1.5 h-9 w-24 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-sm transition-all duration-200 border-0"
+>
+  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+  {isLoading ? 'Memuat...' : 'Refresh'}
+</Button>
+```
+
+## TABLE DESIGN
+
+### Table Container
+```jsx
+<Card className="flex h-full min-h-0 flex-col border border-primary/10 rounded-none" style={{
+  backgroundColor: '#f6f9ff',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+}}>
+```
+
+### Table Header
+```jsx
+<CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2" style={{ backgroundColor: '#f6f9ff' }}>
+  <div className="flex items-center gap-2">
+    <span className="text-xs font-semibold uppercase tracking-wide text-black">Transaksi [Type]</span>
+    <span className="text-black">•</span>
+    <CardTitle className="text-sm text-black">[Title]</CardTitle>
+  </div>
+  <Badge variant="secondary" className="text-white rounded-none" style={{ backgroundColor: '#3b91f9' }}>
+    {data.length} transaksi
+  </Badge>
+</CardHeader>
+```
+
+### Table Structure (Fixed Header)
+```jsx
+<CardContent className="flex-1 min-h-0 overflow-hidden p-0 flex flex-col">
+  {/* Loading/Empty States */}
+  {data.length > 0 && (
+    <>
+      {/* Fixed Header */}
+      <div className="shrink-0 border-b border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
+        <Table className="min-w-full text-sm">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[20%] text-slate-500">[Column 1]</TableHead>
+              {/* More columns */}
+            </TableRow>
+          </TableHeader>
+        </Table>
+      </div>
+
+      {/* Scrollable Body */}
+      <ScrollArea className="flex-1">
+        <Table className="min-w-full text-sm">
+          <TableBody>
+            {data.map((item, index) => (
+              <TableRow
+                key={item.id}
+                onClick={() => onSelectItem(item.id)}
+                className={cn(
+                  "cursor-pointer border-b border-slate-100 transition h-14",
+                  item.id === selectedId
+                    ? "text-black"
+                    : index % 2 === 0
+                      ? "bg-white hover:bg-slate-50"
+                      : "bg-gray-50/50 hover:bg-slate-100"
+                )}
+                style={item.id === selectedId ? { backgroundColor: '#e6f4f1' } : undefined}
+              >
+                <TableCell className="align-middle py-4">
+                  {/* Cell content */}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+    </>
+  )}
+</CardContent>
+```
+
+### Table Row Patterns
+- **Zebra Striping**: Even rows white, odd rows `bg-gray-50/50`
+- **Selected Row**: Background `#e6f4f1` (mint green)
+- **Cell Alignment**: `align-middle py-4` untuk semua cell
+- **Row Height**: `h-14` konsisten
+
+## DETAIL CARD DESIGN
+
+### Container
+```jsx
+<div className="w-full lg:w-1/4" style={{
+  backgroundColor: '#e6f4f1',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+}}>
+```
+
+### Card Component
+```jsx
+<Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
+  <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
+    {selectedItem ? (
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="p-6 font-mono text-sm">
+            {/* Detail content */}
+          </div>
+        </ScrollArea>
+      </div>
+    ) : (
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500 p-6">
+        <[IconName] className="h-8 w-8 text-slate-300" />
+        <p className="text-sm font-medium text-slate-600">Pilih transaksi untuk melihat [detail type]</p>
+        <p className="text-xs text-slate-500">
+          Klik salah satu baris untuk melihat [description].
+        </p>
+      </div>
+    )}
+  </CardContent>
+</Card>
+```
+
+## COLOR PALETTE
+
+### Primary Colors
+- **Header Background**: `#f6f9ff` (very light blue)
+- **Detail Card Background**: `#e6f4f1` (light mint green)
+- **Selected Row**: `#e6f4f1` (mint green)
+- **Accent Blue**: `#3b91f9` (icons, badges)
+- **Button Gradient**: `from-blue-500 to-blue-600`
+
+### Text Colors
+- **Primary Text**: `text-slate-700`, `text-slate-800`
+- **Secondary Text**: `text-slate-500`, `text-slate-600`
+- **Labels**: `text-slate-500 text-[9px]`
+- **Selected Text**: `text-black`
+
+### Background Variations
+- **Glassmorphism**: `bg-white/80 backdrop-blur-sm`
+- **Even Rows**: `bg-white`
+- **Odd Rows**: `bg-gray-50/50`
+- **Hover States**: `hover:bg-slate-50`, `hover:bg-slate-100`
+
+## COMPONENT SIZING
+
+### Heights
+- **Form Elements**: `h-9` (search, dropdowns, buttons, statistics)
+- **Table Rows**: `h-14`
+- **Dividers**: `h-6`
+
+### Spacing
+- **Container Padding**: `py-3 px-4` (header), `py-4` (table cells)
+- **Element Gaps**: `gap-2` (compact), `gap-3` (normal), `gap-4` (spacious)
+- **Icon Sizes**: `h-4 w-4` (standard icons)
+
+### Borders & Shadows
+- **Borders**: `border border-slate-200`, `border-slate-300`
+- **Shadows**: `shadow-sm`, `boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'`
+- **Border Radius**: `rounded-none` (angular design)
+
+## RESPONSIVE BEHAVIOR
+
+### Mobile Layout
+```jsx
+<div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+```
+
+### Table Responsiveness
+- Horizontal scroll untuk table content
+- Fixed header tetap terlihat
+- Minimum width untuk readability
+
+## ICON PATTERNS
+
+### Standard Icons
+- **Search**: `Search` icon dengan blue color
+- **Filter**: `Filter` icon untuk status filtering
+- **Building**: `Building2` untuk supplier/vendor
+- **Refresh**: `RefreshCw` dengan spin animation
+- **Empty State**: Sesuai context (ShoppingCart, Package2, dll)
+
+### Icon Styling
+```jsx
+<[IconName] className="h-4 w-4" style={{ color: '#3b91f9' }} />
+```
+
+## IMPLEMENTATION CHECKLIST
+
+### 1. Import Requirements
+```jsx
+import { Card, CardBody } from "@heroui/react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+```
+
+### 2. State Management
+```jsx
+const [searchTerm, setSearchTerm] = useState("");
+const [statusFilter, setStatusFilter] = useState("all");
+const [selectedId, setSelectedId] = useState(null);
+```
+
+### 3. Filter Logic
+```jsx
+const filteredData = useMemo(() =>
+  filterFunction(data, searchTerm, statusFilter),
+  [data, searchTerm, statusFilter]
+);
+```
+
+### 4. Required Props
+- `searchTerm`, `onSearchChange`
+- `statusFilter`, `onStatusFilterChange`
+- `selectedId`, `onSelectItem`
+- `data`, `isLoading`
+- `stats`, `onRefresh`
+
+## CUSTOMIZATION POINTS
+
+### Per-Page Adaptations
+1. **Search Placeholder**: Sesuaikan dengan entity type
+2. **Table Columns**: Adjust width percentages dan headers
+3. **Filter Options**: Customize dropdown options
+4. **Statistics Labels**: Sesuaikan dengan business logic
+5. **Detail Content**: Customize invoice/detail layout
+6. **Empty State Messages**: Sesuaikan dengan context
+7. **Icon Selection**: Pilih icon yang sesuai dengan domain
+
+### Consistent Elements (Jangan Ubah)
+- Color palette dan hex codes
+- Spacing dan sizing values
+- Component structure dan hierarchy
+- Glassmorphism effects
+- Animation transitions
+- Border radius (rounded-none)
+- Shadow patterns
+
+## TESTING CHECKLIST
+
+- [ ] Search functionality working
+- [ ] All filters applying correctly
+- [ ] Table header fixed during scroll
+- [ ] Row selection highlighting
+- [ ] Zebra striping visible
+- [ ] Responsive layout on mobile
+- [ ] Loading states showing
+- [ ] Empty states displaying
+- [ ] Detail card updating on selection
+- [ ] Refresh button working with animation
+- [ ] All hover effects functioning
+- [ ] Color consistency across components
+
+---
+
+**CATATAN PENTING**:
+Desain ini sudah diuji dan diterapkan pada halaman /sales dan /purchases.
+Gunakan template ini sebagai foundation untuk semua halaman data list di aplikasi.
+Jangan mengubah core design elements - hanya customize content dan data specifics.
