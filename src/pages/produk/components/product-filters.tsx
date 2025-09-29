@@ -66,10 +66,8 @@ export function ProductFilters({
                 <option value="nonaktif">Produk nonaktif</option>
               </select>
             </div>
-          </div>
-          <div className="flex flex-1 items-center justify-end gap-4">
             {/* Filter Kategori */}
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm shadow-sm border border-slate-300 h-9 px-3 min-w-[200px]">
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm shadow-sm border border-slate-300 h-9 px-3 min-w-[150px]">
               <span className="text-xs text-slate-600">Kategori</span>
               <select
                 value={kategoriId ?? ""}
@@ -83,7 +81,7 @@ export function ProductFilters({
               </select>
             </div>
             {/* Filter Brand */}
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm shadow-sm border border-slate-300 h-9 px-3 min-w-[200px]">
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm shadow-sm border border-slate-300 h-9 px-3 min-w-[150px]">
               <span className="text-xs text-slate-600">Brand</span>
               <select
                 value={brandId ?? ""}
@@ -96,6 +94,8 @@ export function ProductFilters({
                 ))}
               </select>
             </div>
+          </div>
+          <div className="flex flex-1 items-center justify-end gap-4">
             <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-3 shadow-sm border border-slate-300 h-9">
               <div className="flex flex-col items-center justify-center">
                 <span className="text-slate-500 text-[9px] font-medium leading-none">Total</span>

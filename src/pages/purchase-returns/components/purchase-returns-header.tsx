@@ -44,7 +44,7 @@ export function PurchaseReturnsHeader({
     <Card className="shrink-0 shadow-sm rounded-none border border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
       <CardBody className="flex flex-col gap-2 py-3 px-4">
         <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-          <div className="flex min-w-[260px] flex-1 items-center gap-2">
+          <div className="flex min-w-[320px] flex-1 items-center gap-2">
             <div className="relative flex-1">
               <Input
                 value={searchTerm}

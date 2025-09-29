@@ -9,6 +9,11 @@ import { StockOpnameHeader } from "./components/stock-opname-header";
 import { StockOpnameList } from "./stock-opname-list";
 import { StockOpnameDetail } from "./stock-opname-detail";
 import { summarizeOpnames } from "./stock-opname-utils";
+import StockOpnameCreateDialog from "./components/stock-opname-create-dialog";
+import StockOpnameEditDialog from "./components/stock-opname-edit-dialog";
+import StockOpnameDeleteDialog from "./components/stock-opname-delete-dialog";
+import StockOpnameDetailDialog from "./components/stock-opname-detail-dialog";
+import StockOpnameItemsDialog from "./components/stock-opname-items-dialog";
 
 
 export function StockOpnamePage() {
@@ -16,6 +21,11 @@ export function StockOpnamePage() {
   const [storeFilter, setStoreFilter] = useState<string | "all">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [editItem, setEditItem] = useState<StockOpnameSummary | null>(null);
+  const [deleteItem, setDeleteItem] = useState<StockOpnameSummary | null>(null);
+  const [detailItem, setDetailItem] = useState<StockOpnameSummary | null>(null);
+  const [openItems, setOpenItems] = useState(false);
 
   const listQuery = useStockOpnameList(storeFilter);
   const detailQuery = useStockOpnameDetail(selectedId);
@@ -64,6 +74,7 @@ export function StockOpnamePage() {
         stats={summaryMetrics}
         onRefresh={handleRefresh}
         isRefreshing={listQuery.isFetching || detailQuery.isFetching}
+        onCreate={() => setOpenCreate(true)}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
@@ -73,6 +84,9 @@ export function StockOpnamePage() {
             isLoading={listQuery.isLoading}
             selectedId={selectedId}
             onSelectItem={setSelectedId}
+            onDetail={(it) => setDetailItem(it)}
+            onEdit={(it) => setEditItem(it)}
+            onDelete={(it) => setDeleteItem(it)}
           />
         </div>
 
@@ -83,8 +97,35 @@ export function StockOpnamePage() {
           <StockOpnameDetail
             opname={selectedDetail}
             isLoading={detailQuery.isLoading}
+            onManageItems={() => setOpenItems(true)}
           />
         </div>
+      <StockOpnameCreateDialog
+        open={openCreate}
+        onOpenChange={(v) => setOpenCreate(v)}
+        defaultStoreId={storeFilter !== "all" ? storeFilter : undefined}
+      />
+      <StockOpnameEditDialog
+        open={Boolean(editItem)}
+        onOpenChange={(v) => !v && setEditItem(null)}
+        data={editItem}
+      />
+      <StockOpnameDeleteDialog
+        open={Boolean(deleteItem)}
+        onOpenChange={(v) => !v && setDeleteItem(null)}
+        id={deleteItem?.id ?? null}
+        nomor={deleteItem?.nomorOpname}
+      />
+      <StockOpnameDetailDialog
+        open={Boolean(detailItem)}
+        onOpenChange={(v) => !v && setDetailItem(null)}
+        data={detailItem}
+      />
+      <StockOpnameItemsDialog
+        open={openItems}
+        onOpenChange={setOpenItems}
+        opnameId={selectedId}
+      />
       </div>
     </div>
   );

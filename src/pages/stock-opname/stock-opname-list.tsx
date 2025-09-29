@@ -11,6 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Eye, Pencil, Trash } from "lucide-react";
 import { NotepadText } from "lucide-react";
 import type { StockOpnameSummary } from "@/features/stock-opname/types";
 import { numberFormatter, formatDate, statusVariant, statusLabel } from "./stock-opname-utils";
@@ -20,9 +22,12 @@ interface StockOpnameListProps {
   isLoading: boolean;
   selectedId: string | null;
   onSelectItem: (id: string) => void;
+  onDetail?: (item: StockOpnameSummary) => void;
+  onEdit?: (item: StockOpnameSummary) => void;
+  onDelete?: (item: StockOpnameSummary) => void;
 }
 
-export function StockOpnameList({ data, isLoading, selectedId, onSelectItem }: StockOpnameListProps) {
+export function StockOpnameList({ data, isLoading, selectedId, onSelectItem, onDetail, onEdit, onDelete }: StockOpnameListProps) {
   return (
     <Card className="flex h-full min-h-0 flex-col border border-primary/10 rounded-none" style={{
       backgroundColor: '#f6f9ff',
@@ -67,6 +72,7 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem }: S
                     <TableHead className="w-[15%] text-slate-500">Selisih +/-</TableHead>
                     <TableHead className="w-[10%] text-slate-500">Status</TableHead>
                     <TableHead className="w-[10%] text-slate-500">PJ</TableHead>
+                    <TableHead className="w-[10%] text-slate-500">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
               </Table>
@@ -124,6 +130,19 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem }: S
                       </TableCell>
                       <TableCell className="align-middle py-4 text-xs text-slate-600">
                         {item.penggunaNama ?? "-"}
+                      </TableCell>
+                      <TableCell className="align-middle py-4">
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); onDetail?.(item); }} className="h-7">
+                            <Eye className="h-3.5 w-3.5 mr-1" /> Detail
+                          </Button>
+                          <Button size="sm" onClick={(e) => { e.stopPropagation(); onEdit?.(item); }} className="h-7">
+                            <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={(e) => { e.stopPropagation(); onDelete?.(item); }} className="h-7">
+                            <Trash className="h-3.5 w-3.5 mr-1" /> Hapus
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

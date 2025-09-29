@@ -119,32 +119,32 @@ export function ProductList({
                       )}
                       style={item.id === selectedId ? { backgroundColor: '#e6f4f1' } : undefined}
                     >
-                      <TableCell className="align-middle py-4">
+                      <TableCell className="w-[12%] align-middle py-4">
                         <span className={cn("font-medium", item.id === selectedId ? "text-black" : "text-slate-900")}>
                           {item.kode}
                         </span>
                       </TableCell>
-                      <TableCell className={cn("align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
+                      <TableCell className={cn("w-[22%] align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
                         {item.nama}
                       </TableCell>
-                      <TableCell className={cn("align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
+                      <TableCell className={cn("w-[14%] align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
                         {item.kategoriNama ?? "-"}
                       </TableCell>
-                      <TableCell className={cn("align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
+                      <TableCell className={cn("w-[12%] align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
                         {item.brandNama ?? "-"}
                       </TableCell>
-                      <TableCell className={cn("align-middle py-4 font-semibold", item.id === selectedId ? "text-black" : "text-slate-900")}>
+                      <TableCell className={cn("w-[12%] align-middle py-4 font-semibold", item.id === selectedId ? "text-black" : "text-slate-900")}>
                         {formatCurrency(item.hargaJual)}
                       </TableCell>
-                      <TableCell className={cn("align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
+                      <TableCell className={cn("w-[8%] align-middle py-4", item.id === selectedId ? "text-black" : "text-slate-700")}>
                         {userTokoId ? (stocks[item.id] ?? 0) : "-"}
                       </TableCell>
-                      <TableCell className="align-middle py-4">
+                      <TableCell className="w-[8%] align-middle py-4">
                         <span className={cn("px-2 py-1 rounded text-xs font-semibold border", item.status === "aktif" ? "text-green-600 bg-green-50 border-green-200" : "text-red-600 bg-red-50 border-red-200")}>
                           {item.status ?? "-"}
                         </span>
                       </TableCell>
-                      <TableCell className="align-middle py-4">
+                      <TableCell className="w-[12%] align-middle py-4">
                         <div className="flex items-center gap-1">
                           <Button variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-none hover:bg-blue-100" onClick={(e) => { e.stopPropagation(); onViewDetail(item.id); }}>
                             <Eye className="h-3 w-3 text-blue-600" />

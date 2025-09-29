@@ -16,7 +16,7 @@ export function VarianceFilters({
   onStockFilterChange
 }: VarianceFiltersProps) {
   return (
-    <div className="flex min-w-[260px] flex-1 items-center gap-2">
+    <div className="flex min-w-[320px] flex-1 items-center gap-2">
       <div className="relative flex-1">
         <Input
           value={searchTerm}

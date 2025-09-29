@@ -11,9 +11,10 @@ import { numberFormatter, formatDate, statusVariant, statusLabel, getVarianceCol
 interface StockOpnameDetailProps {
   opname: StockOpnameDetail | null | undefined;
   isLoading: boolean;
+  onManageItems?: () => void;
 }
 
-export function StockOpnameDetail({ opname, isLoading }: StockOpnameDetailProps) {
+export function StockOpnameDetail({ opname, isLoading, onManageItems }: StockOpnameDetailProps) {
   return (
     <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
       <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
@@ -108,7 +109,12 @@ export function StockOpnameDetail({ opname, isLoading }: StockOpnameDetailProps)
 
                 {/* Items Detail */}
                 <div className="mt-4 border-t border-gray-300 pt-4">
-                  <h4 className="text-xs uppercase tracking-wide text-slate-500 mb-2">Rincian Item ({opname.items.length}):</h4>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs uppercase tracking-wide text-slate-500">Rincian Item ({opname.items.length}):</h4>
+                    {onManageItems && (
+                      <button className="text-xs underline text-blue-600" onClick={onManageItems}>Kelola Item</button>
+                    )}
+                  </div>
                   {opname.items.length === 0 ? (
                     <div className="bg-gray-50 p-4 rounded border text-center">
                       <p className="text-xs text-slate-500">Belum ada item pada sesi ini</p>

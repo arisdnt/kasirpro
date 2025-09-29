@@ -38,7 +38,7 @@ export async function fetchProductMovements(
   const opnameQ = client
     .from("stock_opname_items")
     .select(
-      `id, selisih, keterangan, stock_opname:stock_opname_id ( tanggal, nomor_opname, toko_id, tenant_id )`
+      `id, selisih, keterangan, stock_opname:opname_id ( tanggal, nomor_opname, toko_id, tenant_id )`
     )
     .eq("produk_id", produkId)
     .eq("stock_opname.tenant_id", tenantId)

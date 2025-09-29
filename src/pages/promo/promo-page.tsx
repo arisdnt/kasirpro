@@ -216,8 +216,8 @@ export function PromoPage() {
       <Card className="shrink-0 border border-primary/10 bg-white/95 shadow-sm rounded-none">
         <CardContent className="flex flex-col gap-3 py-4">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex min-w-[260px] flex-1 flex-wrap items-center gap-3">
-              <div className="relative flex-1 min-w-[220px]">
+            <div className="flex min-w-[320px] flex-1 flex-wrap items-center gap-3">
+              <div className="relative flex-1">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   value={searchTerm}

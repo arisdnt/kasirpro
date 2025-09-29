@@ -17,7 +17,7 @@ export function BrandFilters({
   onScopeChange
 }: BrandFiltersProps) {
   return (
-    <div className="flex min-w-[260px] flex-1 items-center gap-2">
+    <div className="flex min-w-[320px] flex-1 items-center gap-2">
       {/* Search Input - glassmorphism */}
       <div className="relative flex-1">
         <Input
