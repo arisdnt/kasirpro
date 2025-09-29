@@ -4,6 +4,8 @@ import { Card, CardBody } from "@heroui/react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Filter, Plus, RefreshCw, Search } from "lucide-react";
+import { useCategoriesQuery } from "@/features/kategori/use-categories";
+import { useBrandsQuery } from "@/features/brand/use-brands";
 
 type StatusFilter = "all" | "aktif" | "nonaktif";
 
@@ -12,6 +14,10 @@ interface ProductFiltersProps {
   onSearchChange: (value: string) => void;
   statusFilter: StatusFilter;
   onStatusChange: (value: StatusFilter) => void;
+  kategoriId?: string | null;
+  onKategoriChange?: (id: string | null) => void;
+  brandId?: string | null;
+  onBrandChange?: (id: string | null) => void;
   stats: { total: number; aktif: number; nonaktif: number };
   isRefreshing: boolean;
   onRefresh: () => void;
@@ -23,11 +29,17 @@ export function ProductFilters({
   onSearchChange,
   statusFilter,
   onStatusChange,
+  kategoriId,
+  onKategoriChange,
+  brandId,
+  onBrandChange,
   stats,
   isRefreshing,
   onRefresh,
   onAddProduct,
 }: ProductFiltersProps) {
+  const categories = useCategoriesQuery();
+  const brands = useBrandsQuery();
   return (
     <Card className="shrink-0 shadow-sm rounded-none border border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
       <CardBody className="flex flex-col gap-2 py-3 px-4">
@@ -56,6 +68,34 @@ export function ProductFilters({
             </div>
           </div>
           <div className="flex flex-1 items-center justify-end gap-4">
+            {/* Filter Kategori */}
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm shadow-sm border border-slate-300 h-9 px-3 min-w-[200px]">
+              <span className="text-xs text-slate-600">Kategori</span>
+              <select
+                value={kategoriId ?? ""}
+                onChange={(e) => onKategoriChange?.(e.target.value || null)}
+                className="bg-transparent border-none text-sm text-slate-700 focus:outline-none cursor-pointer pr-6 w-full"
+              >
+                <option value="">Semua</option>
+                {(categories.data ?? []).map((k) => (
+                  <option key={k.id} value={k.id}>{k.nama}</option>
+                ))}
+              </select>
+            </div>
+            {/* Filter Brand */}
+            <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm shadow-sm border border-slate-300 h-9 px-3 min-w-[200px]">
+              <span className="text-xs text-slate-600">Brand</span>
+              <select
+                value={brandId ?? ""}
+                onChange={(e) => onBrandChange?.(e.target.value || null)}
+                className="bg-transparent border-none text-sm text-slate-700 focus:outline-none cursor-pointer pr-6 w-full"
+              >
+                <option value="">Semua</option>
+                {(brands.data ?? []).map((b) => (
+                  <option key={b.id} value={b.id}>{b.nama}</option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm px-3 shadow-sm border border-slate-300 h-9">
               <div className="flex flex-col items-center justify-center">
                 <span className="text-slate-500 text-[9px] font-medium leading-none">Total</span>

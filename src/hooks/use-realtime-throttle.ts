@@ -1,5 +1,6 @@
 import { useCallback, useRef } from "react";
 import { useSupabaseRealtime, type RealtimeConfig } from "./use-supabase-realtime";
+import { useSupabaseAuth } from "@/features/auth/supabase-auth-provider";
 
 /**
  * Hook realtime dengan throttling untuk mencegah excessive updates
@@ -59,6 +60,8 @@ export function useStockRealtimeThrottle(
   handler: () => void,
   options?: { enabled?: boolean }
 ) {
+  const { state: { user } } = useSupabaseAuth();
+
   // Tables yang mempengaruhi stock dengan priority berbeda
   const highPriorityTables = [
     'item_transaksi_penjualan',
@@ -79,11 +82,25 @@ export function useStockRealtimeThrottle(
     'stock_opname',
   ];
 
+  // Hanya sebagian tabel memiliki kolom tenant_id — tambahkan filter untuk mengurangi event volume
+  const tablesWithTenantId = new Set([
+    'transaksi_penjualan',
+    'transaksi_pembelian',
+    'retur_penjualan',
+    'retur_pembelian',
+    'stock_opname',
+  ]);
+
   // High priority: throttle 1 detik
   highPriorityTables.forEach((table) => {
     useRealtimeThrottle(
       `${prefix}-${table}`,
-      { table },
+      {
+        table,
+        filter: user?.tenantId && tablesWithTenantId.has(table)
+          ? `tenant_id=eq.${user.tenantId}`
+          : undefined,
+      },
       handler,
       { ...options, throttleMs: 1000 }
     );
@@ -93,7 +110,12 @@ export function useStockRealtimeThrottle(
   normalPriorityTables.forEach((table) => {
     useRealtimeThrottle(
       `${prefix}-${table}`,
-      { table },
+      {
+        table,
+        filter: user?.tenantId && tablesWithTenantId.has(table)
+          ? `tenant_id=eq.${user.tenantId}`
+          : undefined,
+      },
       handler,
       { ...options, throttleMs: 2000 }
     );
@@ -103,7 +125,12 @@ export function useStockRealtimeThrottle(
   lowPriorityTables.forEach((table) => {
     useRealtimeThrottle(
       `${prefix}-${table}`,
-      { table },
+      {
+        table,
+        filter: user?.tenantId && tablesWithTenantId.has(table)
+          ? `tenant_id=eq.${user.tenantId}`
+          : undefined,
+      },
       handler,
       { ...options, throttleMs: 3000 }
     );

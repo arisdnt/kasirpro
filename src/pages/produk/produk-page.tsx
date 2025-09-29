@@ -13,7 +13,9 @@ import { ProductDeleteDialog } from "./components/product-delete-dialog";
 type StatusFilter = "all" | "aktif" | "nonaktif";
 
 export function ProdukPage() {
-  const products = useProductsWithRealtimeStocks();
+  const [kategoriId, setKategoriId] = useState<string | null>(null);
+  const [brandId, setBrandId] = useState<string | null>(null);
+  const products = useProductsWithRealtimeStocks({ kategoriId, brandId });
   const { state: { user } } = useSupabaseAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -91,6 +93,10 @@ export function ProdukPage() {
         onSearchChange={setSearchTerm}
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
+        kategoriId={kategoriId}
+        onKategoriChange={setKategoriId}
+        brandId={brandId}
+        onBrandChange={setBrandId}
         stats={stats}
         isRefreshing={products.isFetching}
         onRefresh={handleRefresh}

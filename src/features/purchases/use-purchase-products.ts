@@ -87,7 +87,11 @@ export function usePurchaseProductsQuery() {
     });
   }, [queryClient, user?.tenantId, user?.tokoId]);
 
-  useSupabaseRealtime("purchase-products", { table: "produk" }, invalidate);
+  useSupabaseRealtime(
+    "purchase-products",
+    { table: "produk", filter: user?.tenantId ? `tenant_id=eq.${user.tenantId}` : undefined },
+    invalidate,
+  );
   useProductStockRealtime("purchase-stock", invalidate);
 
   return query;

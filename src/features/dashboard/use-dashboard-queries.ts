@@ -73,7 +73,10 @@ export function useDashboardInsightsQuery(filters: DashboardFilters) {
   useProductStockRealtime("dashboard-insights-stock", invalidate);
   useSupabaseRealtime(
     "dashboard-insights-sales",
-    { table: "transaksi_penjualan" },
+    {
+      table: "transaksi_penjualan",
+      filter: user?.tenantId ? `tenant_id=eq.${user.tenantId}` : undefined,
+    },
     invalidate,
   );
   useSupabaseRealtime(
@@ -107,7 +110,11 @@ export function useLowStockQuery(selectedTokoId: string | "all") {
   }, [queryClient, user?.tenantId]);
 
   useProductStockRealtime("dashboard-low-stock", invalidate);
-  useSupabaseRealtime("dashboard-products", { table: "produk" }, invalidate);
+  useSupabaseRealtime(
+    "dashboard-products",
+    { table: "produk", filter: user?.tenantId ? `tenant_id=eq.${user.tenantId}` : undefined },
+    invalidate,
+  );
 
   return query;
 }
@@ -157,7 +164,11 @@ export function useRecentSalesQuery(
     });
   }, [queryClient, user?.tenantId]);
 
-  useSupabaseRealtime("dashboard-sales", { table: "transaksi_penjualan" }, invalidate);
+  useSupabaseRealtime(
+    "dashboard-sales",
+    { table: "transaksi_penjualan", filter: user?.tenantId ? `tenant_id=eq.${user.tenantId}` : undefined },
+    invalidate,
+  );
   useSupabaseRealtime(
     "dashboard-sales-items",
     { table: "item_transaksi_penjualan" },

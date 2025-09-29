@@ -126,7 +126,7 @@ export function PurchaseReturnsTable({
                       style={item.id === selectedId ? { backgroundColor: '#e6f4f1' } : undefined}
                     >
                       <TableCell
-                        className="align-middle py-4 cursor-pointer"
+                        className="w-[18%] align-middle py-4 cursor-pointer"
                         onClick={() => onSelectReturn(item.id)}
                       >
                         <span className="font-medium font-mono text-xs">
@@ -134,19 +134,19 @@ export function PurchaseReturnsTable({
                         </span>
                       </TableCell>
                       <TableCell
-                        className="align-middle py-4 cursor-pointer"
+                        className="w-[18%] align-middle py-4 cursor-pointer"
                         onClick={() => onSelectReturn(item.id)}
                       >
                         {item.supplierNama}
                       </TableCell>
                       <TableCell
-                        className="align-middle py-4 font-semibold cursor-pointer text-right"
+                        className="w-[12%] align-middle py-4 font-semibold cursor-pointer text-right"
                         onClick={() => onSelectReturn(item.id)}
                       >
                         {formatCurrency(item.total)}
                       </TableCell>
                       <TableCell
-                        className="align-middle py-4 cursor-pointer"
+                        className="w-[12%] align-middle py-4 cursor-pointer"
                         onClick={() => onSelectReturn(item.id)}
                       >
                         <span className={cn(
@@ -157,18 +157,18 @@ export function PurchaseReturnsTable({
                         </span>
                       </TableCell>
                       <TableCell
-                        className="align-middle py-4 max-w-32 truncate cursor-pointer"
+                        className="w-[18%] align-middle py-4 max-w-32 truncate cursor-pointer"
                         onClick={() => onSelectReturn(item.id)}
                       >
                         {item.alasan ?? "-"}
                       </TableCell>
                       <TableCell
-                        className="align-middle py-4 text-xs cursor-pointer"
+                        className="w-[10%] align-middle py-4 text-xs cursor-pointer"
                         onClick={() => onSelectReturn(item.id)}
                       >
                         {formatDateTime(item.tanggal)}
                       </TableCell>
-                      <TableCell className="align-middle py-4">
+                      <TableCell className="w-[12%] align-middle py-4">
                         <div className="flex items-center justify-center gap-1">
                           <Button
                             variant="ghost"

@@ -14,7 +14,15 @@ export const getSupabaseClient = () => {
         persistSession: true,
         autoRefreshToken: true,
       },
-      realtime: ENHANCED_REALTIME_CONFIG.params,
+      // Configure Realtime using documented RealtimeClientOptions
+      // Ref: RealtimeClientOptions (heartbeatIntervalMs, timeout, reconnectAfterMs, params)
+      realtime: {
+        heartbeatIntervalMs: ENHANCED_REALTIME_CONFIG.heartbeatIntervalMs,
+        timeout: ENHANCED_REALTIME_CONFIG.timeout,
+        reconnectAfterMs: ENHANCED_REALTIME_CONFIG.reconnectAfterMs,
+        // Optional connection params (e.g., log_level) can be added here when needed
+        params: {},
+      },
     });
 
     // Initialize channel manager with client

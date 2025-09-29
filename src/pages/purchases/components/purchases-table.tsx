@@ -85,7 +85,7 @@ export function PurchasesTable({ data, isLoading, selectedId, onSelectItem }: Pu
                     )}
                     style={item.id === selectedId ? { backgroundColor: '#e6f4f1' } : undefined}
                   >
-                    <TableCell className="align-middle py-4">
+                    <TableCell className="w-[25%] align-middle py-4">
                       <span className={cn(
                         "font-medium",
                         item.id === selectedId ? "text-black" : "text-slate-900"
@@ -94,18 +94,18 @@ export function PurchasesTable({ data, isLoading, selectedId, onSelectItem }: Pu
                       </span>
                     </TableCell>
                     <TableCell className={cn(
-                      "align-middle py-4",
+                      "w-[25%] align-middle py-4",
                       item.id === selectedId ? "text-black" : "text-slate-700"
                     )}>
                       {item.supplierNama}
                     </TableCell>
                     <TableCell className={cn(
-                      "align-middle py-4 font-semibold",
+                      "w-[20%] align-middle py-4 font-semibold",
                       item.id === selectedId ? "text-black" : "text-slate-900"
                     )}>
                       {formatCurrency(item.total)}
                     </TableCell>
-                    <TableCell className="align-middle py-4">
+                    <TableCell className="w-[15%] align-middle py-4">
                       <span className={cn(
                         "px-2 py-1 rounded text-xs font-semibold border",
                         getStatusColor(item.status ?? "")
@@ -114,7 +114,7 @@ export function PurchasesTable({ data, isLoading, selectedId, onSelectItem }: Pu
                       </span>
                     </TableCell>
                     <TableCell className={cn(
-                      "align-middle py-4 text-xs",
+                      "w-[15%] align-middle py-4 text-xs",
                       item.id === selectedId ? "text-black" : "text-slate-600"
                     )}>
                       {formatDateTime(item.tanggal)}

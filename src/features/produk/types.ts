@@ -6,6 +6,7 @@ export type Product = {
   kategoriNama: string | null;
   brandId: string | null;
   brandNama: string | null;
+  stock?: number; // stok terkini (dari view v_produk_toko_with_stock)
   hargaJual: number;
   hargaBeli: number | null;
   status: string | null;
