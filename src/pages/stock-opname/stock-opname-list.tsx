@@ -62,17 +62,17 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem, onD
           <>
             {/* Fixed Header */}
             <div className="shrink-0 border-b border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
-              <Table className="min-w-full text-sm">
+              <Table className="min-w-full text-sm" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[20%] text-slate-500">Nomor Opname</TableHead>
-                    <TableHead className="w-[15%] text-slate-500">Tanggal</TableHead>
-                    <TableHead className="w-[20%] text-slate-500">Toko</TableHead>
-                    <TableHead className="w-[10%] text-slate-500">Items</TableHead>
-                    <TableHead className="w-[15%] text-slate-500">Selisih +/-</TableHead>
-                    <TableHead className="w-[10%] text-slate-500">Status</TableHead>
-                    <TableHead className="w-[10%] text-slate-500">PJ</TableHead>
-                    <TableHead className="w-[10%] text-slate-500">Aksi</TableHead>
+                    <TableHead className="w-[18%] text-slate-500" style={{ width: '18%' }}>Nomor Opname</TableHead>
+                    <TableHead className="w-[13%] text-slate-500" style={{ width: '13%' }}>Tanggal</TableHead>
+                    <TableHead className="w-[18%] text-slate-500" style={{ width: '18%' }}>Toko</TableHead>
+                    <TableHead className="w-[8%] text-slate-500" style={{ width: '8%' }}>Items</TableHead>
+                    <TableHead className="w-[15%] text-slate-500" style={{ width: '15%' }}>Selisih +/-</TableHead>
+                    <TableHead className="w-[10%] text-slate-500" style={{ width: '10%' }}>Status</TableHead>
+                    <TableHead className="w-[10%] text-slate-500" style={{ width: '10%' }}>PJ</TableHead>
+                    <TableHead className="w-[8%] text-slate-500" style={{ width: '8%' }}>Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
               </Table>
@@ -80,7 +80,7 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem, onD
 
             {/* Scrollable Body */}
             <ScrollArea className="flex-1">
-              <Table className="min-w-full text-sm">
+              <Table className="min-w-full text-sm" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <TableBody>
                   {data.map((item, index) => (
                     <TableRow
@@ -96,7 +96,7 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem, onD
                       )}
                       style={item.id === selectedId ? { backgroundColor: '#e6f4f1' } : undefined}
                     >
-                      <TableCell className="align-middle py-4">
+                      <TableCell className="w-[18%] align-middle py-4" style={{ width: '18%' }}>
                         <span className="font-medium text-slate-800">
                           {item.nomorOpname}
                         </span>
@@ -104,16 +104,16 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem, onD
                           <p className="text-xs text-slate-500 mt-1 truncate">{item.catatan}</p>
                         )}
                       </TableCell>
-                      <TableCell className="align-middle py-4 text-slate-700">
+                      <TableCell className="w-[13%] align-middle py-4 text-slate-700" style={{ width: '13%' }}>
                         {formatDate(item.tanggal)}
                       </TableCell>
-                      <TableCell className="align-middle py-4 text-slate-700">
+                      <TableCell className="w-[18%] align-middle py-4 text-slate-700" style={{ width: '18%' }}>
                         {item.tokoNama ?? "-"}
                       </TableCell>
-                      <TableCell className="align-middle py-4 text-slate-700 text-center font-semibold">
+                      <TableCell className="w-[8%] align-middle py-4 text-slate-700 text-left font-semibold" style={{ width: '8%' }}>
                         {item.totalItems}
                       </TableCell>
-                      <TableCell className="align-middle py-4">
+                      <TableCell className="w-[15%] align-middle py-4" style={{ width: '15%' }}>
                         <div className="flex items-center gap-1 text-xs">
                           <span className="text-emerald-600 font-semibold">+{numberFormatter.format(item.totalSelisihPlus)}</span>
                           <span className="text-slate-400">/</span>
@@ -123,24 +123,24 @@ export function StockOpnameList({ data, isLoading, selectedId, onSelectItem, onD
                           Net: {numberFormatter.format(item.totalSelisihNet)}
                         </div>
                       </TableCell>
-                      <TableCell className="align-middle py-4">
+                      <TableCell className="w-[10%] align-middle py-4" style={{ width: '10%' }}>
                         <Badge variant={statusVariant(item.status)} className="text-xs rounded">
                           {statusLabel(item.status)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="align-middle py-4 text-xs text-slate-600">
+                      <TableCell className="w-[10%] align-middle py-4 text-xs text-slate-600" style={{ width: '10%' }}>
                         {item.penggunaNama ?? "-"}
                       </TableCell>
-                      <TableCell className="align-middle py-4">
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); onDetail?.(item); }} className="h-7">
-                            <Eye className="h-3.5 w-3.5 mr-1" /> Detail
+                      <TableCell className="w-[8%] align-middle py-4" style={{ width: '8%' }}>
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); onDetail?.(item); }} className="h-7 w-7 p-0 rounded-none hover:bg-blue-100">
+                            <Eye className="h-3.5 w-3.5 text-blue-600" />
                           </Button>
-                          <Button size="sm" onClick={(e) => { e.stopPropagation(); onEdit?.(item); }} className="h-7">
-                            <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
+                          <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); onEdit?.(item); }} className="h-7 w-7 p-0 rounded-none hover:bg-green-100">
+                            <Pencil className="h-3.5 w-3.5 text-green-600" />
                           </Button>
-                          <Button size="sm" variant="destructive" onClick={(e) => { e.stopPropagation(); onDelete?.(item); }} className="h-7">
-                            <Trash className="h-3.5 w-3.5 mr-1" /> Hapus
+                          <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); onDelete?.(item); }} className="h-7 w-7 p-0 rounded-none hover:bg-red-100">
+                            <Trash className="h-3.5 w-3.5 text-red-600" />
                           </Button>
                         </div>
                       </TableCell>
