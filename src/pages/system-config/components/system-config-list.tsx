@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { Settings2 } from "lucide-react";
+import { Settings2, Eye, Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { SystemConfig } from "@/features/system-config/types";
 import type { UseQueryResult } from "@tanstack/react-query";
 
@@ -24,6 +25,9 @@ interface SystemConfigListProps {
   selectedId: string | null;
   onSelectConfig: (id: string) => void;
   configsQuery: UseQueryResult<SystemConfig[]>;
+  onViewDetail?: (config: SystemConfig) => void;
+  onEditConfig?: (config: SystemConfig) => void;
+  onDeleteConfig?: (config: SystemConfig) => void;
 }
 
 export function SystemConfigList({
@@ -31,20 +35,26 @@ export function SystemConfigList({
   selectedId,
   onSelectConfig,
   configsQuery,
+  onViewDetail,
+  onEditConfig,
+  onDeleteConfig,
 }: SystemConfigListProps) {
   return (
-    <Card className="flex h-full min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
+    <Card className="flex h-full min-h-0 flex-col border border-primary/10 rounded-none" style={{
+      backgroundColor: '#f6f9ff',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+    }}>
+      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2" style={{ backgroundColor: '#f6f9ff' }}>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">Konfigurasi</span>
-          <span className="text-slate-400">•</span>
-          <CardTitle className="text-sm">Daftar Key</CardTitle>
+          <span className="text-xs font-semibold uppercase tracking-wide text-black">Konfigurasi</span>
+          <span className="text-black">•</span>
+          <CardTitle className="text-sm text-black">Daftar Key</CardTitle>
         </div>
-        <Badge variant="secondary" className="bg-slate-100 text-slate-700 rounded-none">
+        <Badge variant="secondary" className="text-white rounded-none" style={{ backgroundColor: '#3b91f9' }}>
           {filteredConfigs.length} key
         </Badge>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 overflow-hidden p-0">
+      <CardContent className="flex-1 min-h-0 overflow-hidden p-0 flex flex-col">
         <ScrollArea className="h-full">
           {configsQuery.isLoading ? (
             <div className="space-y-2 p-4">
@@ -59,36 +69,94 @@ export function SystemConfigList({
               <p className="text-xs text-slate-500">Sesuaikan pencarian atau filter untuk melihat konfigurasi lainnya.</p>
             </div>
           ) : (
-            <div className="space-y-2 p-4">
-              {filteredConfigs.map((config) => {
+            <div className="space-y-1 p-2">
+              {filteredConfigs.map((config, index) => {
                 const isActive = selectedId === config.id;
                 const scope = describeScope(config);
                 return (
-                  <button
+                  <div
                     key={config.id}
-                    type="button"
-                    onClick={() => onSelectConfig(config.id)}
                     className={cn(
-                      "w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition",
-                      isActive ? "border-indigo-300 bg-indigo-50/80" : "hover:border-indigo-200 hover:bg-indigo-50/40",
+                      "flex w-full items-center gap-3 border border-slate-100 px-4 py-3 transition",
+                      isActive
+                        ? "text-black"
+                        : index % 2 === 0
+                          ? "bg-white hover:bg-slate-50"
+                          : "bg-gray-50/50 hover:bg-slate-100"
                     )}
+                    style={isActive ? { backgroundColor: '#e6f4f1' } : undefined}
+                    onClick={() => onSelectConfig(config.id)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onSelectConfig(config.id);
+                      }
+                    }}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className={cn("text-sm font-semibold", isActive ? "text-indigo-700" : "text-slate-800")}>{config.key}</p>
-                        <p className="text-xs text-slate-500">{scope}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className={cn("text-sm font-semibold truncate", isActive ? "text-slate-800" : "text-slate-800")}>{config.key}</p>
+                      <p className="text-xs text-slate-500 truncate">{scope}</p>
+                      {config.deskripsi && (
+                        <p className="mt-1 line-clamp-1 text-xs text-slate-500">{config.deskripsi}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex flex-col items-end gap-1">
+                        <Badge variant="secondary" className="rounded-none px-2 py-0.5 text-xs bg-blue-100 text-blue-700">
+                          {config.tipe ?? "string"}
+                        </Badge>
+                        <div className="text-[10px] text-slate-400 text-right">
+                          {config.updatedAt ? dateFormatter.format(new Date(config.updatedAt)) : "-"}
+                        </div>
                       </div>
-                      <Badge variant="secondary" className="rounded-full px-3 py-0.5 text-xs">
-                        {config.tipe ?? "string"}
-                      </Badge>
+                      <div className="flex items-center gap-1">
+                        {onViewDetail ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 rounded-none hover:bg-blue-100"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onViewDetail(config);
+                            }}
+                            title="Detail"
+                          >
+                            <Eye className="h-3 w-3 text-blue-600" />
+                          </Button>
+                        ) : null}
+                        {onEditConfig ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 rounded-none hover:bg-green-100"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onEditConfig(config);
+                            }}
+                            title="Edit"
+                          >
+                            <Edit className="h-3 w-3 text-green-600" />
+                          </Button>
+                        ) : null}
+                        {onDeleteConfig ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 rounded-none hover:bg-red-100"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onDeleteConfig(config);
+                            }}
+                            title="Hapus"
+                          >
+                            <Trash2 className="h-3 w-3 text-red-600" />
+                          </Button>
+                        ) : null}
+                      </div>
                     </div>
-                    {config.deskripsi ? (
-                      <p className="mt-2 line-clamp-2 text-xs text-slate-500">{config.deskripsi}</p>
-                    ) : null}
-                    <div className="mt-2 text-[11px] text-slate-500">
-                      Disunting {config.updatedAt ? dateFormatter.format(new Date(config.updatedAt)) : "-"}
-                    </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

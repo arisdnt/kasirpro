@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { PromoWithRelations } from "@/features/promo/types";
+import type { PromoInput, PromoWithRelations } from "@/features/promo/types";
 
 const BASE_SELECT = `
   id,
@@ -183,7 +183,7 @@ export async function fetchPromos(tenantId: string, tokoId: string | null) {
     .limit(100);
 
   if (tokoId) {
-    query.eq("toko_id", tokoId);
+    query.or(`toko_id.eq.${tokoId},toko_id.is.null`);
   }
 
   const { data, error } = await query;
@@ -200,6 +200,84 @@ export async function updatePromoStatus(promoId: string, status: string) {
     .from("promo")
     .update({ status, updated_at: new Date().toISOString() })
     .eq("id", promoId);
+
+  if (error) {
+    throw error;
+  }
+}
+
+function mapInputToColumns(input: PromoInput, tenantId: string, userId: string | null) {
+  return {
+    tenant_id: tenantId,
+    toko_id: input.tokoId && input.tokoId !== "all" ? input.tokoId : null,
+    user_id: userId,
+    nama: input.nama,
+    deskripsi: input.deskripsi ?? null,
+    kode: input.kode ?? null,
+    tipe: input.tipe,
+    level: input.level,
+    nilai: Number.isFinite(input.nilai) ? input.nilai : 0,
+    harga_spesial: input.hargaSpesial ?? null,
+    beli_qty: input.beliQty ?? null,
+    gratis_qty: input.gratisQty ?? null,
+    syarat_min_qty: input.syaratMinQty ?? null,
+    syarat_min_total: input.syaratMinTotal ?? null,
+    mulai: input.mulai,
+    selesai: input.selesai ?? null,
+    hari_dalam_minggu:
+      input.hariDalamMinggu && input.hariDalamMinggu.length > 0 ? input.hariDalamMinggu : null,
+    jam_mulai: input.jamMulai ?? null,
+    jam_selesai: input.jamSelesai ?? null,
+    limit_per_pelanggan: input.limitPerPelanggan ?? null,
+    limit_keseluruhan: input.limitKeseluruhan ?? null,
+    prioritas: Number.isFinite(input.prioritas) ? input.prioritas : 0,
+    is_otomatis: input.isOtomatis,
+    status: input.status,
+    metadata: {},
+    updated_at: new Date().toISOString(),
+  };
+}
+
+export async function createPromo(params: {
+  tenantId: string;
+  userId: string | null;
+  input: PromoInput;
+}) {
+  const client = getSupabaseClient();
+  const payload = mapInputToColumns(params.input, params.tenantId, params.userId);
+  const { error } = await client.from("promo").insert({ ...payload, created_at: new Date().toISOString() });
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function updatePromo(params: {
+  promoId: string;
+  tenantId: string;
+  input: PromoInput;
+  userId: string | null;
+}) {
+  const client = getSupabaseClient();
+  const payload = mapInputToColumns(params.input, params.tenantId, params.userId);
+  const { error } = await client
+    .from("promo")
+    .update(payload)
+    .eq("id", params.promoId)
+    .eq("tenant_id", params.tenantId);
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function deletePromo(params: { promoId: string; tenantId: string }) {
+  const client = getSupabaseClient();
+  const { error } = await client
+    .from("promo")
+    .delete()
+    .eq("id", params.promoId)
+    .eq("tenant_id", params.tenantId);
 
   if (error) {
     throw error;

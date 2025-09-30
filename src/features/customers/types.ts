@@ -15,3 +15,15 @@ export type Customer = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+export type CustomerInput = {
+  kode: string;
+  nama: string;
+  status: string;
+  telepon?: string | null;
+  email?: string | null;
+  alamat?: string | null;
+  tanggalLahir?: string | null;
+  jenisKelamin?: string | null;
+  tokoId?: string | null;
+};

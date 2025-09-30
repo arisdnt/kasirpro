@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStoresQuery } from "@/features/stores/use-stores";
-import { useSystemConfigList, useSystemConfigUpdate } from "@/features/system-config/use-system-config";
-import type { SystemConfig } from "@/features/system-config/types";
-import { SystemConfigMetrics } from "./components/system-config-metrics";
+import { useSystemConfigList } from "@/features/system-config/use-system-config";
 import { SystemConfigHeader } from "./components/system-config-header";
 import { SystemConfigList } from "./components/system-config-list";
 import { SystemConfigDetail } from "./components/system-config-detail";
+import { SystemConfigAddModal } from "./components/system-config-add-modal";
+import { SystemConfigEditModal } from "./components/system-config-edit-modal";
+import { SystemConfigDeleteDialog } from "./components/system-config-delete-dialog";
+import { SystemConfigDetailModal } from "./components/system-config-detail-modal";
 
 type ScopeFilter = "all" | "tenant" | string;
 type TypeFilter = "all" | string;
@@ -13,14 +15,15 @@ type TypeFilter = "all" | string;
 export function SystemConfigPage() {
   const stores = useStoresQuery();
   const configsQuery = useSystemConfigList();
-  const updateMutation = useSystemConfigUpdate();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [scopeFilter, setScopeFilter] = useState<ScopeFilter>("all");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [valueDraft, setValueDraft] = useState("");
-  const [descriptionDraft, setDescriptionDraft] = useState("");
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [detailModalId, setDetailModalId] = useState<string | null>(null);
+  const [editModalId, setEditModalId] = useState<string | null>(null);
+  const [deleteModalId, setDeleteModalId] = useState<string | null>(null);
 
   const configs = useMemo(() => configsQuery.data ?? [], [configsQuery.data]);
 
@@ -70,10 +73,23 @@ export function SystemConfigPage() {
     [filteredConfigs, selectedId],
   );
 
-  useEffect(() => {
-    setValueDraft(selectedConfig?.value ?? "");
-    setDescriptionDraft(selectedConfig?.deskripsi ?? "");
-  }, [selectedConfig?.id, selectedConfig?.value, selectedConfig?.deskripsi]);
+  const storeOptions = useMemo(
+    () => (stores.data ?? []).map((store) => ({ value: store.id, label: store.nama })),
+    [stores.data],
+  );
+
+  const detailModalConfig = useMemo(
+    () => filteredConfigs.find((config) => config.id === detailModalId) ?? null,
+    [detailModalId, filteredConfigs],
+  );
+  const editModalConfig = useMemo(
+    () => filteredConfigs.find((config) => config.id === editModalId) ?? null,
+    [editModalId, filteredConfigs],
+  );
+  const deleteModalConfig = useMemo(
+    () => filteredConfigs.find((config) => config.id === deleteModalId) ?? null,
+    [deleteModalId, filteredConfigs],
+  );
 
   const typeOptions = useMemo(() => {
     const values = new Set(configs.map((config) => config.tipe ?? ""));
@@ -81,35 +97,20 @@ export function SystemConfigPage() {
     return Array.from(values).sort();
   }, [configs]);
 
+  const stats = useMemo(() => {
+    const total = configs.length;
+    const tenant = configs.filter((config) => !config.tokoId).length;
+    const store = configs.filter((config) => config.tokoId).length;
+    return { total, tenant, store };
+  }, [configs]);
+
   const handleRefresh = () => {
     void configsQuery.refetch();
   };
 
-  const handleSave = () => {
-    if (!selectedConfig) return;
-    updateMutation.mutate({
-      id: selectedConfig.id,
-      value: valueDraft.trim().length === 0 ? null : valueDraft,
-      deskripsi: descriptionDraft.trim().length === 0 ? null : descriptionDraft,
-    });
-  };
-
-  const isDirty = Boolean(
-    selectedConfig &&
-      (((selectedConfig.value ?? "") !== valueDraft) || (selectedConfig.deskripsi ?? "") !== descriptionDraft),
-  );
-
-  const handleReset = () => {
-    if (selectedConfig) {
-      setValueDraft(selectedConfig.value ?? "");
-      setDescriptionDraft(selectedConfig.deskripsi ?? "");
-    }
-  };
 
   return (
     <div className="flex h-[calc(100vh-5rem)] max-h-[calc(100vh-5rem)] flex-col gap-4 overflow-hidden -mx-4 -my-6 px-2 py-2 text-slate-900">
-      <SystemConfigMetrics configs={configs} />
-
       <SystemConfigHeader
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -121,6 +122,8 @@ export function SystemConfigPage() {
         stores={stores}
         configsQuery={configsQuery}
         onRefresh={handleRefresh}
+        stats={stats}
+        onAddConfig={() => setIsAddOpen(true)}
       />
 
       <div className="flex flex-1 min-h-0 flex-col gap-4 lg:flex-row">
@@ -130,23 +133,58 @@ export function SystemConfigPage() {
             selectedId={selectedId}
             onSelectConfig={setSelectedId}
             configsQuery={configsQuery}
+            onViewDetail={(config) => setDetailModalId(config.id)}
+            onEditConfig={(config) => setEditModalId(config.id)}
+            onDeleteConfig={(config) => setDeleteModalId(config.id)}
           />
         </div>
 
-        <div className="w-full lg:w-1/4">
+        <div className="w-full lg:w-1/4" style={{
+          backgroundColor: '#e6f4f1',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+        }}>
           <SystemConfigDetail
             selectedConfig={selectedConfig}
-            valueDraft={valueDraft}
-            onValueDraftChange={setValueDraft}
-            descriptionDraft={descriptionDraft}
-            onDescriptionDraftChange={setDescriptionDraft}
-            isDirty={isDirty}
-            isUpdating={updateMutation.isPending}
-            onSave={handleSave}
-            onReset={handleReset}
+            onEdit={(config) => setEditModalId(config.id)}
+            onDelete={(config) => setDeleteModalId(config.id)}
+            onOpenModal={(config) => setDetailModalId(config.id)}
           />
         </div>
       </div>
+
+      <SystemConfigAddModal
+        open={isAddOpen}
+        onOpenChange={(open) => setIsAddOpen(open)}
+        storeOptions={storeOptions}
+        defaultStoreId={scopeFilter !== "all" && scopeFilter !== "tenant" ? scopeFilter : null}
+      />
+
+      <SystemConfigEditModal
+        open={Boolean(editModalId && editModalConfig)}
+        onOpenChange={(open) => {
+          if (!open) setEditModalId(null);
+        }}
+        config={editModalConfig}
+        storeOptions={storeOptions}
+      />
+
+      <SystemConfigDeleteDialog
+        open={Boolean(deleteModalId && deleteModalConfig)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteModalId(null);
+        }}
+        config={deleteModalConfig}
+      />
+
+      <SystemConfigDetailModal
+        open={Boolean(detailModalId && detailModalConfig)}
+        onOpenChange={(open) => {
+          if (!open) setDetailModalId(null);
+        }}
+        config={detailModalConfig}
+        onEdit={(config) => setEditModalId(config.id)}
+        onDelete={(config) => setDeleteModalId(config.id)}
+      />
     </div>
   );
 }

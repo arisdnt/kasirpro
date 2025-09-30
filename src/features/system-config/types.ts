@@ -10,3 +10,11 @@ export type SystemConfig = {
   createdAt: string | null;
   updatedAt: string | null;
 };
+
+export type SystemConfigInput = {
+  key: string;
+  value: string | null;
+  tipe: string | null;
+  deskripsi: string | null;
+  tokoId: string | null;
+};

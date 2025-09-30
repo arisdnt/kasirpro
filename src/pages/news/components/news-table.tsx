@@ -1,9 +1,10 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardBody, CardHeader, CardTitle } from "@heroui/react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, Eye, Newspaper, Tag, User } from "lucide-react";
+import { Calendar, Eye, Newspaper, Tag, User, Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDateTime } from "@/lib/format";
 import type { NewsItem } from "../news-types";
@@ -21,18 +22,21 @@ interface NewsTableProps {
 
 export function NewsTable({ data, isLoading, selectedId, onSelectItem, onDetail, onEdit, onDelete }: NewsTableProps) {
   return (
-    <Card className="flex h-full min-h-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
+    <Card className="flex h-full min-h-0 flex-col border border-primary/10 rounded-none" style={{
+      backgroundColor: '#f6f9ff',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)'
+    }}>
+      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2" style={{ backgroundColor: '#f6f9ff' }}>
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-black">Manajemen Berita</span>
           <span className="text-black">•</span>
           <CardTitle className="text-sm text-black">Daftar Artikel</CardTitle>
         </div>
-        <Badge variant="secondary" className="bg-slate-100 text-slate-700 rounded-none">
+        <Badge variant="secondary" className="text-white rounded-none" style={{ backgroundColor: '#3b91f9' }}>
           {data.length} artikel
         </Badge>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 overflow-hidden p-0">
+      <CardBody className="flex-1 min-h-0 overflow-hidden p-0 flex flex-col">
         <ScrollArea className="h-full">
           {isLoading ? (
             <div className="flex flex-col gap-2 p-4">
@@ -49,118 +53,98 @@ export function NewsTable({ data, isLoading, selectedId, onSelectItem, onDetail,
               </p>
             </div>
           ) : (
-            <Table className="min-w-full text-sm">
-              <TableHeader className="sticky top-0 z-10 bg-white/95">
-                <TableRow className="border-b border-slate-200">
-                  <TableHead className="w-[30%] text-slate-500">Judul</TableHead>
-                  <TableHead className="w-[20%] text-slate-500">Tipe</TableHead>
-                  <TableHead className="w-[15%] text-slate-500">Penulis</TableHead>
-                  <TableHead className="w-[10%] text-slate-500">Status</TableHead>
-                  <TableHead className="w-[10%] text-slate-500">Views</TableHead>
-                  <TableHead className="w-[15%] text-slate-500">Dibuat</TableHead>
-                  <TableHead className="w-[20%] text-slate-500">Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((item) => (
-                  <TableRow
-                    key={item.id}
-                    onClick={() => onSelectItem(item.id)}
-                    data-state={item.id === selectedId ? "selected" : undefined}
-                    className={cn(
-                      "cursor-pointer border-b border-slate-100 transition",
-                      item.id === selectedId ? "!bg-gray-100 text-black" : "hover:bg-slate-50"
-                    )}
-                  >
-                    <TableCell className="align-top">
-                      <div className="space-y-1">
-                        <span className={cn(
-                          "font-medium line-clamp-2",
-                          item.id === selectedId ? "text-black" : "text-slate-900"
-                        )}>
-                          {item.judul}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className={cn(
-                      "align-top",
-                      item.id === selectedId ? "text-black" : "text-slate-700"
-                    )}>
-                      <div className="flex items-center gap-1">
-                        <Tag className="h-3 w-3 text-slate-400" />
-                        <span className="capitalize">{item.tipeBerita}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className={cn(
-                      "align-top",
-                      item.id === selectedId ? "text-black" : "text-slate-700"
-                    )}>
-                      <div className="flex items-center gap-1">
-                        <User className="h-3 w-3 text-slate-400" />
-                        <span className="truncate">{item.authorName ?? "Unknown"}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="align-top">
-                      <span className={cn(
-                        "px-2 py-1 rounded text-xs font-semibold border capitalize",
-                        getStatusColor(item.status)
-                      )}>
-                        {getStatusLabel(item.status)}
-                      </span>
-                    </TableCell>
-                    <TableCell className={cn(
-                      "align-top text-center font-semibold",
-                      item.id === selectedId ? "text-black" : "text-slate-900"
-                    )}>
-                      <div className="flex items-center justify-center gap-1">
-                        <Eye className="h-3 w-3 text-slate-400" />
-                        {item.viewCount}
-                      </div>
-                    </TableCell>
-                    <TableCell className={cn(
-                      "align-top text-xs",
-                      item.id === selectedId ? "text-black" : "text-slate-600"
-                    )}>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3 text-slate-400" />
-                        {formatDateTime(item.createdAt)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="align-top">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          title="Detail"
-                          onClick={(e) => { e.stopPropagation(); (onDetail ?? onSelectItem)(item.id); }}
-                          className="text-xs rounded-none bg-slate-800 px-2 py-1 text-white hover:opacity-90"
-                        >
-                          Detail
-                        </button>
-                        <button
-                          type="button"
-                          title="Edit"
-                          onClick={(e) => { e.stopPropagation(); onEdit?.(item.id); }}
-                          className="text-xs rounded-none bg-[#476EAE] px-2 py-1 text-white hover:opacity-90"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          title="Hapus"
-                          onClick={(e) => { e.stopPropagation(); onDelete?.(item.id); }}
-                          className="text-xs rounded-none bg-red-600 px-2 py-1 text-white hover:opacity-90"
-                        >
-                          Hapus
-                        </button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <>
+              {/* Fixed Header */}
+              <div className="shrink-0 border-b border-slate-200" style={{ backgroundColor: '#f6f9ff' }}>
+                <Table className="min-w-full text-sm" style={{ tableLayout: 'fixed', width: '100%' }}>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[30%] text-slate-500" style={{ width: '30%' }}>Judul</TableHead>
+                      <TableHead className="w-[15%] text-slate-500" style={{ width: '15%' }}>Tipe</TableHead>
+                      <TableHead className="w-[15%] text-slate-500" style={{ width: '15%' }}>Penulis</TableHead>
+                      <TableHead className="w-[10%] text-slate-500" style={{ width: '10%' }}>Status</TableHead>
+                      <TableHead className="w-[8%] text-slate-500" style={{ width: '8%' }}>Views</TableHead>
+                      <TableHead className="w-[12%] text-slate-500" style={{ width: '12%' }}>Dibuat</TableHead>
+                      <TableHead className="w-[10%] text-slate-500" style={{ width: '10%' }}>Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
+              </div>
+
+              {/* Scrollable Body */}
+              <ScrollArea className="flex-1">
+                <Table className="min-w-full text-sm" style={{ tableLayout: 'fixed', width: '100%' }}>
+                  <TableBody>
+                    {data.map((item, index) => (
+                      <TableRow
+                        key={item.id}
+                        onClick={() => onSelectItem(item.id)}
+                        className={cn(
+                          "cursor-pointer border-b border-slate-100 transition h-14",
+                          item.id === selectedId
+                            ? "text-black"
+                            : index % 2 === 0
+                              ? "bg-white hover:bg-slate-50"
+                              : "bg-gray-50/50 hover:bg-slate-100"
+                        )}
+                        style={item.id === selectedId ? { backgroundColor: '#e6f4f1' } : undefined}
+                      >
+                        <TableCell className="w-[30%] align-middle py-4" style={{ width: '30%' }}>
+                          <span className="font-medium text-slate-800 line-clamp-2">
+                            {item.judul}
+                          </span>
+                        </TableCell>
+                        <TableCell className="w-[15%] align-middle py-4 text-slate-700" style={{ width: '15%' }}>
+                          <div className="flex items-center gap-1">
+                            <Tag className="h-3 w-3 text-slate-400" />
+                            <span className="capitalize truncate">{item.tipeBerita}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-[15%] align-middle py-4 text-slate-700" style={{ width: '15%' }}>
+                          <div className="flex items-center gap-1">
+                            <User className="h-3 w-3 text-slate-400" />
+                            <span className="truncate">{item.authorName ?? "Unknown"}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-[10%] align-middle py-4" style={{ width: '10%' }}>
+                          <Badge variant="secondary" className={cn("text-xs rounded", getStatusColor(item.status))}>
+                            {getStatusLabel(item.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="w-[8%] align-middle py-4 text-center font-semibold text-slate-900" style={{ width: '8%' }}>
+                          <div className="flex items-center justify-center gap-1">
+                            <Eye className="h-3 w-3 text-slate-400" />
+                            {item.viewCount}
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-[12%] align-middle py-4 text-xs text-slate-600" style={{ width: '12%' }}>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 text-slate-400" />
+                            <span className="truncate">{formatDateTime(item.createdAt)}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-[10%] align-middle py-4" style={{ width: '10%' }}>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); (onDetail ?? onSelectItem)(item.id); }} className="h-7 w-7 p-0 rounded-none hover:bg-blue-100">
+                              <Eye className="h-3.5 w-3.5 text-blue-600" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); onEdit?.(item.id); }} className="h-7 w-7 p-0 rounded-none hover:bg-green-100">
+                              <Edit className="h-3.5 w-3.5 text-green-600" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); onDelete?.(item.id); }} className="h-7 w-7 p-0 rounded-none hover:bg-red-100">
+                              <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </>
           )}
         </ScrollArea>
-      </CardContent>
+      </CardBody>
     </Card>
   );
 }

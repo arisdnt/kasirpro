@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { SystemConfig } from "@/features/system-config/types";
+import type { SystemConfig, SystemConfigInput } from "@/features/system-config/types";
 
 type RawConfig = {
   id: string;
@@ -59,19 +59,51 @@ export async function fetchSystemConfigs(tenantId: string) {
   return ((data as any[]) ?? []).map((row) => mapConfig(row as RawConfig));
 }
 
-export async function updateSystemConfig(payload: { id: string; value: string | null; deskripsi: string | null }) {
-  const client = getSupabaseClient();
-
-  const updates = {
-    value: payload.value,
-    deskripsi: payload.deskripsi,
+function mapInputToColumns(input: SystemConfigInput, tenantId: string) {
+  return {
+    tenant_id: tenantId,
+    key: input.key.trim(),
+    value: input.value,
+    tipe: input.tipe ?? null,
+    deskripsi: input.deskripsi ?? null,
+    toko_id: input.tokoId ?? null,
     updated_at: new Date().toISOString(),
   };
+}
 
+export async function createSystemConfig(params: { tenantId: string; input: SystemConfigInput }) {
+  const client = getSupabaseClient();
+  const payload = mapInputToColumns(params.input, params.tenantId);
   const { error } = await client
     .from("konfigurasi_sistem")
-    .update(updates)
-    .eq("id", payload.id);
+    .insert({ ...payload, created_at: new Date().toISOString() });
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function updateSystemConfig(params: { id: string; tenantId: string; input: SystemConfigInput }) {
+  const client = getSupabaseClient();
+  const payload = mapInputToColumns(params.input, params.tenantId);
+  const { error } = await client
+    .from("konfigurasi_sistem")
+    .update(payload)
+    .eq("id", params.id)
+    .eq("tenant_id", params.tenantId);
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function deleteSystemConfig(params: { id: string; tenantId: string }) {
+  const client = getSupabaseClient();
+  const { error } = await client
+    .from("konfigurasi_sistem")
+    .delete()
+    .eq("id", params.id)
+    .eq("tenant_id", params.tenantId);
 
   if (error) {
     throw error;

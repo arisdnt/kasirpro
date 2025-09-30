@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase-client";
-import type { Customer } from "@/features/customers/types";
+import type { Customer, CustomerInput } from "@/features/customers/types";
 
 type PelangganRow = {
   id: string;
@@ -68,4 +68,57 @@ export async function fetchCustomers(tenantId: string, tokoId: string | null) {
     createdAt: item.created_at,
     updatedAt: item.updated_at,
   })) satisfies Customer[];
+}
+
+function normalizeString(value?: string | null) {
+  const trimmed = value?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : null;
+}
+
+function mapInputToColumns(input: CustomerInput) {
+  return {
+    kode: input.kode.trim(),
+    nama: input.nama.trim(),
+    status: input.status?.trim() || "aktif",
+    telepon: normalizeString(input.telepon),
+    email: normalizeString(input.email),
+    alamat: normalizeString(input.alamat),
+    tanggal_lahir: normalizeString(input.tanggalLahir),
+    jenis_kelamin: normalizeString(input.jenisKelamin),
+    toko_id: normalizeString(input.tokoId) ?? null,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+export async function createCustomer(params: { tenantId: string; input: CustomerInput }) {
+  const client = getSupabaseClient();
+  const payload = mapInputToColumns(params.input);
+  const { error } = await client
+    .from("pelanggan")
+    .insert({ ...payload, tenant_id: params.tenantId, created_at: new Date().toISOString() } as any);
+
+  if (error) throw error;
+}
+
+export async function updateCustomer(params: { id: string; tenantId: string; input: CustomerInput }) {
+  const client = getSupabaseClient();
+  const payload = mapInputToColumns(params.input);
+  const { error } = await client
+    .from("pelanggan")
+    .update(payload as any)
+    .eq("id", params.id)
+    .eq("tenant_id", params.tenantId);
+
+  if (error) throw error;
+}
+
+export async function deleteCustomer(params: { id: string; tenantId: string }) {
+  const client = getSupabaseClient();
+  const { error } = await client
+    .from("pelanggan")
+    .delete()
+    .eq("id", params.id)
+    .eq("tenant_id", params.tenantId);
+
+  if (error) throw error;
 }

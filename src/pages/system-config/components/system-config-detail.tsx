@@ -1,14 +1,10 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Settings2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Settings2, Edit, Trash2, Maximize2 } from "lucide-react";
+import { formatDateTime } from "@/lib/format";
 import type { SystemConfig } from "@/features/system-config/types";
-
-const dateFormatter = new Intl.DateTimeFormat("id-ID", {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
+import { Button } from "@/components/ui/button";
 
 function describeScope(config: SystemConfig) {
   if (config.tokoId) {
@@ -19,118 +15,127 @@ function describeScope(config: SystemConfig) {
 
 interface SystemConfigDetailProps {
   selectedConfig: SystemConfig | null;
-  valueDraft: string;
-  onValueDraftChange: (value: string) => void;
-  descriptionDraft: string;
-  onDescriptionDraftChange: (value: string) => void;
-  isDirty: boolean;
-  isUpdating: boolean;
-  onSave: () => void;
-  onReset: () => void;
+  onEdit?: (config: SystemConfig) => void;
+  onDelete?: (config: SystemConfig) => void;
+  onOpenModal?: (config: SystemConfig) => void;
 }
 
 export function SystemConfigDetail({
   selectedConfig,
-  valueDraft,
-  onValueDraftChange,
-  descriptionDraft,
-  onDescriptionDraftChange,
-  isDirty,
-  isUpdating,
-  onSave,
-  onReset,
+  onEdit,
+  onDelete,
+  onOpenModal,
 }: SystemConfigDetailProps) {
   return (
-    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 bg-white/95 shadow-sm rounded-none">
-      <CardHeader className="shrink-0 flex flex-row items-center justify-between gap-2 py-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">Detail</span>
-          <span className="text-slate-400">•</span>
-          <CardTitle className="text-sm">
-            {selectedConfig ? selectedConfig.key : "Pilih konfigurasi"}
-          </CardTitle>
-        </div>
+    <Card className="flex w-full h-full shrink-0 flex-col border border-primary/10 shadow-sm rounded-none" style={{ backgroundColor: 'transparent' }}>
+      <CardContent className="flex flex-1 min-h-0 flex-col overflow-hidden p-0">
         {selectedConfig ? (
-          <Badge variant="secondary" className="bg-slate-100 text-slate-700 rounded-none text-xs">
-            {selectedConfig.tipe ?? "string"}
-          </Badge>
-        ) : null}
-      </CardHeader>
-      <CardContent className="flex flex-1 min-h-0 flex-col gap-4 overflow-hidden">
-        {!selectedConfig ? (
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6 font-mono text-sm">
+                <div className="relative w-full">
+                  <div className="absolute right-0 top-0">
+                    <Badge variant="outline" className="rounded-none border border-slate-400 text-[11px] uppercase tracking-wide">
+                      {selectedConfig.tipe ?? "string"}
+                    </Badge>
+                  </div>
+                  <div className="text-center border-b-2 border-dashed border-slate-400 pb-3 mb-4">
+                    <h2 className="text-lg font-bold tracking-[0.3em] text-slate-900">KONFIGURASI</h2>
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">System Config</p>
+                  </div>
+
+                  <div className="space-y-1 text-[11px]">
+                    <div className="flex justify-between">
+                      <span>Key</span>
+                      <span className="font-semibold text-slate-900 max-w-[60%] truncate text-right">{selectedConfig.key}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tipe</span>
+                      <span className="font-semibold text-slate-900">{selectedConfig.tipe ?? "string"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Cakupan</span>
+                      <span className="text-slate-900">{describeScope(selectedConfig)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>ID</span>
+                      <span className="text-slate-900 text-[9px] font-mono">{selectedConfig.id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Dibuat</span>
+                      <span>{selectedConfig.createdAt ? formatDateTime(selectedConfig.createdAt) : "-"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Diubah</span>
+                      <span>{selectedConfig.updatedAt ? formatDateTime(selectedConfig.updatedAt) : "-"}</span>
+                    </div>
+                  </div>
+
+                  {selectedConfig.deskripsi && (
+                    <div className="mt-4 border-t-2 border-dashed border-slate-400 pt-3">
+                      <div className="text-[10px] uppercase text-slate-500 mb-2">Deskripsi</div>
+                      <div className="text-[11px] text-slate-900 leading-relaxed">{selectedConfig.deskripsi}</div>
+                    </div>
+                  )}
+
+                  <div className="mt-4 border-t-2 border-dashed border-slate-400 pt-3">
+                    <div className="text-[10px] uppercase text-slate-500 mb-2">Nilai Konfigurasi</div>
+                    <div className="rounded border border-slate-200 bg-slate-50/30 px-3 py-2">
+                      {selectedConfig.value ? (
+                        <pre className="text-[10px] font-mono text-slate-900 whitespace-pre-wrap overflow-auto max-h-32">{selectedConfig.value}</pre>
+                      ) : (
+                        <div className="text-[10px] text-slate-500 italic">Belum ada nilai tersimpan</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 text-center border-t-2 border-dashed border-slate-400 pt-3">
+                    <div className="text-[9px] uppercase tracking-[0.1em] text-slate-400">
+                      System Configuration Detail
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+                    {onOpenModal ? (
+                      <Button
+                        variant="outline"
+                        className="rounded-none gap-2 border-slate-300 text-slate-700"
+                        onClick={() => onOpenModal(selectedConfig)}
+                      >
+                        <Maximize2 className="h-4 w-4" />
+                        Perbesar
+                      </Button>
+                    ) : null}
+                    {onEdit ? (
+                      <Button
+                        variant="ghost"
+                        className="rounded-none gap-2 text-blue-600 hover:bg-blue-100"
+                        onClick={() => onEdit(selectedConfig)}
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit
+                      </Button>
+                    ) : null}
+                    {onDelete ? (
+                      <Button
+                        variant="ghost"
+                        className="rounded-none gap-2 text-red-600 hover:bg-red-100"
+                        onClick={() => onDelete(selectedConfig)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Hapus
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
+        ) : (
           <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center text-slate-500">
             <Settings2 className="h-8 w-8 text-slate-300" />
             <p className="text-sm font-medium text-slate-600">Pilih konfigurasi untuk melihat detail</p>
             <p className="text-xs text-slate-500">Klik salah satu key di daftar konfigurasi.</p>
           </div>
-        ) : (
-          <>
-            <div className="rounded-none border border-slate-200 bg-white p-4 shadow-inner text-sm text-slate-600">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Cakupan</p>
-                  <p className="font-semibold text-slate-800">{describeScope(selectedConfig)}</p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Terakhir diubah</p>
-                  <p className="font-semibold text-slate-800">
-                    {selectedConfig.updatedAt ? dateFormatter.format(new Date(selectedConfig.updatedAt)) : "-"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Dibuat</p>
-                  <p className="text-slate-800">
-                    {selectedConfig.createdAt ? dateFormatter.format(new Date(selectedConfig.createdAt)) : "-"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-slate-500">ID</p>
-                  <p className="text-slate-800">{selectedConfig.id}</p>
-                </div>
-              </div>
-              <Separator className="my-3" />
-              <div>
-                <p className="text-xs uppercase tracking-wide text-slate-500">Deskripsi</p>
-                <textarea
-                  value={descriptionDraft}
-                  onChange={(event) => onDescriptionDraftChange(event.target.value)}
-                  className="mt-1 min-h-[80px] w-full resize-y rounded-none border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/40"
-                  placeholder="Tambahkan deskripsi untuk key ini"
-                />
-              </div>
-            </div>
-
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border border-slate-200 bg-white p-4 shadow-inner">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Nilai</p>
-              <textarea
-                value={valueDraft}
-                onChange={(event) => onValueDraftChange(event.target.value)}
-                className="mt-2 min-h-[150px] flex-1 resize-y rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-mono text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/40"
-                placeholder="Masukkan nilai konfigurasi"
-              />
-              <p className="mt-2 text-[11px] text-slate-500">
-                Simpan sebagai teks mentah. Gunakan format JSON untuk konfigurasi kompleks.
-              </p>
-            </div>
-
-            <div className="flex items-center justify-end gap-2">
-              <Button
-                variant="outline"
-                className="rounded-none"
-                onClick={onReset}
-                disabled={!isDirty || isUpdating}
-              >
-                Reset
-              </Button>
-              <Button
-                className="rounded-none"
-                onClick={onSave}
-                disabled={!selectedConfig || isUpdating || !isDirty}
-              >
-                {isUpdating ? "Menyimpan..." : "Simpan perubahan"}
-              </Button>
-            </div>
-          </>
         )}
       </CardContent>
     </Card>
